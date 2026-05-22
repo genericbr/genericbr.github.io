@@ -3,543 +3,509 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GenericBR — Tradutor & Localizador PT-BR</title>
+  <title>GenericBR</title>
   <script src="config.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg:       #06060e;
-      --bg2:      #0c0c1a;
-      --card:     #0f0f1e;
-      --accent:   #39ff14;
-      --pink:     #ff3864;
-      --cyan:     #00e5ff;
-      --text:     #e8e8e8;
-      --muted:    #5a5a7a;
-      --border:   rgba(57,255,20,0.12);
-      --border2:  rgba(255,56,100,0.15);
+      --bg:      #0d0f18;
+      --surface: #161927;
+      --card:    #1c1f30;
+      --border:  rgba(255,255,255,0.07);
+      --text:    #e2e4ef;
+      --muted:   #6b7194;
+      --yt:      #e53935;
+      --dc:      #5865f2;
+      --em:      #2979ff;
+      --pf:      #2a2d40;
     }
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      overflow-x: hidden;
-    }
-
-    /* scanline overlay */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background: repeating-linear-gradient(
-        0deg, transparent, transparent 2px,
-        rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px
-      );
-      pointer-events: none;
-      z-index: 9999;
-    }
-
-    /* ── NAV ───────────────────────────────────────────────── */
-    nav {
-      position: fixed; top:0; left:0; right:0;
-      padding: 1.1rem 2.5rem;
-      display: flex; justify-content: space-between; align-items: center;
-      z-index: 100;
-      background: rgba(6,6,14,0.85);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem; letter-spacing: 3px;
-      color: var(--accent);
-    }
-    .nav-links { display:flex; gap:2rem; list-style:none; }
-    .nav-links a {
-      color: var(--muted); text-decoration: none;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.72rem; letter-spacing: 1.5px;
-      text-transform: uppercase; transition: color .2s;
-    }
-    .nav-links a:hover { color: var(--accent); }
-
-    /* ── HERO ──────────────────────────────────────────────── */
-    .hero {
+      font-family: 'DM Sans', sans-serif;
       min-height: 100vh;
-      display: flex; align-items: center;
-      padding: 7rem 4rem 4rem;
-      position: relative; overflow: hidden;
-    }
-    /* grid bg */
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(57,255,20,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(57,255,20,0.035) 1px, transparent 1px);
-      background-size: 55px 55px;
-    }
-    /* glow orb */
-    .hero::after {
-      content: '';
-      position: absolute; top:15%; right:8%;
-      width: 550px; height: 550px;
-      background: radial-gradient(circle, rgba(57,255,20,0.05) 0%, transparent 68%);
-      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
     }
 
-    .hero-content { position:relative; z-index:1; max-width:860px; }
+    /* ── PROFILE CARD ───────────────────────────────── */
+    .card {
+      width: 100%;
+      max-width: 680px;
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1.5rem 2.5rem;
+      align-items: start;
+    }
 
-    .hero-tag {
+    /* left side */
+    .profile-left { display: flex; flex-direction: column; gap: 1rem; }
+
+    .profile-top { display: flex; align-items: center; gap: 1rem; }
+
+    .avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--card);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      color: var(--muted);
       font-family: 'DM Mono', monospace;
-      font-size: 0.72rem; color: var(--accent);
-      letter-spacing: 3px; text-transform: uppercase;
-      margin-bottom: 1.5rem;
-      display: flex; align-items: center; gap: 0.75rem;
-      animation: fadeUp .5s ease .1s both;
     }
-    .hero-tag::before {
-      content:''; display:inline-block;
-      width:28px; height:1px; background:var(--accent);
-    }
+    .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-    .hero-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(5rem, 13vw, 10.5rem);
-      line-height: 0.88; letter-spacing: -1px;
-      margin-bottom: 1.5rem;
-      animation: fadeUp .5s ease .2s both;
-      cursor: default;
-    }
-    .hero-name span { color: var(--accent); }
-    .hero-name:hover { animation: glitch .35s; }
+    .profile-meta { display: flex; flex-direction: column; gap: .2rem; }
 
-    .hero-bio {
-      font-size: 1.05rem; color: var(--muted);
-      max-width: 480px; line-height: 1.75;
-      margin-bottom: 3rem;
-      animation: fadeUp .5s ease .3s both;
-    }
-
-    .hero-stats {
-      display: flex; gap: 3rem; margin-bottom: 3rem;
-      animation: fadeUp .5s ease .4s both;
-    }
-    .stat { display:flex; flex-direction:column; gap:.2rem; }
-    .stat-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.8rem; color: var(--accent); line-height:1;
-    }
-    .stat-label {
+    .tagline {
       font-family: 'DM Mono', monospace;
-      font-size: 0.62rem; color: var(--muted);
-      letter-spacing: 1.5px; text-transform: uppercase;
-    }
-
-    .hero-cta {
-      display: flex; gap: 1rem;
-      animation: fadeUp .5s ease .5s both;
-    }
-    .btn {
-      padding: .75rem 1.75rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.72rem; letter-spacing: 2px;
+      font-size: .68rem;
+      letter-spacing: .1em;
       text-transform: uppercase;
-      text-decoration: none; border: none; cursor: pointer;
-      transition: all .2s; display:inline-block;
+      color: var(--muted);
     }
-    .btn-primary { background: var(--accent); color: var(--bg); }
-    .btn-primary:hover {
-      background: transparent; color: var(--accent);
-      outline: 1px solid var(--accent);
-    }
-    .btn-ghost {
-      background: transparent; color: var(--text);
-      outline: 1px solid rgba(255,255,255,0.18);
-    }
-    .btn-ghost:hover { outline-color: var(--accent); color: var(--accent); }
 
-    /* ── SECTION SHELL ─────────────────────────────────────── */
-    section { padding: 5.5rem 4rem; }
+    .profile-name {
+      font-size: 1.55rem;
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -.01em;
+    }
+
+    .profile-bio {
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      max-width: 380px;
+    }
+
+    .section-links {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+
+    .section-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .45rem .9rem;
+      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: .8rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+    }
+    .section-link:hover {
+      border-color: rgba(255,255,255,.2);
+      background: #222540;
+    }
+    .section-link svg { flex-shrink: 0; opacity: .7; }
+
+    /* right side — contact buttons */
+    .contact-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: .65rem;
+      min-width: 190px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 1.1rem;
+      border-radius: 10px;
+      font-size: .88rem;
+      font-weight: 500;
+      text-decoration: none;
+      color: #fff;
+      transition: filter .15s, transform .1s;
+    }
+    .btn:hover  { filter: brightness(1.12); }
+    .btn:active { transform: scale(.97); }
+    .btn svg    { width: 20px; height: 20px; flex-shrink: 0; }
+
+    .btn-yt { background: var(--yt); }
+    .btn-dc { background: var(--dc); }
+    .btn-em { background: var(--em); }
+    .btn-pf { background: var(--pf); border: 1px solid var(--border); }
+
+    /* ── SECTIONS ────────────────────────────────────── */
+    .section {
+      width: 100%;
+      max-width: 680px;
+      margin-top: 1.25rem;
+    }
 
     .section-header {
-      display: flex; align-items: baseline; gap: 1.25rem;
-      margin-bottom: 2.75rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: 1.1rem 1.5rem;
+      background: var(--surface);
+      border-radius: 14px 14px 0 0;
+      border-bottom: 1px solid var(--border);
     }
-    .section-num {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.68rem; color: var(--accent); letter-spacing: 2px;
-    }
-    .section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 3.2rem; letter-spacing: 1px;
-    }
-    .section-line { flex:1; height:1px; background: var(--border); }
 
-    /* ── STATES ─────────────────────────────────────────────── */
-    .loading-state {
-      text-align: center; padding: 4rem;
+    .section-header h2 {
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
       color: var(--muted);
-      font-family: 'DM Mono', monospace; font-size: 0.78rem;
-    }
-    .spinner {
-      width:28px; height:28px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin: 0 auto 1rem;
-    }
-    .error-state {
-      padding: 1.5rem 2rem;
-      border: 1px solid var(--pink);
-      color: var(--pink);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem; line-height: 2;
-    }
-    .error-state code {
-      background: rgba(255,56,100,0.1);
-      padding: .1rem .35rem;
     }
 
-    /* ── MUSIC SECTION ─────────────────────────────────────── */
-    #music { background: var(--bg2); }
+    .section-body {
+      background: var(--surface);
+      border-radius: 0 0 14px 14px;
+      padding: 1.25rem;
+    }
 
+    /* ── MUSIC GRID ──────────────────────────────────── */
     .music-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: .75rem;
     }
+
     .music-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
       background: var(--card);
-      border: 1px solid rgba(255,255,255,0.04);
-      overflow: hidden; transition: all .3s;
-      cursor: pointer; text-decoration: none;
-      display: block; color: inherit;
-    }
-    .music-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-5px);
-      box-shadow: 0 12px 36px rgba(57,255,20,0.09);
-    }
-    .music-thumb {
-      width:100%; aspect-ratio: 16/9;
-      object-fit: cover; display: block;
-    }
-    .music-thumb-placeholder {
-      width:100%; aspect-ratio:16/9;
-      background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--muted); font-size: 2rem;
-    }
-    .music-info { padding: 1rem; }
-    .music-title {
-      font-size: 0.88rem; font-weight: 600;
-      line-height: 1.45; margin-bottom: .5rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      border-radius: 10px;
       overflow: hidden;
+      border: 1px solid var(--border);
+      transition: border-color .2s, transform .2s;
+    }
+    .music-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
+
+    .music-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+      background: var(--bg);
+    }
+
+    .music-info {
+      padding: .65rem .75rem;
+    }
+    .music-title {
+      font-size: .77rem;
+      font-weight: 500;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: .3rem;
     }
     .music-channel {
       font-family: 'DM Mono', monospace;
-      font-size: 0.68rem; color: var(--accent);
-      margin-bottom: .35rem;
+      font-size: .62rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .music-stats { display: flex; gap: 1rem; flex-wrap:wrap; }
-    .music-stat {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.62rem; color: var(--muted);
-    }
-    .music-stat span { color: var(--text); }
 
-    /* ── GAMES SECTION ─────────────────────────────────────── */
+    /* ── GAMES GRID ──────────────────────────────────── */
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: .75rem;
     }
+
     .game-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
       background: var(--card);
-      border: 1px solid rgba(255,255,255,0.04);
-      overflow: hidden; transition: all .3s;
-      text-decoration: none; display: block; color: inherit;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: border-color .2s, transform .2s;
     }
-    .game-card:hover {
-      border-color: var(--pink);
-      transform: translateY(-5px);
-      box-shadow: 0 12px 36px rgba(255,56,100,0.09);
-    }
-    .game-header-img {
-      width:100%; height:170px;
-      object-fit: cover; display: block;
+    .game-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
+
+    .game-img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
       background: var(--bg);
     }
-    .game-info { padding: 1.25rem; }
+
+    .game-info { padding: .85rem 1rem; }
+
     .game-role {
       font-family: 'DM Mono', monospace;
-      font-size: 0.62rem; color: var(--pink);
-      letter-spacing: 2px; text-transform: uppercase;
-      margin-bottom: .4rem;
+      font-size: .6rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: .25rem;
     }
     .game-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.5rem; letter-spacing: .5px;
-      margin-bottom: .35rem;
+      font-size: .95rem;
+      font-weight: 600;
+      margin-bottom: .2rem;
     }
     .game-dev {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.68rem; color: var(--muted);
-      margin-bottom: .6rem;
+      font-size: .75rem;
+      color: var(--muted);
+      margin-bottom: .4rem;
     }
     .game-note {
       display: inline-block;
       font-family: 'DM Mono', monospace;
-      font-size: 0.6rem; color: var(--cyan);
-      border: 1px solid rgba(0,229,255,.25);
-      padding: .15rem .5rem; margin-bottom: .6rem;
-    }
-    .game-tags { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.6rem; }
-    .game-tag {
-      padding: .18rem .45rem;
-      background: rgba(255,56,100,0.08);
-      border: 1px solid rgba(255,56,100,0.18);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.58rem; color: var(--pink);
-    }
-    .game-owners {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.62rem; color: var(--muted); margin-top:.5rem;
-    }
-    .game-owners span { color: var(--text); }
-
-    /* skeleton loader */
-    @keyframes shimmer {
-      0%   { background-position: -400px 0; }
-      100% { background-position: 400px 0; }
-    }
-    .skeleton {
-      background: linear-gradient(90deg, var(--card) 25%, #1a1a2e 50%, var(--card) 75%);
-      background-size: 800px 100%;
-      animation: shimmer 1.4s infinite;
-    }
-
-    /* ── CONTACT ───────────────────────────────────────────── */
-    #contact {
-      text-align:center;
-      background: var(--bg2);
-    }
-    .contact-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(3rem, 9vw, 7.5rem);
-      line-height: 1; margin-bottom: 1.5rem;
-    }
-    .contact-title span { color: var(--accent); }
-    #contact-bio {
+      font-size: .58rem;
+      padding: .18rem .5rem;
+      border-radius: 4px;
+      background: rgba(255,255,255,.06);
       color: var(--muted);
+    }
+
+    /* ── STATES ──────────────────────────────────────── */
+    .state {
+      padding: 2.5rem 1rem;
+      text-align: center;
       font-family: 'DM Mono', monospace;
-      font-size: .82rem; margin-bottom: 2.25rem; line-height:1.9;
+      font-size: .75rem;
+      color: var(--muted);
+      grid-column: 1 / -1;
     }
-    .contact-links { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
 
-    /* ── FOOTER ────────────────────────────────────────────── */
-    footer {
-      padding: 1.75rem 4rem;
-      border-top: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
+    .spinner {
+      width: 22px; height: 22px;
+      border: 2px solid var(--border);
+      border-top-color: var(--muted);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto .75rem;
+    }
+
+    .error-msg {
       font-family: 'DM Mono', monospace;
-      font-size: 0.62rem; color: var(--muted);
+      font-size: .72rem;
+      color: var(--muted);
+      line-height: 1.8;
+      grid-column: 1 / -1;
+      padding: 1rem;
+      background: rgba(255,255,255,.03);
+      border-radius: 8px;
     }
-    .footer-dot { color: var(--accent); margin: 0 .4rem; }
-
-    /* ── ANIMATIONS ────────────────────────────────────────── */
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(18px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    @keyframes glitch {
-      0%  { text-shadow: none; }
-      20% { text-shadow: -3px 0 var(--pink), 3px 0 var(--cyan); }
-      40% { text-shadow:  3px 0 var(--pink),-3px 0 var(--cyan); }
-      70% { text-shadow: -1px 0 var(--pink), 1px 0 var(--cyan); }
-      100%{ text-shadow: none; }
+    .error-msg code {
+      background: rgba(255,255,255,.08);
+      padding: .1rem .3rem;
+      border-radius: 3px;
     }
 
-    /* ── RESPONSIVE ────────────────────────────────────────── */
-    @media(max-width:768px) {
-      nav    { padding: 1rem 1.5rem; }
-      .nav-links { display:none; }
-      section { padding: 4rem 1.5rem; }
-      .hero  { padding: 5.5rem 1.5rem 3rem; }
-      .hero-stats { gap: 1.5rem; }
-      footer { flex-direction:column; gap:.75rem; text-align:center; }
+    /* ── FOOTER ──────────────────────────────────────── */
+    .footer {
+      margin-top: 2.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: .62rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 540px) {
+      body { padding: 1rem .75rem 3rem; }
+
+      .card {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+      }
+
+      .contact-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        min-width: unset;
+      }
+
+      .btn {
+        flex: 1 1 calc(50% - .4rem);
+        min-width: 130px;
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo" id="nav-logo">GENERICBR</div>
-  <ul class="nav-links">
-    <li><a href="#music">Músicas</a></li>
-    <li><a href="#games">Jogos</a></li>
-    <li><a href="#contact">Contato</a></li>
-  </ul>
-</nav>
+<!-- PROFILE CARD -->
+<div class="card">
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-tag" id="hero-tag">PT-BR Translator &amp; Game Localizer</div>
-    <h1 class="hero-name" id="hero-name">GENERIC<span>BR</span></h1>
-    <p class="hero-bio" id="hero-bio">
-      Especializado em localização PT-BR de músicas indie e jogos. Suas histórias, na língua do seu público.
+  <div class="profile-left">
+    <div class="profile-top">
+      <div class="avatar" id="avatar-wrap">
+        <span id="avatar-initials">G</span>
+      </div>
+      <div class="profile-meta">
+        <div class="tagline" id="tagline">English · Portuguese Translator</div>
+        <div class="profile-name" id="profile-name">GenericBR // Dhimitri Rael</div>
+      </div>
+    </div>
+
+    <p class="profile-bio" id="profile-bio">
+      Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.
     </p>
-    <div class="hero-stats">
-      <div class="stat">
-        <div class="stat-num" id="stat-songs">10+</div>
-        <div class="stat-label">Músicas Traduzidas</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" id="stat-views">20M+</div>
-        <div class="stat-label">Views Combinadas</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" id="stat-games">—</div>
-        <div class="stat-label">Jogos Localizados</div>
-      </div>
-    </div>
-    <div class="hero-cta">
-      <a href="#music" class="btn btn-primary">Ver Portfolio</a>
-      <a href="#contact" class="btn btn-ghost">Contato</a>
+
+    <div class="section-links">
+      <a class="section-link" href="#games">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Steam
+      </a>
+      <a class="section-link" href="#music">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Music
+      </a>
     </div>
   </div>
-</section>
 
-<!-- MUSIC -->
-<section id="music">
+  <!-- Contact buttons -->
+  <div class="contact-buttons">
+    <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener">
+      Youtube
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
+    </a>
+    <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener">
+      Discord
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg>
+    </a>
+    <a class="btn btn-em" id="btn-em" href="#">
+      Email
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </a>
+    <a class="btn btn-pf" id="btn-pf" href="#" target="_blank" rel="noopener">
+      Portfolio
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    </a>
+  </div>
+
+</div>
+
+<!-- GAMES SECTION -->
+<div class="section" id="games">
   <div class="section-header">
-    <span class="section-num">01</span>
-    <h2 class="section-title">Traduções Musicais</h2>
-    <div class="section-line"></div>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    <h2>All My Gaming-Related Cameos Thus Far</h2>
   </div>
-  <div class="music-grid" id="music-grid">
-    <div class="loading-state" style="grid-column:1/-1">
-      <div class="spinner"></div>
-      Carregando playlist do YouTube…
+  <div class="section-body">
+    <div class="games-grid" id="games-grid">
+      <div class="state"><div class="spinner"></div>Loading Steam…</div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- GAMES -->
-<section id="games">
+<!-- MUSIC SECTION -->
+<div class="section" id="music">
   <div class="section-header">
-    <span class="section-num">02</span>
-    <h2 class="section-title">Localizações de Jogos</h2>
-    <div class="section-line"></div>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <h2>All My Music-Related Cameos Thus Far</h2>
   </div>
-  <div class="games-grid" id="games-grid">
-    <div class="loading-state" style="grid-column:1/-1">
-      <div class="spinner"></div>
-      Carregando dados da Steam…
+  <div class="section-body">
+    <div class="music-grid" id="music-grid">
+      <div class="state"><div class="spinner"></div>Loading YouTube…</div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- CONTACT -->
-<section id="contact">
-  <h2 class="contact-title">VAMOS<br><span>TRABALHAR</span><br>JUNTOS?</h2>
-  <p id="contact-bio">Aberto para projetos de localização PT-BR de jogos indie e músicas.</p>
-  <div class="contact-links" id="contact-links">
-    <a href="#" class="btn btn-primary" id="contact-email">Email</a>
-    <a href="#" class="btn btn-ghost"   id="contact-portfolio">Portfolio</a>
-  </div>
-</section>
+<div class="footer" id="footer">GENERICBR · <span id="footer-year"></span></div>
 
-<footer>
-  <div id="footer-name">GENERICBR <span class="footer-dot">·</span> © <span id="footer-year"></span></div>
-  <div>PT-BR Translator &amp; Game Localizer</div>
-</footer>
-
-<!-- ═══════════════════════════════════════════════════════════
-     LOGIC — não edite a não ser que saiba o que está fazendo
-     ═══════════════════════════════════════════════════════════ -->
 <script>
-// ── helpers ──────────────────────────────────────────────────
+// ── helpers ────────────────────────────────────────────────────
 function fmtViews(n) {
   n = parseInt(n) || 0;
-  if (n >= 1e9) return (n/1e9).toFixed(1) + 'B';
   if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
   if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
   return n.toString();
 }
-function fmtDate(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('pt-BR', { year:'numeric', month:'short' });
-}
 function esc(s) {
   const d = document.createElement('div');
-  d.textContent = s;
+  d.textContent = String(s || '');
   return d.innerHTML;
 }
 
-// ── apply CONFIG to static elements ──────────────────────────
+// ── apply CONFIG ───────────────────────────────────────────────
 function applyConfig() {
   const c = CONFIG;
-  document.title = c.name + ' — Tradutor & Localizador PT-BR';
-  document.getElementById('nav-logo').textContent       = c.name.toUpperCase();
-  document.getElementById('footer-name').innerHTML      =
-    c.name.toUpperCase() + ' <span class="footer-dot">·</span> © <span id="footer-year"></span>';
-  document.getElementById('footer-year').textContent    = new Date().getFullYear();
-  if (c.tagline)    document.getElementById('hero-tag').textContent  = c.tagline;
-  if (c.bio)        document.getElementById('hero-bio').textContent  = c.bio;
-  if (c.contactBio) document.getElementById('contact-bio').textContent = c.contactBio;
-  if (c.stats?.songs) document.getElementById('stat-songs').textContent = c.stats.songs;
-  if (c.stats?.views) document.getElementById('stat-views').textContent = c.stats.views;
+  const name = c.name || 'GenericBR';
+  const handle = c.handle || '';
 
-  const emailEl = document.getElementById('contact-email');
-  const portEl  = document.getElementById('contact-portfolio');
-  if (c.links?.email)          emailEl.href = 'mailto:' + c.links.email;
-  if (c.links?.portfolio)      portEl.href  = c.links.portfolio;
-  if (c.links?.portfolioLabel) portEl.textContent = c.links.portfolioLabel;
+  document.title = name;
+  document.getElementById('tagline').textContent    = c.tagline  || '';
+  document.getElementById('profile-name').textContent = handle ? `${name} // ${handle}` : name;
+  document.getElementById('profile-bio').textContent  = c.bio    || '';
+  document.getElementById('footer-year').textContent  = new Date().getFullYear();
+
+  // initials fallback
+  document.getElementById('avatar-initials').textContent = name.charAt(0).toUpperCase();
+
+  // avatar image
+  if (c.avatar) {
+    const wrap = document.getElementById('avatar-wrap');
+    wrap.innerHTML = `<img src="${esc(c.avatar)}" alt="avatar">`;
+  }
+
+  // links
+  const L = c.links || {};
+  const btnYt = document.getElementById('btn-yt');
+  const btnDc = document.getElementById('btn-dc');
+  const btnEm = document.getElementById('btn-em');
+  const btnPf = document.getElementById('btn-pf');
+  if (L.youtube)   btnYt.href = L.youtube;
+  if (L.discord)   btnDc.href = L.discord;
+  if (L.email)     btnEm.href = 'mailto:' + L.email;
+  if (L.portfolio) btnPf.href = L.portfolio;
 }
 
-// ── YOUTUBE ───────────────────────────────────────────────────
+// ── YOUTUBE ────────────────────────────────────────────────────
 async function loadMusic() {
   const grid = document.getElementById('music-grid');
-  const { apiKey, playlistId, maxResults } = CONFIG.youtube;
+  const { apiKey, playlistId, maxResults } = CONFIG.youtube || {};
 
-  // Setup guide when not configured
   if (!apiKey || apiKey === 'YOUR_YOUTUBE_API_KEY_HERE') {
-    grid.innerHTML = `<div class="error-state" style="grid-column:1/-1">
+    grid.innerHTML = `<div class="error-msg">
       ⚠️ <strong>YouTube API Key não configurada.</strong><br>
-      1. Acesse <code>console.cloud.google.com</code><br>
-      2. Novo projeto → Biblioteca → ative <code>YouTube Data API v3</code><br>
+      1. <code>console.cloud.google.com</code> → novo projeto<br>
+      2. Ativar <code>YouTube Data API v3</code><br>
       3. Credenciais → Criar credencial → API Key<br>
-      4. Cole a key em <code>config.js → youtube.apiKey</code>
+      4. Colar em <code>config.js → youtube.apiKey</code>
     </div>`;
     return;
   }
   if (!playlistId || playlistId === 'YOUR_PLAYLIST_ID_HERE') {
-    grid.innerHTML = `<div class="error-state" style="grid-column:1/-1">
-      ⚠️ <strong>Playlist ID não configurada.</strong><br>
-      Abra sua playlist no YouTube.<br>
-      Na URL você verá: <code>?list=PLxxxxxxxxx</code><br>
-      Cole esse ID em <code>config.js → youtube.playlistId</code>
+    grid.innerHTML = `<div class="error-msg">
+      ⚠️ Playlist ID não configurada.<br>
+      URL do YouTube: <code>?list=PLxxxxxxx</code> → colar em <code>config.js → youtube.playlistId</code>
     </div>`;
     return;
   }
 
   try {
-    // 1 — playlist items
     const plRes = await fetch(
       `https://www.googleapis.com/youtube/v3/playlistItems`
-      + `?part=snippet&maxResults=${maxResults || 50}`
+      + `?part=snippet&maxResults=${maxResults||50}`
       + `&playlistId=${encodeURIComponent(playlistId)}`
       + `&key=${apiKey}`
     );
@@ -548,86 +514,42 @@ async function loadMusic() {
 
     const items = plData.items || [];
     if (!items.length) {
-      grid.innerHTML = `<div class="error-state" style="grid-column:1/-1">Nenhum vídeo encontrado na playlist.</div>`;
+      grid.innerHTML = `<div class="error-msg">Nenhum vídeo encontrado na playlist.</div>`;
       return;
     }
 
-    // 2 — video stats (views)
-    const ids = items.map(i => i.snippet.resourceId.videoId).join(',');
-    const stRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos`
-      + `?part=statistics&id=${ids}&key=${apiKey}`
-    );
-    const stData = await stRes.json();
-    const statsMap = {};
-    (stData.items || []).forEach(v => { statsMap[v.id] = v.statistics; });
-
-    // 3 — update hero stat
-    const totalViews = Object.values(statsMap).reduce((s, v) => s + (parseInt(v?.viewCount)||0), 0);
-    document.getElementById('stat-songs').textContent = items.length + '+';
-    document.getElementById('stat-views').textContent = fmtViews(totalViews);
-
-    // 4 — render cards
     grid.innerHTML = items.map(item => {
       const s   = item.snippet;
       const vid = s.resourceId?.videoId;
-      const st  = statsMap[vid] || {};
-      const th  = s.thumbnails?.high?.url || s.thumbnails?.medium?.url || s.thumbnails?.default?.url;
+      const th  = s.thumbnails?.high?.url || s.thumbnails?.medium?.url || s.thumbnails?.default?.url || '';
+      const ch  = s.videoOwnerChannelTitle || '';
       return `
-        <a class="music-card" href="https://youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer">
-          ${th
-            ? `<img class="music-thumb" src="${esc(th)}" alt="${esc(s.title)}" loading="lazy">`
-            : `<div class="music-thumb-placeholder">♪</div>`}
+        <a class="music-card" href="https://youtube.com/watch?v=${vid}" target="_blank" rel="noopener">
+          ${th ? `<img class="music-thumb" src="${esc(th)}" alt="${esc(s.title)}" loading="lazy">`
+               : `<div class="music-thumb" style="background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`}
           <div class="music-info">
             <div class="music-title">${esc(s.title)}</div>
-            <div class="music-channel">${esc(s.videoOwnerChannelTitle || '—')}</div>
-            <div class="music-stats">
-              <div class="music-stat">👁 <span>${fmtViews(st.viewCount)}</span></div>
-              <div class="music-stat">📅 <span>${fmtDate(s.publishedAt)}</span></div>
-              ${st.likeCount ? `<div class="music-stat">♥ <span>${fmtViews(st.likeCount)}</span></div>` : ''}
-            </div>
+            <div class="music-channel">${esc(ch)}</div>
           </div>
         </a>`;
     }).join('');
 
   } catch (err) {
     console.error('YouTube error:', err);
-    grid.innerHTML = `<div class="error-state" style="grid-column:1/-1">
-      ❌ Erro ao carregar YouTube: <code>${esc(err.message)}</code><br>
-      Verifique o console (F12) para detalhes.
-    </div>`;
+    grid.innerHTML = `<div class="error-msg">❌ Erro ao carregar YouTube: <code>${esc(err.message)}</code></div>`;
   }
 }
 
-// ── STEAM ─────────────────────────────────────────────────────
+// ── STEAM ──────────────────────────────────────────────────────
 async function loadGames() {
   const grid  = document.getElementById('games-grid');
   const games = CONFIG.steam?.games || [];
 
   if (!games.length) {
-    grid.innerHTML = `<div class="error-state" style="grid-column:1/-1">
-      Nenhum jogo configurado.<br>
-      Adicione AppIDs em <code>config.js → steam.games</code>
-    </div>`;
+    grid.innerHTML = `<div class="error-msg">Nenhum jogo em <code>config.js → steam.games</code></div>`;
     return;
   }
 
-  // update hero stat
-  document.getElementById('stat-games').textContent = games.length;
-
-  // skeleton cards while loading
-  grid.innerHTML = games.map(() => `
-    <div class="game-card" style="pointer-events:none">
-      <div class="skeleton" style="width:100%;height:170px;"></div>
-      <div class="game-info">
-        <div class="skeleton" style="height:10px;width:55%;margin-bottom:.75rem;"></div>
-        <div class="skeleton" style="height:22px;width:75%;margin-bottom:.5rem;"></div>
-        <div class="skeleton" style="height:10px;width:40%;"></div>
-      </div>
-    </div>`).join('');
-
-  // fetch all games in parallel
-  // SteamSpy has open CORS headers — no proxy needed
   const results = await Promise.allSettled(
     games.map(g =>
       fetch(`https://steamspy.com/api.php?request=appdetails&appid=${g.appId}`)
@@ -638,32 +560,27 @@ async function loadGames() {
 
   grid.innerHTML = results.map((r, i) => {
     if (r.status === 'rejected' || !r.value?.appid) {
-      return `<div class="error-state">Erro ao carregar jogo ${games[i]?.appId}</div>`;
+      return `<div class="error-msg">Erro ao carregar jogo ${games[i]?.appId}</div>`;
     }
-    const d      = r.value;
-    const cfg    = d._cfg;
-    const appId  = d.appid;
-    const img    = `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg`;
-    const tags   = Object.keys(d.tags || {}).slice(0, 5);
-    const owners = d.owners || '';
+    const d   = r.value;
+    const cfg = d._cfg;
+    const img = `https://cdn.cloudflare.steamstatic.com/steam/apps/${d.appid}/header.jpg`;
 
     return `
-      <a class="game-card" href="https://store.steampowered.com/app/${appId}" target="_blank" rel="noopener noreferrer">
-        <img class="game-header-img" src="${img}" alt="${esc(d.name || '')}" loading="lazy"
-          onerror="this.style.background='var(--bg)';this.removeAttribute('src')">
+      <a class="game-card" href="https://store.steampowered.com/app/${d.appid}" target="_blank" rel="noopener">
+        <img class="game-img" src="${img}" alt="${esc(d.name)}" loading="lazy"
+          onerror="this.style.display='none'">
         <div class="game-info">
           <div class="game-role">${esc(cfg.role || 'PT-BR Localization')}</div>
-          ${cfg.note ? `<div class="game-note">${esc(cfg.note)}</div>` : ''}
-          <div class="game-name">${esc(d.name || 'Jogo Steam')}</div>
-          <div class="game-dev">${esc(d.developer || '—')}</div>
-          ${tags.length ? `<div class="game-tags">${tags.map(t=>`<span class="game-tag">${esc(t)}</span>`).join('')}</div>` : ''}
-          ${owners ? `<div class="game-owners">Donos: <span>${esc(owners)}</span></div>` : ''}
+          <div class="game-name">${esc(d.name || 'Steam Game')}</div>
+          <div class="game-dev">${esc(d.developer || '')}</div>
+          ${cfg.note ? `<span class="game-note">${esc(cfg.note)}</span>` : ''}
         </div>
       </a>`;
   }).join('');
 }
 
-// ── init ──────────────────────────────────────────────────────
+// ── init ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   applyConfig();
   loadMusic();
