@@ -580,7 +580,8 @@ async function loadGames() {
     const spy  = spyMap[cfg.appId] || {};
     const name = cfg.name || spy.name || 'Steam Game';
     const dev  = cfg.dev  || spy.developer || '';
-    const img  = `https://cdn.cloudflare.steamstatic.com/steam/apps/${cfg.appId}/header.jpg`;
+    // URL oficial e padronizada da Steam (sem token dinâmico, funciona para qualquer jogo)
+    const img  = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${cfg.appId}/header.jpg`;
     const fallbackId = `img-fallback-${cfg.appId}`;
     
     return `
