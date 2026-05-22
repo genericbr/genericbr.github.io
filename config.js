@@ -11,7 +11,7 @@ const CONFIG = {
   bio:     "Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.",
 
   // ── Avatar (URL de imagem — pode ser do GitHub, imgur, etc.) ─
-  avatar: "",  // ex: "https://i.imgur.com/xxxx.jpg"
+  avatar: "https://genericbr.carrd.co/assets/images/image01.jpg?v=5985aec8",  // ex: "https://i.imgur.com/xxxx.jpg"
 
   // ── Links ────────────────────────────────────────────────────
   links: {
