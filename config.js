@@ -25,7 +25,7 @@ const CONFIG = {
   //  Como obter a API Key e o Playlist ID: veja README.md
   youtube: {
     apiKey:     "YOUR_YOUTUBE_API_KEY_HERE",
-    playlistId: "YOUR_PLAYLIST_ID_HERE",
+    playlistId: "PLsX_idXfvgUKeFHYUvGJOkwF0mu4nZy_t",
     maxResults: 50,
   },
 
