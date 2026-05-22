@@ -518,7 +518,7 @@
           sortSelect.removeEventListener('change', handleSortChange);
           sortSelect.addEventListener('change', handleSortChange);
         }
-        document.getElementById('update-badge').innerHTML = '🔄 via Cloudflare Worker (global cache)';
+        document.getElementById('update-badge').innerHTML = '';
       } else {
         grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
         statsDiv.style.display = 'none';
