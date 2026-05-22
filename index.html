@@ -35,6 +35,13 @@
       overflow-x: hidden;
     }
 
+    /* focus styles for accessibility */
+    :focus-visible {
+      outline: 2px solid #6b7194;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
     /* ── VIEW SYSTEM ────────────────────────────────────────── */
     .view-wrap {
       width: 100%;
@@ -254,6 +261,23 @@
       object-fit: cover; display: block;
       background: var(--bg);
     }
+    /* Fallback for missing images */
+    .game-img-fallback {
+      width: 100%; height: 135px;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      gap: 0.5rem;
+    }
+    .game-img-fallback svg {
+      width: 24px;
+      height: 24px;
+      opacity: 0.6;
+    }
 
     .game-info { padding: .8rem 1rem; }
     .game-role {
@@ -331,7 +355,7 @@
       <!-- Left: profile -->
       <div class="profile-left">
         <div class="profile-top">
-          <div class="avatar" id="avatar-wrap">
+          <div class="avatar" id="avatar-wrap" aria-label="Avatar">
             <span id="avatar-initials">G</span>
           </div>
           <div class="profile-meta">
@@ -346,14 +370,14 @@
 
         <!-- Section nav -->
         <div class="nav-links">
-          <div class="nav-link" onclick="goTo('view-games')">
+          <div class="nav-link" onclick="goTo('view-games')" role="button" tabindex="0" aria-label="Ver jogos da Steam">
             <div class="nav-link-left">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
               Steam
             </div>
             <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
-          <div class="nav-link" onclick="goTo('view-music')">
+          <div class="nav-link" onclick="goTo('view-music')" role="button" tabindex="0" aria-label="Ver músicas do YouTube">
             <div class="nav-link-left">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
               Music
@@ -365,21 +389,21 @@
 
       <!-- Right: contact buttons -->
       <div class="contact-buttons">
-        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener">
+        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener" aria-label="YouTube">
           Youtube
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
         </a>
-        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener">
+        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener" aria-label="Discord">
           Discord
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg>
         </a>
-        <a class="btn btn-em" id="btn-em" href="#">
+        <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">
           Email
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </a>
-        <a class="btn btn-pf" id="btn-pf" href="#" target="_blank" rel="noopener">
+        <a class="btn btn-pf" id="btn-pf" href="#" target="_blank" rel="noopener" aria-label="Portfólio">
           Portfolio
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </a>
       </div>
     </div>
@@ -390,7 +414,7 @@
   <!-- ══ VIEW: MUSIC ══════════════════════════════════════════ -->
   <div class="view" id="view-music">
     <div class="section-header">
-      <div class="back-btn" onclick="goTo('view-home')" title="Voltar">
+      <div class="back-btn" onclick="goTo('view-home')" title="Voltar" role="button" tabindex="0" aria-label="Voltar para página inicial">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">All My Music-Related Cameos Thus Far</span>
@@ -405,7 +429,7 @@
   <!-- ══ VIEW: GAMES ══════════════════════════════════════════ -->
   <div class="view" id="view-games">
     <div class="section-header">
-      <div class="back-btn" onclick="goTo('view-home')" title="Voltar">
+      <div class="back-btn" onclick="goTo('view-home')" title="Voltar" role="button" tabindex="0" aria-label="Voltar para página inicial">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">All My Gaming-Related Cameos Thus Far</span>
@@ -452,7 +476,7 @@ function applyConfig() {
 
   if (c.avatar) {
     document.getElementById('avatar-wrap').innerHTML =
-      `<img src="${esc(c.avatar)}" alt="avatar">`;
+      `<img src="${esc(c.avatar)}" alt="Avatar de ${esc(name)}">`;
   }
 
   const L = c.links || {};
@@ -507,9 +531,9 @@ async function loadMusic() {
       const vid = s.resourceId?.videoId;
       const th  = s.thumbnails?.high?.url || s.thumbnails?.medium?.url || '';
       return `
-        <a class="music-card" href="https://youtube.com/watch?v=${vid}" target="_blank" rel="noopener">
+        <a class="music-card" href="https://youtube.com/watch?v=${vid}" target="_blank" rel="noopener" aria-label="Assistir ${esc(s.title)} no YouTube">
           ${th
-            ? `<img class="music-thumb" src="${esc(th)}" alt="${esc(s.title)}" loading="lazy">`
+            ? `<img class="music-thumb" src="${esc(th)}" alt="Thumbnail de ${esc(s.title)}" loading="lazy">`
             : `<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`
           }
           <div class="music-info">
@@ -557,11 +581,16 @@ async function loadGames() {
     const name = cfg.name || spy.name || 'Steam Game';
     const dev  = cfg.dev  || spy.developer || '';
     const img  = `https://cdn.cloudflare.steamstatic.com/steam/apps/${cfg.appId}/header.jpg`;
-
+    const fallbackId = `img-fallback-${cfg.appId}`;
+    
     return `
-      <a class="game-card" href="https://store.steampowered.com/app/${cfg.appId}" target="_blank" rel="noopener">
-        <img class="game-img" src="${img}" alt="${esc(name)}" loading="lazy"
-          onerror="this.style.display='none'">
+      <a class="game-card" href="https://store.steampowered.com/app/${cfg.appId}" target="_blank" rel="noopener" aria-label="Ver ${esc(name)} na Steam">
+        <img class="game-img" src="${img}" alt="Capa de ${esc(name)}" loading="lazy"
+          onerror="this.onerror=null; this.style.display='none'; document.getElementById('${fallbackId}').style.display='flex';">
+        <div id="${fallbackId}" class="game-img-fallback" style="display: none;" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
+          <span>${esc(name)}</span>
+        </div>
         <div class="game-info">
           <div class="game-role">${esc(cfg.role || 'PT-BR Localization')}</div>
           <div class="game-name">${esc(name)}</div>
