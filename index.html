@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,14 +35,12 @@
       overflow-x: hidden;
     }
 
-    /* focus styles for accessibility */
     :focus-visible {
       outline: 2px solid #6b7194;
       outline-offset: 2px;
       border-radius: 4px;
     }
 
-    /* ── VIEW SYSTEM ────────────────────────────────────────── */
     .view-wrap {
       width: 100%;
       max-width: 720px;
@@ -63,14 +61,12 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── CARD ───────────────────────────────────────────────── */
     .card {
       background: var(--surface);
       border-radius: 20px;
       padding: 1.75rem 2rem;
     }
 
-    /* ── PROFILE VIEW ───────────────────────────────────────── */
     #view-home .card {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -79,7 +75,6 @@
     }
 
     .profile-left { display: flex; flex-direction: column; gap: 1rem; }
-
     .profile-top { display: flex; align-items: center; gap: 1rem; }
 
     .avatar {
@@ -95,7 +90,6 @@
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .profile-meta { display: flex; flex-direction: column; gap: .2rem; }
-
     .tagline {
       font-family: 'DM Mono', monospace;
       font-size: .66rem;
@@ -103,23 +97,19 @@
       text-transform: uppercase;
       color: var(--muted);
     }
-
     .profile-name {
       font-size: 1.6rem;
       font-weight: 600;
       line-height: 1;
       letter-spacing: -.01em;
     }
-
     .profile-bio {
       font-size: .875rem;
       color: var(--muted);
       line-height: 1.65;
     }
 
-    /* nav links at bottom of profile */
     .nav-links { display: flex; flex-direction: column; gap: .5rem; }
-
     .nav-link {
       display: flex;
       align-items: center;
@@ -136,19 +126,16 @@
       transition: border-color .15s, background .15s;
     }
     .nav-link:hover { border-color: rgba(255,255,255,.16); background: #222540; }
-
     .nav-link-left { display: flex; align-items: center; gap: .6rem; }
     .nav-link svg { flex-shrink: 0; }
     .nav-link .arrow { color: var(--muted); }
 
-    /* contact buttons */
     .contact-buttons {
       display: flex;
       flex-direction: column;
       gap: .6rem;
       min-width: 185px;
     }
-
     .btn {
       display: flex;
       align-items: center;
@@ -165,13 +152,11 @@
     .btn:hover  { filter: brightness(1.13); }
     .btn:active { transform: scale(.97); }
     .btn svg    { width: 19px; height: 19px; flex-shrink: 0; }
-
     .btn-yt { background: var(--yt); }
     .btn-dc { background: var(--dc); }
     .btn-em { background: var(--em); }
     .btn-pf { background: var(--pf); border: 1px solid var(--border); }
 
-    /* ── SECTION VIEWS (Music / Games) ──────────────────────── */
     .section-header {
       display: flex;
       align-items: center;
@@ -200,7 +185,7 @@
       text-transform: uppercase;
       color: var(--muted);
     }
-    /* Sorting controls */
+
     .sort-controls {
       display: flex;
       align-items: center;
@@ -220,11 +205,8 @@
       padding: 0.2rem 0.4rem;
     }
     .sort-controls select:focus { outline: none; }
-    .sort-controls label {
-      font-size: 0.65rem;
-      color: var(--muted);
-    }
-    /* Total stats bar */
+    .sort-controls label { font-size: 0.65rem; color: var(--muted); }
+
     .stats-bar {
       background: var(--card);
       border-radius: 12px;
@@ -237,26 +219,15 @@
       gap: 0.5rem;
       border: 1px solid var(--border);
     }
-    .total-views {
-      font-size: 0.8rem;
-      font-family: 'DM Mono', monospace;
-    }
-    .total-views strong {
-      color: #fff;
-      font-size: 1.1rem;
-    }
-    .update-badge {
-      font-size: 0.6rem;
-      color: var(--muted);
-    }
+    .total-views { font-size: 0.8rem; font-family: 'DM Mono', monospace; }
+    .total-views strong { color: #fff; font-size: 1.1rem; }
+    .update-badge { font-size: 0.6rem; color: var(--muted); }
 
-    /* ── MUSIC GRID ─────────────────────────────────────────── */
     .music-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 1rem;
     }
-
     .music-card {
       display: block;
       text-decoration: none;
@@ -268,13 +239,11 @@
       transition: border-color .2s, transform .2s;
     }
     .music-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
-
     .music-thumb {
       width: 100%; aspect-ratio: 16/9;
       object-fit: cover; display: block;
       background: var(--bg);
     }
-
     .music-info { padding: .7rem .8rem; }
     .music-title {
       font-size: .8rem; font-weight: 500; line-height: 1.4;
@@ -291,24 +260,14 @@
       flex-direction: column;
       gap: 0.2rem;
     }
-    .music-views, .music-date {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-    .music-channel {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .music-views, .music-date { display: flex; align-items: center; gap: 0.3rem; }
+    .music-channel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ── GAMES GRID ─────────────────────────────────────────── */
     .games-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: .75rem;
     }
-
     .game-card {
       display: block;
       text-decoration: none; color: inherit;
@@ -318,7 +277,6 @@
       transition: border-color .2s, transform .2s;
     }
     .game-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
-
     .game-img {
       width: 100%; height: 135px;
       object-fit: cover; display: block;
@@ -335,11 +293,7 @@
       color: var(--muted);
       gap: 0.5rem;
     }
-    .game-img-fallback svg {
-      width: 24px;
-      height: 24px;
-      opacity: 0.6;
-    }
+    .game-img-fallback svg { width: 24px; height: 24px; opacity: 0.6; }
     .game-info { padding: .8rem 1rem; }
     .game-role {
       font-family: 'DM Mono', monospace;
@@ -355,7 +309,6 @@
       background: rgba(255,255,255,.06); color: var(--muted);
     }
 
-    /* ── STATES ─────────────────────────────────────────────── */
     .state {
       padding: 3rem 1rem; text-align: center;
       font-family: 'DM Mono', monospace;
@@ -376,10 +329,7 @@
       grid-column: 1 / -1; padding: 1.25rem;
       background: rgba(255,255,255,.03); border-radius: 8px;
     }
-    .error-msg code {
-      background: rgba(255,255,255,.08);
-      padding: .1rem .3rem; border-radius: 3px;
-    }
+    .error-msg code { background: rgba(255,255,255,.08); padding: .1rem .3rem; border-radius: 3px; }
 
     .footer {
       text-align: center;
@@ -391,17 +341,9 @@
 
     @media (max-width: 520px) {
       body { padding: 1rem .75rem; align-items: flex-start; padding-top: 1.5rem; }
-      #view-home .card {
-        grid-template-columns: 1fr;
-      }
-      .contact-buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        min-width: unset;
-      }
-      .music-grid {
-        grid-template-columns: 1fr;
-      }
+      #view-home .card { grid-template-columns: 1fr; }
+      .contact-buttons { display: grid; grid-template-columns: 1fr 1fr; min-width: unset; }
+      .music-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -409,9 +351,8 @@
 
 <div class="view-wrap">
 
-  <!-- ══ VIEW: HOME ══════════════════════════════════════════ -->
+  <!-- HOME -->
   <div class="view active" id="view-home">
-
     <div class="card">
       <div class="profile-left">
         <div class="profile-top">
@@ -427,14 +368,14 @@
           Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.
         </p>
         <div class="nav-links">
-          <div class="nav-link" onclick="goTo('view-games')" role="button" tabindex="0" aria-label="Ver jogos da Steam">
+          <div class="nav-link" onclick="goTo('view-games')" role="button" tabindex="0" aria-label="View Steam games">
             <div class="nav-link-left">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
               Steam
             </div>
             <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
-          <div class="nav-link" onclick="goTo('view-music')" role="button" tabindex="0" aria-label="Ver músicas do YouTube">
+          <div class="nav-link" onclick="goTo('view-music')" role="button" tabindex="0" aria-label="View YouTube music">
             <div class="nav-link-left">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
               Music
@@ -444,31 +385,19 @@
         </div>
       </div>
       <div class="contact-buttons">
-        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener" aria-label="YouTube">
-          Youtube
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
-        </a>
-        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener" aria-label="Discord">
-          Discord
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg>
-        </a>
-        <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">
-          Email
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        </a>
-        <a class="btn btn-pf" id="btn-pf" href="#" target="_blank" rel="noopener" aria-label="Portfólio">
-          Portfolio
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </a>
+        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener" aria-label="YouTube">Youtube<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg></a>
+        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener" aria-label="Discord">Discord<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg></a>
+        <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+        <a class="btn btn-pf" id="btn-pf" href="#" target="_blank" rel="noopener" aria-label="Portfolio">Portfolio<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>
       </div>
     </div>
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
 
-  <!-- ══ VIEW: MUSIC ══════════════════════════════════════════ -->
+  <!-- MUSIC VIEW (using Cloudflare Worker proxy) -->
   <div class="view" id="view-music">
     <div class="section-header">
-      <div class="back-btn" onclick="goTo('view-home')" title="Voltar" role="button" tabindex="0" aria-label="Voltar para página inicial">
+      <div class="back-btn" onclick="goTo('view-home')" title="Back" role="button" tabindex="0">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">All My Music-Related Cameos Thus Far</span>
@@ -496,10 +425,10 @@
     </div>
   </div>
 
-  <!-- ══ VIEW: GAMES ══════════════════════════════════════════ -->
+  <!-- GAMES VIEW (Steam) -->
   <div class="view" id="view-games">
     <div class="section-header">
-      <div class="back-btn" onclick="goTo('view-home')" title="Voltar" role="button" tabindex="0" aria-label="Voltar para página inicial">
+      <div class="back-btn" onclick="goTo('view-home')" title="Back" role="button" tabindex="0">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">All My Gaming-Related Cameos Thus Far</span>
@@ -514,286 +443,196 @@
 </div>
 
 <script>
-// ── navigation ──────────────────────────────────────────────
-function goTo(viewId) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  const target = document.getElementById(viewId);
-  if (target) {
-    target.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }
-}
-
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = String(s || '');
-  return d.innerHTML;
-}
-
-// Format number with commas
-function formatNumber(num) {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-// Format date (YYYY-MM-DD to DD/MM/YYYY)
-function formatDate(isoString) {
-  if (!isoString) return '';
-  const d = new Date(isoString);
-  return d.toLocaleDateString('en-US');
-}
-
-// ── apply CONFIG ─────────────────────────────────────────────
-function applyConfig() {
-  const c = CONFIG;
-  const name   = c.name   || 'GenericBR';
-  const handle = c.handle || '';
-
-  document.title = name;
-  document.getElementById('tagline').textContent     = c.tagline || '';
-  document.getElementById('profile-name').textContent = handle ? `${name} // ${handle}` : name;
-  document.getElementById('profile-bio').textContent  = c.bio    || '';
-  document.getElementById('footer-year').textContent  = new Date().getFullYear();
-  document.getElementById('avatar-initials').textContent = name.charAt(0).toUpperCase();
-
-  if (c.avatar) {
-    document.getElementById('avatar-wrap').innerHTML =
-      `<img src="${esc(c.avatar)}" alt="Avatar de ${esc(name)}">`;
+  // navigation
+  function goTo(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const target = document.getElementById(viewId);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   }
 
-  const L = c.links || {};
-  if (L.youtube)   document.getElementById('btn-yt').href = L.youtube;
-  if (L.discord)   document.getElementById('btn-dc').href = L.discord;
-  if (L.email)     document.getElementById('btn-em').href = 'mailto:' + L.email;
-  if (L.portfolio) document.getElementById('btn-pf').href = L.portfolio;
-}
-
-// ── YOUTUBE with CACHE (2x per day) ────────────────────────
-const CACHE_KEY = 'youtube_music_cache';
-const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
-
-let musicItemsRaw = []; // store raw data from API
-let currentSort = 'original';
-
-async function loadMusic() {
-  const grid = document.getElementById('music-grid');
-  const statsDiv = document.getElementById('music-stats');
-  const { apiKey, playlistId, maxResults } = CONFIG.youtube || {};
-
-  if (!apiKey || apiKey === 'YOUR_YOUTUBE_API_KEY_HERE') {
-    grid.innerHTML = `<div class="error-msg">⚠️ YouTube API Key não configurada. Veja README.</div>`;
-    statsDiv.style.display = 'none';
-    return;
-  }
-  if (!playlistId) {
-    grid.innerHTML = `<div class="error-msg">⚠️ Playlist ID não configurada.</div>`;
-    statsDiv.style.display = 'none';
-    return;
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = String(s || '');
+    return d.innerHTML;
   }
 
-  // Check cache
-  const cached = localStorage.getItem(CACHE_KEY);
-  let cacheValid = false;
-  let videoData = null;
-  if (cached) {
+  function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function formatDate(isoString) {
+    if (!isoString) return '';
+    const d = new Date(isoString);
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  // ── apply CONFIG (profile, links, etc) ──
+  function applyConfig() {
+    const c = CONFIG;
+    const name   = c.name   || 'GenericBR';
+    const handle = c.handle || '';
+
+    document.title = name;
+    document.getElementById('tagline').textContent     = c.tagline || '';
+    document.getElementById('profile-name').textContent = handle ? `${name} // ${handle}` : name;
+    document.getElementById('profile-bio').textContent  = c.bio    || '';
+    document.getElementById('footer-year').textContent  = new Date().getFullYear();
+    document.getElementById('avatar-initials').textContent = name.charAt(0).toUpperCase();
+
+    if (c.avatar) {
+      document.getElementById('avatar-wrap').innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`;
+    }
+
+    const L = c.links || {};
+    if (L.youtube)   document.getElementById('btn-yt').href = L.youtube;
+    if (L.discord)   document.getElementById('btn-dc').href = L.discord;
+    if (L.email)     document.getElementById('btn-em').href = 'mailto:' + L.email;
+    if (L.portfolio) document.getElementById('btn-pf').href = L.portfolio;
+  }
+
+  // ── MUSIC via Cloudflare Worker proxy ─────────────────────
+  let musicItemsRaw = [];
+  let currentSort = 'original';
+
+  async function loadMusic() {
+    const grid = document.getElementById('music-grid');
+    const statsDiv = document.getElementById('music-stats');
+    const { playlistId, maxResults } = CONFIG.youtube || {};
+    const workerUrl = 'https://portfolio.genericbr-business.workers.dev';  // your worker URL
+
+    if (!playlistId) {
+      grid.innerHTML = `<div class="error-msg">⚠️ Playlist ID not configured in config.js</div>`;
+      statsDiv.style.display = 'none';
+      return;
+    }
+
     try {
-      const cache = JSON.parse(cached);
-      if (Date.now() - cache.timestamp < CACHE_TTL) {
-        videoData = cache.data;
-        cacheValid = true;
+      grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube via proxy…</div>`;
+      const response = await fetch(`${workerUrl}?playlistId=${playlistId}&maxResults=${maxResults || 50}`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const videoData = await response.json();
+
+      if (videoData && videoData.length) {
+        musicItemsRaw = videoData;
+        renderMusicGrid();
+        statsDiv.style.display = 'flex';
+        updateTotalViews();
+        const sortSelect = document.getElementById('sort-music');
+        if (sortSelect) {
+          sortSelect.removeEventListener('change', handleSortChange);
+          sortSelect.addEventListener('change', handleSortChange);
+        }
+        document.getElementById('update-badge').innerHTML = '🔄 via Cloudflare Worker (global cache)';
+      } else {
+        grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
+        statsDiv.style.display = 'none';
       }
-    } catch(e) {}
-  }
-
-  if (!cacheValid) {
-    grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube...</div>`;
-    statsDiv.style.display = 'none';
-    try {
-      // 1. Get playlist items
-      const plRes = await fetch(
-        `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${maxResults||50}&playlistId=${encodeURIComponent(playlistId)}&key=${apiKey}`
-      );
-      const plData = await plRes.json();
-      if (plData.error) throw new Error(plData.error.message);
-      const items = plData.items || [];
-      if (!items.length) throw new Error('Playlist vazia.');
-
-      // 2. Get video IDs
-      const videoIds = items.map(item => item.snippet.resourceId.videoId).filter(id => id);
-      // 3. Fetch video statistics in batches (max 50 per request)
-      let videoStats = [];
-      for (let i = 0; i < videoIds.length; i += 50) {
-        const batch = videoIds.slice(i, i+50);
-        const statsRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet&id=${batch.join(',')}&key=${apiKey}`
-        );
-        const statsData = await statsRes.json();
-        if (statsData.error) throw new Error(statsData.error.message);
-        videoStats.push(...(statsData.items || []));
-      }
-      // Map videoId to stats
-      const statsMap = {};
-      videoStats.forEach(v => { statsMap[v.id] = v; });
-
-      // Build enriched items
-      const enriched = items.map(item => {
-        const vid = item.snippet.resourceId.videoId;
-        const stats = statsMap[vid] || {};
-        const snippet = item.snippet;
-        return {
-          id: vid,
-          title: snippet.title,
-          thumbnail: snippet.thumbnails?.high?.url || snippet.thumbnails?.medium?.url || '',
-          channelTitle: snippet.videoOwnerChannelTitle || snippet.channelTitle || '',
-          publishedAt: stats.snippet?.publishedAt || snippet.publishedAt,
-          viewCount: stats.statistics?.viewCount ? parseInt(stats.statistics.viewCount) : 0,
-        };
-      });
-      videoData = enriched;
-      // Save cache
-      localStorage.setItem(CACHE_KEY, JSON.stringify({
-        timestamp: Date.now(),
-        data: videoData
-      }));
-      document.getElementById('update-badge').innerHTML = '🔄 Updated just now';
     } catch (err) {
       console.error(err);
-      grid.innerHTML = `<div class="error-msg">❌ Erro: <code>${esc(err.message)}</code><br>Usando cache antigo (se existir).</div>`;
-      if (!videoData) {
-        statsDiv.style.display = 'none';
-        return;
-      }
+      grid.innerHTML = `<div class="error-msg">❌ Error: <code>${esc(err.message)}</code></div>`;
+      statsDiv.style.display = 'none';
     }
-  } else {
-    document.getElementById('update-badge').innerHTML = '📦 Cached (updated <12h)';
   }
 
-  if (videoData && videoData.length) {
-    musicItemsRaw = videoData;
+  function handleSortChange(e) {
+    currentSort = e.target.value;
     renderMusicGrid();
-    statsDiv.style.display = 'flex';
-    updateTotalViews();
-    // Attach sort listener
-    const sortSelect = document.getElementById('sort-music');
-    if (sortSelect) {
-      sortSelect.removeEventListener('change', handleSortChange);
-      sortSelect.addEventListener('change', handleSortChange);
+  }
+
+  function renderMusicGrid() {
+    const grid = document.getElementById('music-grid');
+    let sorted = [...musicItemsRaw];
+    switch(currentSort) {
+      case 'views_desc': sorted.sort((a,b) => b.viewCount - a.viewCount); break;
+      case 'views_asc':  sorted.sort((a,b) => a.viewCount - b.viewCount); break;
+      case 'date_desc':  sorted.sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt)); break;
+      case 'date_asc':   sorted.sort((a,b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
+      case 'title_asc':  sorted.sort((a,b) => a.title.localeCompare(b.title)); break;
+      case 'title_desc': sorted.sort((a,b) => b.title.localeCompare(a.title)); break;
+      default: sorted = [...musicItemsRaw];
     }
-  } else {
-    grid.innerHTML = `<div class="error-msg">Nenhum vídeo encontrado.</div>`;
-    statsDiv.style.display = 'none';
-  }
-}
-
-function handleSortChange(e) {
-  currentSort = e.target.value;
-  renderMusicGrid();
-}
-
-function renderMusicGrid() {
-  const grid = document.getElementById('music-grid');
-  let sorted = [...musicItemsRaw];
-  switch(currentSort) {
-    case 'views_desc':
-      sorted.sort((a,b) => b.viewCount - a.viewCount);
-      break;
-    case 'views_asc':
-      sorted.sort((a,b) => a.viewCount - b.viewCount);
-      break;
-    case 'date_desc':
-      sorted.sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-      break;
-    case 'date_asc':
-      sorted.sort((a,b) => new Date(a.publishedAt) - new Date(b.publishedAt));
-      break;
-    case 'title_asc':
-      sorted.sort((a,b) => a.title.localeCompare(b.title));
-      break;
-    case 'title_desc':
-      sorted.sort((a,b) => b.title.localeCompare(a.title));
-      break;
-    default: // original order: keep as from API (which is playlist order)
-      sorted = [...musicItemsRaw]; // already in playlist order
-  }
-  grid.innerHTML = sorted.map(v => `
-    <a class="music-card" href="https://youtube.com/watch?v=${v.id}" target="_blank" rel="noopener" aria-label="Assistir ${esc(v.title)}">
-      ${v.thumbnail
-        ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail de ${esc(v.title)}" loading="lazy">`
-        : `<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`
-      }
-      <div class="music-info">
-        <div class="music-title">${esc(v.title)}</div>
-        <div class="music-meta">
-          <div class="music-views">👁️ ${formatNumber(v.viewCount)} views</div>
-          <div class="music-date">📅 ${formatDate(v.publishedAt)}</div>
-          <div class="music-channel">🎤 ${esc(v.channelTitle)}</div>
+    grid.innerHTML = sorted.map(v => `
+      <a class="music-card" href="https://youtube.com/watch?v=${v.id}" target="_blank" rel="noopener" aria-label="Watch ${esc(v.title)}">
+        ${v.thumbnail
+          ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail of ${esc(v.title)}" loading="lazy">`
+          : `<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`
+        }
+        <div class="music-info">
+          <div class="music-title">${esc(v.title)}</div>
+          <div class="music-meta">
+            <div class="music-views">👁️ ${formatNumber(v.viewCount)} views</div>
+            <div class="music-date">📅 ${formatDate(v.publishedAt)}</div>
+            <div class="music-channel">🎤 ${esc(v.channelTitle)}</div>
+          </div>
         </div>
-      </div>
-    </a>
-  `).join('');
-  updateTotalViews();
-}
-
-function updateTotalViews() {
-  const total = musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0);
-  document.getElementById('total-views-count').innerText = formatNumber(total);
-}
-
-// ── STEAM ────────────────────────────────────────────────────
-async function loadGames() {
-  const grid  = document.getElementById('games-grid');
-  const games = CONFIG.steam?.games || [];
-
-  if (!games.length) {
-    grid.innerHTML = `<div class="error-msg">Nenhum jogo em <code>config.js → steam.games</code></div>`;
-    return;
+      </a>
+    `).join('');
+    updateTotalViews();
   }
 
-  const needsFetch = games.filter(g => !g.name);
-  const spyMap = {};
-  if (needsFetch.length) {
-    const results = await Promise.allSettled(
-      needsFetch.map(g =>
-        fetch(`https://steamspy.com/api.php?request=appdetails&appid=${g.appId}`)
-          .then(r => r.json())
-      )
-    );
-    results.forEach((r, i) => {
-      if (r.status === 'fulfilled' && r.value?.appid) {
-        spyMap[needsFetch[i].appId] = r.value;
-      }
-    });
+  function updateTotalViews() {
+    const total = musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0);
+    document.getElementById('total-views-count').innerText = formatNumber(total);
   }
 
-  grid.innerHTML = games.map(cfg => {
-    const spy  = spyMap[cfg.appId] || {};
-    const name = cfg.name || spy.name || 'Steam Game';
-    const dev  = cfg.dev  || spy.developer || '';
-    const img  = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${cfg.appId}/header.jpg`;
-    const fallbackId = `img-fallback-${cfg.appId}`;
-    return `
-      <a class="game-card" href="https://store.steampowered.com/app/${cfg.appId}" target="_blank" rel="noopener" aria-label="Ver ${esc(name)} na Steam">
-        <img class="game-img" src="${img}" alt="Capa de ${esc(name)}" loading="lazy"
-          onerror="this.onerror=null; this.style.display='none'; document.getElementById('${fallbackId}').style.display='flex';">
-        <div id="${fallbackId}" class="game-img-fallback" style="display: none;" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
-          <span>${esc(name)}</span>
-        </div>
-        <div class="game-info">
-          <div class="game-role">${esc(cfg.role || 'PT-BR Localization')}</div>
-          <div class="game-name">${esc(name)}</div>
-          ${dev ? `<div class="game-dev">${esc(dev)}</div>` : ''}
-          ${cfg.note ? `<span class="game-note">${esc(cfg.note)}</span>` : ''}
-        </div>
-      </a>`;
-  }).join('');
-}
+  // ── STEAM games ────────────────────────────────────────────
+  async function loadGames() {
+    const grid  = document.getElementById('games-grid');
+    const games = CONFIG.steam?.games || [];
 
-// ── init ─────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  applyConfig();
-  loadMusic();
-  loadGames();
-});
+    if (!games.length) {
+      grid.innerHTML = `<div class="error-msg">No games in <code>config.js → steam.games</code></div>`;
+      return;
+    }
+
+    const needsFetch = games.filter(g => !g.name);
+    const spyMap = {};
+    if (needsFetch.length) {
+      const results = await Promise.allSettled(
+        needsFetch.map(g =>
+          fetch(`https://steamspy.com/api.php?request=appdetails&appid=${g.appId}`).then(r => r.json())
+        )
+      );
+      results.forEach((r, i) => {
+        if (r.status === 'fulfilled' && r.value?.appid) {
+          spyMap[needsFetch[i].appId] = r.value;
+        }
+      });
+    }
+
+    grid.innerHTML = games.map(cfg => {
+      const spy  = spyMap[cfg.appId] || {};
+      const name = cfg.name || spy.name || 'Steam Game';
+      const dev  = cfg.dev  || spy.developer || '';
+      const img  = `https://cdn.cloudflare.steamstatic.com/steam/apps/${cfg.appId}/header.jpg`;
+      const fallbackId = `img-fallback-${cfg.appId}`;
+      return `
+        <a class="game-card" href="https://store.steampowered.com/app/${cfg.appId}" target="_blank" rel="noopener" aria-label="View ${esc(name)} on Steam">
+          <img class="game-img" src="${img}" alt="Cover of ${esc(name)}" loading="lazy"
+            onerror="this.onerror=null; this.style.display='none'; document.getElementById('${fallbackId}').style.display='flex';">
+          <div id="${fallbackId}" class="game-img-fallback" style="display: none;" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
+            <span>${esc(name)}</span>
+          </div>
+          <div class="game-info">
+            <div class="game-role">${esc(cfg.role || 'PT-BR Localization')}</div>
+            <div class="game-name">${esc(name)}</div>
+            ${dev ? `<div class="game-dev">${esc(dev)}</div>` : ''}
+            ${cfg.note ? `<span class="game-note">${esc(cfg.note)}</span>` : ''}
+          </div>
+        </a>`;
+    }).join('');
+  }
+
+  // ── INIT ───────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    applyConfig();
+    loadMusic();
+    loadGames();
+  });
 </script>
 </body>
 </html>
