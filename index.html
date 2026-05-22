@@ -535,30 +535,37 @@ async function loadGames() {
     return;
   }
 
-  const results = await Promise.allSettled(
-    games.map(g =>
-      fetch(`https://steamspy.com/api.php?request=appdetails&appid=${g.appId}`)
-        .then(r => r.json())
-        .then(d => ({ ...d, _cfg: g }))
-    )
-  );
+  // Try SteamSpy for games without name in config
+  const needsFetch = games.filter(g => !g.name);
+  const spyMap = {};
+  if (needsFetch.length) {
+    const results = await Promise.allSettled(
+      needsFetch.map(g =>
+        fetch(`https://steamspy.com/api.php?request=appdetails&appid=${g.appId}`)
+          .then(r => r.json())
+      )
+    );
+    results.forEach((r, i) => {
+      if (r.status === 'fulfilled' && r.value?.appid) {
+        spyMap[needsFetch[i].appId] = r.value;
+      }
+    });
+  }
 
-  grid.innerHTML = results.map((r, i) => {
-    if (r.status === 'rejected' || !r.value?.appid) {
-      return `<div class="error-msg">Erro ao carregar jogo ${games[i]?.appId}</div>`;
-    }
-    const d   = r.value;
-    const cfg = d._cfg;
-    const img = `https://cdn.cloudflare.steamstatic.com/steam/apps/${d.appid}/header.jpg`;
+  grid.innerHTML = games.map(cfg => {
+    const spy  = spyMap[cfg.appId] || {};
+    const name = cfg.name || spy.name || 'Steam Game';
+    const dev  = cfg.dev  || spy.developer || '';
+    const img  = `https://cdn.cloudflare.steamstatic.com/steam/apps/${cfg.appId}/header.jpg`;
 
     return `
-      <a class="game-card" href="https://store.steampowered.com/app/${d.appid}" target="_blank" rel="noopener">
-        <img class="game-img" src="${img}" alt="${esc(d.name)}" loading="lazy"
+      <a class="game-card" href="https://store.steampowered.com/app/${cfg.appId}" target="_blank" rel="noopener">
+        <img class="game-img" src="${img}" alt="${esc(name)}" loading="lazy"
           onerror="this.style.display='none'">
         <div class="game-info">
           <div class="game-role">${esc(cfg.role || 'PT-BR Localization')}</div>
-          <div class="game-name">${esc(d.name || 'Steam Game')}</div>
-          <div class="game-dev">${esc(d.developer || '')}</div>
+          <div class="game-name">${esc(name)}</div>
+          ${dev ? `<div class="game-dev">${esc(dev)}</div>` : ''}
           ${cfg.note ? `<span class="game-note">${esc(cfg.note)}</span>` : ''}
         </div>
       </a>`;
@@ -574,3 +581,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
