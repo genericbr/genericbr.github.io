@@ -33,9 +33,8 @@ const CONFIG = {
   //  appId = número na URL da loja: store.steampowered.com/app/XXXXXX/
   steam: {
     games: [
-      { appId: "4178020", role: "Localizador PT-BR", note: "Early Access" },
-      // { appId: "XXXXXXX", role: "Tradução PT-BR" },
-    ],
-  },
+    { appId: "4178020", name: "Lured In", dev: "Angler Interactive", role: "Localizador PT-BR", note: "Early Access" },
+  ],
+},
 
 };
