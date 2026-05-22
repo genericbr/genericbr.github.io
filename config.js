@@ -36,8 +36,8 @@ const CONFIG = {
   //    Abra a playlist no YouTube → a URL terá ?list=PLxxxxxxx
   //    Cole esse "PLxxxxxxx" em playlistId abaixo.
   youtube: {
-    apiKey:     "YOUR_YOUTUBE_API_KEY_HERE",
-    playlistId: "YOUR_PLAYLIST_ID_HERE",
+    apiKey:     "AIzaSyAT7jaIbug5dmm_PzFqm7MvzdQkfn7eLUE",
+    playlistId: "PLsX_idXfvgUKeFHYUvGJOkwF0mu4nZy_t",
     maxResults: 50,   // máximo 50 por request da API
   },
 
