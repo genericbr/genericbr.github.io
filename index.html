@@ -420,7 +420,7 @@
         <div class="update-badge" id="update-badge"></div>
       </div>
       <div class="music-grid" id="music-grid">
-        <div class="state"><div class="spinner"></div>Loading YouTube…</div>
+        <div class="state"><div class="spinner"></div>Loading YouTube...</div>
       </div>
     </div>
   </div>
@@ -435,7 +435,7 @@
     </div>
     <div class="card">
       <div class="games-grid" id="games-grid">
-        <div class="state"><div class="spinner"></div>Loading Steam…</div>
+        <div class="state"><div class="spinner"></div>Loading Steam...</div>
       </div>
     </div>
   </div>
@@ -500,18 +500,11 @@
   async function loadMusic() {
     const grid = document.getElementById('music-grid');
     const statsDiv = document.getElementById('music-stats');
-    const { playlistId, maxResults } = CONFIG.youtube || {};
     const workerUrl = 'https://portfolio.genericbr-business.workers.dev';  // your worker URL
 
-    if (!playlistId) {
-      grid.innerHTML = `<div class="error-msg">⚠️ Playlist ID not configured in config.js</div>`;
-      statsDiv.style.display = 'none';
-      return;
-    }
-
     try {
-      grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube via proxy…</div>`;
-      const response = await fetch(`${workerUrl}?playlistId=${playlistId}&maxResults=${maxResults || 50}`);
+      grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube via proxy...</div>`;
+      const response = await fetch(workerUrl);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const videoData = await response.json();
 
