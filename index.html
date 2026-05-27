@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* (mesmo CSS do último código fornecido - manter igual) */
     :root {
       --bg:      #0d0f18;
       --surface: #161927;
@@ -230,6 +229,17 @@
     }
     .sort-controls select:focus { outline: none; }
     .sort-controls label { font-size: 0.65rem; color: var(--muted); }
+    .refresh-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.1); }
 
     .stats-bar {
       background: var(--card);
@@ -531,19 +541,6 @@
 </head>
 <body>
 
-  <script>
-  (function(l) {
-    if (l.search[1] === '/') {
-      var decoded = l.search.slice(1).split('&').map(function(s) {
-        return s.replace(/~and~/g, '&');
-      }).join('?');
-      window.history.replaceState(null, null,
-        l.pathname.slice(0, -1) + decoded + l.hash
-      );
-    }
-  }(window.location));
-</script>
-  
 <div class="view-wrap">
 
   <!-- VIEW HOME -->
@@ -587,8 +584,7 @@
       <div class="portfolio-grid">
         <div class="portfolio-card" onclick="navigateTo('view-games')" role="button" tabindex="0">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M6 11h4M8 9v4M15 12h.01M18 10h.01M17.32 5H6.68a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10.64a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z" />
+            <path d="M6 11h4M8 9v4M15 12h.01M18 10h.01M17.32 5H6.68a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10.64a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/>
           </svg>
           <span>Steam</span>
         </div>
@@ -611,17 +607,20 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">All My Music-Related Cameos Thus Far</span>
-      <div class="sort-controls">
-        <label>Sort by:</label>
-        <select id="sort-music">
-          <option value="original">Original order</option>
-          <option value="views_desc">Most views</option>
-          <option value="views_asc">Least views</option>
-          <option value="date_desc">Newest first</option>
-          <option value="date_asc">Oldest first</option>
-          <option value="title_asc">Title A–Z</option>
-          <option value="title_desc">Title Z–A</option>
-        </select>
+      <div style="display: flex; gap: 0.5rem;">
+        <div class="sort-controls">
+          <label>Sort by:</label>
+          <select id="sort-music">
+            <option value="original">Original order</option>
+            <option value="views_desc">Most views</option>
+            <option value="views_asc">Least views</option>
+            <option value="date_desc">Newest first</option>
+            <option value="date_asc">Oldest first</option>
+            <option value="title_asc">Title A–Z</option>
+            <option value="title_desc">Title Z–A</option>
+          </select>
+        </div>
+        <button id="refresh-music-btn" class="refresh-btn">🔄 Recarregar</button>
       </div>
     </div>
     <div class="card">
@@ -666,7 +665,6 @@
 
 <script>
   // ==================== ROTEAMENTO COM HISTORY API ====================
-  // Mapeamento de viewId para path da URL
   const routes = {
     'view-home': '/',
     'view-portfolio-pasta': '/portfolio',
@@ -675,31 +673,23 @@
     'view-video-detail': (videoId) => `/video/${videoId}`
   };
 
-  // Função de navegação principal (substitui o antigo goTo)
   function navigateTo(viewId, videoId = null) {
-    // Se for detail e tiver videoId, trata separado
     if (viewId === 'view-video-detail' && videoId) {
-      // Atualiza a URL com /video/:id
       const newUrl = `/video/${videoId}`;
       history.pushState({ view: viewId, videoId }, '', newUrl);
-      // Chama a função que monta o detalhe
       showVideoDetail(videoId);
     } else {
-      // Para outras views, mapeia o path
       let path = '/';
       if (viewId === 'view-portfolio-pasta') path = '/portfolio';
       else if (viewId === 'view-music') path = '/music';
       else if (viewId === 'view-games') path = '/games';
       else path = '/';
       history.pushState({ view: viewId }, '', path);
-      // Ativa a view
       setActiveView(viewId);
     }
   }
 
-  // Ativa uma view pelo ID (sem alterar URL)
   function setActiveView(viewId) {
-    // Limpa o iframe se estiver saindo da view de detalhe
     const videoDetailView = document.getElementById('view-video-detail');
     if (videoDetailView && videoDetailView.classList.contains('active') && viewId !== 'view-video-detail') {
       const detailCard = document.getElementById('detail-card');
@@ -714,33 +704,26 @@
     }
   }
 
-  // Restaura a view com base na URL atual (chamado no load e no popstate)
   function restoreFromPath() {
     const path = window.location.pathname;
     if (path === '/portfolio') {
       setActiveView('view-portfolio-pasta');
     } else if (path === '/music') {
       setActiveView('view-music');
-      // Se a lista de vídeos ainda não foi carregada, carrega (já é feito no DOMContentLoaded)
     } else if (path === '/games') {
       setActiveView('view-games');
     } else if (path.startsWith('/video/')) {
       const videoId = path.split('/video/')[1];
       if (videoId && musicItemsRaw.length > 0) {
-        // Aguarda os dados estarem prontos
-        if (musicItemsRaw.length) {
-          showVideoDetail(videoId);
-        } else {
-          // Se os dados ainda não chegaram, espera e tenta novamente
-          const waitForData = setInterval(() => {
-            if (musicItemsRaw.length) {
-              clearInterval(waitForData);
-              showVideoDetail(videoId);
-            }
-          }, 100);
-        }
+        showVideoDetail(videoId);
+      } else if (videoId) {
+        const waitForData = setInterval(() => {
+          if (musicItemsRaw.length) {
+            clearInterval(waitForData);
+            showVideoDetail(videoId);
+          }
+        }, 100);
       } else {
-        // Fallback: vai para home
         setActiveView('view-home');
         history.replaceState({ view: 'view-home' }, '', '/');
       }
@@ -749,12 +732,8 @@
     }
   }
 
-  // Escuta os eventos de voltar/avançar no navegador
-  window.addEventListener('popstate', (event) => {
-    restoreFromPath();
-  });
+  window.addEventListener('popstate', () => restoreFromPath());
 
-  // Helper para escapar HTML (igual antes)
   function esc(s) {
     const d = document.createElement('div');
     d.textContent = String(s || '');
@@ -818,7 +797,6 @@
           sortSelect.removeEventListener('change', handleSortChange);
           sortSelect.addEventListener('change', handleSortChange);
         }
-        // Se a URL atual é /video/... e os dados acabaram de carregar, tenta restaurar o vídeo
         if (window.location.pathname.startsWith('/video/')) {
           const videoId = window.location.pathname.split('/video/')[1];
           if (videoId) showVideoDetail(videoId);
@@ -944,8 +922,33 @@
     const lyricsContainer = detailCard.querySelector(`#lyrics-container-${video.id}`);
     if (lyricsContainer) loadLyrics(video.id, lyricsContainer);
 
-    // Ativa a view de detalhe
     setActiveView('view-video-detail');
+  }
+
+  // ==================== BOTÃO RECARREGAR ====================
+  const refreshBtn = document.getElementById('refresh-music-btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', async () => {
+      refreshBtn.innerText = '🔄 Carregando...';
+      refreshBtn.disabled = true;
+      try {
+        const response = await fetch(WORKER_URL + '?t=' + Date.now(), { cache: 'no-cache' });
+        const videoData = await response.json();
+        if (videoData && videoData.length) {
+          musicItemsRaw = videoData;
+          renderMusicGrid();
+          updateTotalViews();
+        } else {
+          alert('Falha ao recarregar dados');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Erro ao recarregar');
+      } finally {
+        refreshBtn.innerText = '🔄 Recarregar';
+        refreshBtn.disabled = false;
+      }
+    });
   }
 
   // ==================== STEAM JOGOS ====================
@@ -1000,9 +1003,9 @@
   // ==================== INICIALIZAÇÃO ====================
   document.addEventListener('DOMContentLoaded', async () => {
     applyConfig();
-    await loadMusic();  // carrega os vídeos primeiro
+    await loadMusic();
     await loadGames();
-    restoreFromPath();  // depois que os dados estão prontos, restaura a URL
+    restoreFromPath();
   });
 </script>
 </body>
