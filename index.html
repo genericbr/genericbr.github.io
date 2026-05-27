@@ -343,30 +343,58 @@
       max-height: 200px;
       overflow-y: auto;
     }
-    .detail-description::-webkit-scrollbar {
+    /* Descrição e letra compartilham a mesma barra de rolagem */
+    .detail-description::-webkit-scrollbar,
+    .lyrics-box-scroll::-webkit-scrollbar {
       width: 6px;
     }
-    .detail-description::-webkit-scrollbar-track {
+    .detail-description::-webkit-scrollbar-track,
+    .lyrics-box-scroll::-webkit-scrollbar-track {
       background: rgba(255,255,255,0.05);
       border-radius: 3px;
     }
-    .detail-description::-webkit-scrollbar-thumb {
+    .detail-description::-webkit-scrollbar-thumb,
+    .lyrics-box-scroll::-webkit-scrollbar-thumb {
       background: rgba(255,255,255,0.2);
       border-radius: 3px;
     }
-    .detail-description::-webkit-scrollbar-thumb:hover {
+    .detail-description::-webkit-scrollbar-thumb:hover,
+    .lyrics-box-scroll::-webkit-scrollbar-thumb:hover {
       background: rgba(255,255,255,0.3);
     }
 
-    .lyrics-placeholder {
+    /* Caixa de letras (scrollável, legível) */
+    .lyrics-section {
       margin-top: 1rem;
+    }
+    .lyrics-header {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .lyrics-box-scroll {
       background: rgba(255,255,255,0.02);
       border-left: 2px solid var(--muted);
       padding: 0.8rem;
-      font-style: italic;
-      color: var(--muted);
-      font-size: 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #d0d2e0; /* texto mais claro e legível */
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 200px;
+      overflow-y: auto;
     }
+    .lyrics-box-scroll.empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
     .other-videos-title {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
@@ -752,26 +780,18 @@
     document.getElementById('total-views-count').innerText = formatNumber(total);
   }
 
-  async function loadLyrics(videoId, placeholderElement) {
+  // Carrega as letras e preenche a área com scroll
+  async function loadLyrics(videoId, lyricsContainer) {
     try {
       const res = await fetch(`${WORKER_URL}/api/music/lyrics?id=${videoId}`);
       const data = await res.json();
       if (data.lyrics && data.lyrics.trim() !== '') {
-        placeholderElement.innerHTML = `
-          ✍️ <strong>Lyrics / Translation</strong><br>
-          <div style="white-space: pre-wrap; margin-top: 0.5rem;">${esc(data.lyrics)}</div>
-        `;
+        lyricsContainer.innerHTML = `<div class="lyrics-box-scroll">${esc(data.lyrics)}</div>`;
       } else {
-        placeholderElement.innerHTML = `
-          ✍️ <strong>Lyrics / Translation</strong><br>
-          <em>No lyrics available yet.</em>
-        `;
+        lyricsContainer.innerHTML = `<div class="lyrics-box-scroll empty">No lyrics available yet.</div>`;
       }
     } catch (err) {
-      placeholderElement.innerHTML = `
-        ✍️ <strong>Lyrics / Translation</strong><br>
-        <em>Failed to load lyrics.</em>
-      `;
+      lyricsContainer.innerHTML = `<div class="lyrics-box-scroll empty">Failed to load lyrics.</div>`;
     }
   }
 
@@ -800,9 +820,11 @@
             <span>📅 ${formatDate(video.publishedAt)}</span>
           </div>
           <div class="detail-description">${esc(descriptionText)}</div>
-          <div class="lyrics-placeholder" id="lyrics-placeholder">
-            ✍️ <strong>Lyrics / Translation</strong><br>
-            <em>Loading...</em>
+          <div class="lyrics-section">
+            <div class="lyrics-header">
+              <span>📝</span> Lyrics / Translation
+            </div>
+            <div id="lyrics-container-${video.id}" class="lyrics-container"></div>
           </div>
         </div>
       </div>
@@ -825,8 +847,8 @@
       `).join('');
     }
 
-    const lyricsPlaceholder = detailCard.querySelector('#lyrics-placeholder');
-    if (lyricsPlaceholder) loadLyrics(video.id, lyricsPlaceholder);
+    const lyricsContainer = detailCard.querySelector(`#lyrics-container-${video.id}`);
+    if (lyricsContainer) loadLyrics(video.id, lyricsContainer);
 
     goTo('view-video-detail');
   }
