@@ -863,60 +863,63 @@ async function loadLyrics(videoId, placeholderElement) {
   }
 
   function showVideoDetail(videoId) {
-    const video = musicItemsRaw.find(v => v.id === videoId);
-    if (!video) return;
+  const video = musicItemsRaw.find(v => v.id === videoId);
+  if (!video) return;
 
-    // Limpeza da descrição (remove espaços/linhas extras)
-    let descriptionText = video.description ? video.description.trim() : '';
-    if (descriptionText === '') descriptionText = 'No description available.';
+  let descriptionText = video.description ? video.description.trim() : '';
+  if (descriptionText === '') descriptionText = 'No description available.';
 
-    const otherVideos = musicItemsRaw.filter(v => v.channelTitle === video.channelTitle && v.id !== video.id);
+  const otherVideos = musicItemsRaw.filter(v => v.channelTitle === video.channelTitle && v.id !== video.id);
 
-    const detailCard = document.getElementById('detail-card');
-    detailCard.innerHTML = `
-      <div class="detail-container">
-        <div class="detail-player">
-          <div class="video-embed">
-            <!-- Player com legendas em português forçadas -->
-            <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
-          </div>
-        </div>
-        <div class="detail-info">
-          <div class="detail-title">${esc(video.title)}</div>
-          <div class="detail-channel">${esc(video.channelTitle)}</div>
-          <div class="detail-stats">
-            <span>👁️ ${formatNumber(video.viewCount)} views</span>
-            <span>📅 ${formatDate(video.publishedAt)}</span>
-          </div>
-          <div class="detail-description">${esc(descriptionText)}</div>
-          <!-- Espaço para letras traduzidas (futuro backend) -->
-          <div class="lyrics-placeholder" id="lyrics-placeholder">
-            ✍️ <strong>Lyrics / Translation</strong><br>
-            <em>Will be loaded from backend soon.</em>
-          </div>
+  const detailCard = document.getElementById('detail-card');
+  detailCard.innerHTML = `
+    <div class="detail-container">
+      <div class="detail-player">
+        <div class="video-embed">
+          <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
         </div>
       </div>
-      ${otherVideos.length ? `
-        <div class="other-videos-title">🎵 Other videos from ${esc(video.channelTitle)}</div>
-        <div class="other-videos-grid" id="other-videos-grid"></div>
-      ` : '<div class="other-videos-title">No other videos from this channel in the playlist.</div>'}
-    `;
-
-    if (otherVideos.length) {
-      const gridContainer = detailCard.querySelector('#other-videos-grid');
-      gridContainer.innerHTML = otherVideos.map(v => `
-        <div class="other-video-card" onclick="showVideoDetail('${v.id}')">
-          <img class="other-video-thumb" src="${esc(v.thumbnail)}" alt="${esc(v.title)}" loading="lazy">
-          <div class="other-video-info">
-            <div class="other-video-title">${esc(v.title)}</div>
-            <div class="other-video-views">👁️ ${formatNumber(v.viewCount)}</div>
-          </div>
+      <div class="detail-info">
+        <div class="detail-title">${esc(video.title)}</div>
+        <div class="detail-channel">${esc(video.channelTitle)}</div>
+        <div class="detail-stats">
+          <span>👁️ ${formatNumber(video.viewCount)} views</span>
+          <span>📅 ${formatDate(video.publishedAt)}</span>
         </div>
-      `).join('');
-    }
+        <div class="detail-description">${esc(descriptionText)}</div>
+        <div class="lyrics-placeholder" id="lyrics-placeholder">
+          ✍️ <strong>Lyrics / Translation</strong><br>
+          <em>Loading...</em>
+        </div>
+      </div>
+    </div>
+    ${otherVideos.length ? `
+      <div class="other-videos-title">🎵 Other videos from ${esc(video.channelTitle)}</div>
+      <div class="other-videos-grid" id="other-videos-grid"></div>
+    ` : '<div class="other-videos-title">No other videos from this channel in the playlist.</div>'}
+  `;
 
-    goTo('view-video-detail');
+  if (otherVideos.length) {
+    const gridContainer = detailCard.querySelector('#other-videos-grid');
+    gridContainer.innerHTML = otherVideos.map(v => `
+      <div class="other-video-card" onclick="showVideoDetail('${v.id}')">
+        <img class="other-video-thumb" src="${esc(v.thumbnail)}" alt="${esc(v.title)}" loading="lazy">
+        <div class="other-video-info">
+          <div class="other-video-title">${esc(v.title)}</div>
+          <div class="other-video-views">👁️ ${formatNumber(v.viewCount)}</div>
+        </div>
+      </div>
+    `).join('');
   }
+
+  // Carregar letras do backend
+  const lyricsPlaceholder = detailCard.querySelector('#lyrics-placeholder');
+  if (lyricsPlaceholder) {
+    loadLyrics(video.id, lyricsPlaceholder);
+  }
+
+  goTo('view-video-detail');
+}
 
   // 5. SEÇÃO: JOGOS STEAM
   async function loadGames() {
