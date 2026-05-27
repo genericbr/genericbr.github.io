@@ -294,6 +294,9 @@
     .detail-player {
       flex: 2;
       min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
     .detail-info {
       flex: 1.5;
@@ -343,7 +346,7 @@
       max-height: 200px;
       overflow-y: auto;
     }
-    /* Descrição e letra compartilham a mesma barra de rolagem */
+    /* Scrollbars */
     .detail-description::-webkit-scrollbar,
     .lyrics-box-scroll::-webkit-scrollbar {
       width: 6px;
@@ -363,7 +366,7 @@
       background: rgba(255,255,255,0.3);
     }
 
-    /* Caixa de letras (scrollável, legível) */
+    /* Letras */
     .lyrics-section {
       margin-top: 1rem;
     }
@@ -384,7 +387,7 @@
       border-radius: 12px;
       font-size: 0.85rem;
       line-height: 1.5;
-      color: #d0d2e0; /* texto mais claro e legível */
+      color: #d0d2e0;
       white-space: pre-wrap;
       word-break: break-word;
       max-height: 200px;
@@ -395,12 +398,14 @@
       font-style: italic;
     }
 
+    /* Outros vídeos (agora dentro da coluna do player) */
     .other-videos-title {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
       letter-spacing: 0.1em;
-      margin: 1.5rem 0 1rem 0;
       color: var(--muted);
+      margin-top: 0.5rem;
+      margin-bottom: 0.75rem;
     }
     .other-videos-grid {
       display: grid;
@@ -780,7 +785,6 @@
     document.getElementById('total-views-count').innerText = formatNumber(total);
   }
 
-  // Carrega as letras e preenche a área com scroll
   async function loadLyrics(videoId, lyricsContainer) {
     try {
       const res = await fetch(`${WORKER_URL}/api/music/lyrics?id=${videoId}`);
@@ -811,6 +815,10 @@
           <div class="video-embed">
             <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
           </div>
+          ${otherVideos.length ? `
+            <div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div>
+            <div class="other-videos-grid" id="other-videos-grid"></div>
+          ` : ''}
         </div>
         <div class="detail-info">
           <div class="detail-title">${esc(video.title)}</div>
@@ -828,10 +836,6 @@
           </div>
         </div>
       </div>
-      ${otherVideos.length ? `
-        <div class="other-videos-title">🎵 Other videos from ${esc(video.channelTitle)}</div>
-        <div class="other-videos-grid" id="other-videos-grid"></div>
-      ` : '<div class="other-videos-title">No other videos from this channel in the playlist.</div>'}
     `;
 
     if (otherVideos.length) {
