@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - GenericBR</title>
+  <script src="config.js"></script> <!-- para ter acesso aos jogos e dados do perfil -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
@@ -74,7 +75,6 @@
 <div class="container">
   <h1>🎛️ Admin Dashboard</h1>
 
-  <!-- Login -->
   <div id="login-section" class="card login-form">
     <h2>Login</h2>
     <input type="password" id="admin-password" placeholder="Senha" style="width:100%; margin-bottom:1rem;">
@@ -82,19 +82,16 @@
     <div id="login-error" class="status" style="color:#e53935;"></div>
   </div>
 
-  <!-- Conteúdo administrativo (só aparece após login) -->
   <div id="admin-content" style="display:none;">
     <div class="tabs">
       <div class="tab active" data-tab="music">🎵 Músicas (lyrics + tags)</div>
       <div class="tab" data-tab="games">🎮 Jogos (tags)</div>
     </div>
 
-    <!-- Aba Músicas -->
     <div id="music-tab" class="tab-content active">
       <div id="music-list"></div>
     </div>
 
-    <!-- Aba Jogos -->
     <div id="games-tab" class="tab-content">
       <div id="games-list"></div>
     </div>
@@ -102,7 +99,7 @@
 </div>
 
 <script>
-  const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev'; // seu Worker
+  const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let authToken = null;
 
   // Login
@@ -126,7 +123,7 @@
     }
   };
 
-  // Verificar token salvo ao carregar a página
+  // Verificar token salvo
   (async () => {
     const savedToken = localStorage.getItem('adminToken');
     if (savedToken) {
@@ -155,30 +152,26 @@
     };
   });
 
-  // Carregar lista de músicas (do mesmo endpoint do front-end)
+  // Carregar músicas (playlist + tags/lyrics via admin=true)
   async function loadMusicData() {
-    const res = await fetch(`${WORKER_URL}?admin=true`); // endpoint que retorna playlist + tags/lyrics
+    const res = await fetch(`${WORKER_URL}?admin=true`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
     const videos = await res.json();
     const container = document.getElementById('music-list');
     container.innerHTML = '';
     for (const video of videos) {
-      // Buscar tags e lyrics específicas para esse vídeo
-      const tagsRes = await fetch(`${WORKER_URL}/api/music/tags?id=${video.id}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
-      const tagsData = await tagsRes.json();
-      const lyricsRes = await fetch(`${WORKER_URL}/api/music/lyrics?id=${video.id}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
-      const lyricsData = await lyricsRes.json();
-
       const div = document.createElement('div');
       div.className = 'item-card';
       div.innerHTML = `
         <div class="item-title">${escapeHtml(video.title)}</div>
-        <div class="tags-area" id="tags-${video.id}">${(tagsData.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="tags-area" id="tags-${video.id}">${(video.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
         <div class="tag-input">
           <input type="text" placeholder="Nova tag" id="newtag-${video.id}" style="flex:1">
           <button onclick="addTag('${video.id}', 'music')">+</button>
         </div>
         <div><strong>Lyrics / tradução:</strong></div>
-        <textarea id="lyrics-${video.id}" class="lyrics-box">${escapeHtml(lyricsData.lyrics || '')}</textarea>
+        <textarea id="lyrics-${video.id}" class="lyrics-box">${escapeHtml(video.lyrics || '')}</textarea>
         <button class="save-btn" onclick="saveLyrics('${video.id}')">Salvar letra</button>
         <div class="status" id="status-${video.id}"></div>
       `;
@@ -186,20 +179,17 @@
     }
   }
 
-  async function loadGamesData() {
-    // Pega a lista de jogos do config.js via Worker
-    const res = await fetch(`${WORKER_URL}/api/games`, { headers: { 'Authorization': `Bearer ${authToken}` } });
-    const games = await res.json();
+  // Carregar jogos diretamente do config.js (variável global CONFIG)
+  function loadGamesData() {
+    const games = CONFIG.steam?.games || [];
     const container = document.getElementById('games-list');
     container.innerHTML = '';
     for (const game of games) {
-      const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
-      const tagsData = await tagsRes.json();
       const div = document.createElement('div');
       div.className = 'item-card';
       div.innerHTML = `
         <div class="item-title">${escapeHtml(game.name)} (${game.appId})</div>
-        <div class="tags-area" id="tags-${game.appId}">${(tagsData.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="tags-area" id="tags-${game.appId}">Carregando tags...</div>
         <div class="tag-input">
           <input type="text" placeholder="Nova tag" id="newtag-${game.appId}" style="flex:1">
           <button onclick="addTag('${game.appId}', 'game')">+</button>
@@ -207,6 +197,16 @@
         <div class="status" id="status-${game.appId}"></div>
       `;
       container.appendChild(div);
+      // Buscar tags atuais para este jogo
+      fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          const tagsDiv = document.getElementById(`tags-${game.appId}`);
+          if (tagsDiv) tagsDiv.innerHTML = (data.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
+        })
+        .catch(console.error);
     }
   }
 
@@ -214,7 +214,7 @@
     const input = document.getElementById(`newtag-${id}`);
     const newTag = input.value.trim();
     if (!newTag) return;
-    const endpoint = type === 'music' ? `/api/music/tags` : `/api/games/tags`;
+    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
     const res = await fetch(`${WORKER_URL}${endpoint}`, {
       method: 'POST',
       headers: {
@@ -225,7 +225,8 @@
     });
     if (res.ok) {
       input.value = '';
-      if (type === 'music') loadMusicData(); else loadGamesData();
+      if (type === 'music') loadMusicData();
+      else loadGamesData();
     } else {
       alert('Erro ao adicionar tag');
     }
