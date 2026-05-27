@@ -605,7 +605,7 @@
           <option value="original">Original order</option>
           <option value="views_desc">Most views</option>
           <option value="views_asc">Least views</option>
-          <option value="date_desc">Newest first</option>
+          <option value="date_desc" selected>Newest first</option>
           <option value="date_asc">Oldest first</option>
           <option value="title_asc">Title A–Z</option>
           <option value="title_desc">Title Z–A</option>
@@ -755,7 +755,7 @@
 
   // ==================== MÚSICA ====================
   let musicItemsRaw = [];
-  let currentSort = 'original';
+  let currentSort = 'date_desc';  // ALTERADO: padrão agora é "mais recentes primeiro"
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
 
   async function loadMusic() {
