@@ -42,13 +42,16 @@
     }
 
     .view-wrap {
-  width: 100%;
-  max-width: 720px;  /* padrão para telas normais */
-  position: relative;
+      width: 100%;
+      max-width: 720px;  /* padrão para home e pasta */
+      position: relative;
+      transition: max-width 0.2s ease;
     }
-.view-wrap:has(#view-video-detail.active) {
-  max-width: 980px;  /* aumenta apenas quando a view de detalhe está ativa */
-}
+    /* Aumenta a largura apenas quando a view de detalhe está ativa */
+    .view-wrap:has(#view-video-detail.active) {
+      max-width: 980px;
+    }
+
     .view {
       width: 100%;
       display: none;
@@ -477,7 +480,9 @@
       .detail-container {
         flex-direction: column;
       }
-      .view-wrap { max-width: 720px; }
+      .view-wrap:has(#view-video-detail.active) {
+        max-width: 720px;
+      }
     }
     @media (max-width: 520px) {
       body { padding: 1rem .75rem; align-items: flex-start; padding-top: 1.5rem; }
@@ -581,7 +586,7 @@
     </div>
   </div>
 
-  <!-- DETALHE DO VÍDEO (com player e descrição) -->
+  <!-- DETALHE DO VÍDEO (com player e legendas em português) -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
@@ -746,7 +751,7 @@
       <div class="detail-container">
         <div class="detail-player">
           <div class="video-embed">
-            <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
           </div>
         </div>
         <div class="detail-info">
