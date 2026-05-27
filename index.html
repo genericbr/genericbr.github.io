@@ -731,47 +731,100 @@
      - FUTURO: botão para forçar atualização (ex: ?refresh=true no Worker)
      - FUTURO: integração com backend de letras traduzidas
     ============================================================ */
-  let musicItemsRaw = [];
-  let currentSort = 'original';
+let musicItemsRaw = [];
+let currentSort = 'original';
+const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev'; // declaração global para uso em outras funções
 
-  async function loadMusic() {
-    const grid = document.getElementById('music-grid');
-    const statsDiv = document.getElementById('music-stats');
-    const workerUrl = 'https://portfolio.genericbr-business.workers.dev';
+async function loadMusic() {
+  const grid = document.getElementById('music-grid');
+  const statsDiv = document.getElementById('music-stats');
 
-    try {
-      grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube via proxy...</div>`;
-      // 🔁 PARA FORÇAR ATUALIZAÇÃO MANUAL, adicione ?refresh=true à URL (o Worker precisa tratar)
-      const response = await fetch(workerUrl);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const videoData = await response.json();
+  try {
+    grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube via proxy...</div>`;
+    const response = await fetch(WORKER_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const videoData = await response.json();
 
-      if (videoData && videoData.length) {
-        musicItemsRaw = videoData;
-        renderMusicGrid();
-        statsDiv.style.display = 'flex';
-        updateTotalViews();
-        const sortSelect = document.getElementById('sort-music');
-        if (sortSelect) {
-          sortSelect.removeEventListener('change', handleSortChange);
-          sortSelect.addEventListener('change', handleSortChange);
-        }
-      } else {
-        grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
-        statsDiv.style.display = 'none';
+    if (videoData && videoData.length) {
+      musicItemsRaw = videoData;
+      renderMusicGrid();
+      statsDiv.style.display = 'flex';
+      updateTotalViews();
+      const sortSelect = document.getElementById('sort-music');
+      if (sortSelect) {
+        sortSelect.removeEventListener('change', handleSortChange);
+        sortSelect.addEventListener('change', handleSortChange);
       }
-    } catch (err) {
-      console.error(err);
-      grid.innerHTML = `<div class="error-msg">❌ Error: <code>${esc(err.message)}</code></div>`;
+    } else {
+      grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
       statsDiv.style.display = 'none';
     }
+  } catch (err) {
+    console.error(err);
+    grid.innerHTML = `<div class="error-msg">❌ Error: <code>${esc(err.message)}</code></div>`;
+    statsDiv.style.display = 'none';
   }
+}
 
-  function handleSortChange(e) {
-    currentSort = e.target.value;
-    renderMusicGrid();
+function handleSortChange(e) {
+  currentSort = e.target.value;
+  renderMusicGrid();
+}
+
+function renderMusicGrid() {
+  const grid = document.getElementById('music-grid');
+  let sorted = [...musicItemsRaw];
+  switch(currentSort) {
+    case 'views_desc': sorted.sort((a,b) => b.viewCount - a.viewCount); break;
+    case 'views_asc':  sorted.sort((a,b) => a.viewCount - b.viewCount); break;
+    case 'date_desc':  sorted.sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt)); break;
+    case 'date_asc':   sorted.sort((a,b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
+    case 'title_asc':  sorted.sort((a,b) => a.title.localeCompare(b.title)); break;
+    case 'title_desc': sorted.sort((a,b) => b.title.localeCompare(a.title)); break;
+    default: sorted = [...musicItemsRaw];
   }
+  grid.innerHTML = sorted.map(v => `
+    <div class="music-card" onclick="showVideoDetail('${v.id}')" role="button" tabindex="0">
+      ${v.thumbnail
+        ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail of ${esc(v.title)}" loading="lazy">`
+        : `<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`
+      }
+      <div class="music-info">
+        <div class="music-title">${esc(v.title)}</div>
+        <div class="music-meta">
+          <div class="music-views">👁️ ${formatNumber(v.viewCount)} views</div>
+          <div class="music-date">📅 ${formatDate(v.publishedAt)}</div>
+          <div class="music-channel">🎤 ${esc(v.channelTitle)}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  updateTotalViews();
+}
 
+// Função para buscar e exibir as letras no detalhe do vídeo
+async function loadLyrics(videoId, placeholderElement) {
+  try {
+    const res = await fetch(`${WORKER_URL}/api/music/lyrics?id=${videoId}`);
+    const data = await res.json();
+    if (data.lyrics && data.lyrics.trim() !== '') {
+      placeholderElement.innerHTML = `
+        ✍️ <strong>Lyrics / Translation</strong><br>
+        <div style="white-space: pre-wrap; margin-top: 0.5rem;">${esc(data.lyrics)}</div>
+      `;
+    } else {
+      placeholderElement.innerHTML = `
+        ✍️ <strong>Lyrics / Translation</strong><br>
+        <em>No lyrics available yet.</em>
+      `;
+    }
+  } catch (err) {
+    placeholderElement.innerHTML = `
+      ✍️ <strong>Lyrics / Translation</strong><br>
+      <em>Failed to load lyrics.</em>
+    `;
+  }
+}
   function renderMusicGrid() {
     const grid = document.getElementById('music-grid');
     let sorted = [...musicItemsRaw];
@@ -801,6 +854,7 @@
       </div>
     `).join('');
     updateTotalViews();
+    
   }
 
   function updateTotalViews() {
