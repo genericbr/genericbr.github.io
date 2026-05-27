@@ -8,209 +8,50 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* ===== MESMOS ESTILOS DO PORTFÓLIO PRINCIPAL ===== */
-    :root {
-      --bg:      #0d0f18;
-      --surface: #161927;
-      --card:    #1c1f30;
-      --border:  rgba(255,255,255,0.07);
-      --text:    #e2e4ef;
-      --muted:   #6b7194;
-      --yt:      #e53935;
-      --dc:      #5865f2;
-      --em:      #2979ff;
-      --pf:      #2a2d40;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      padding: 2rem;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* Cards e elementos */
-    .card {
-      background: var(--surface);
-      border-radius: 20px;
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--border);
-    }
-
-    .login-card {
-      max-width: 400px;
-      margin: 2rem auto;
-      text-align: center;
-    }
-
-    input, textarea, select {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.6rem 1rem;
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 0.85rem;
-      width: 100%;
-    }
-
-    button {
-      background: var(--em);
-      border: none;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 10px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: filter 0.15s;
-      font-family: inherit;
-    }
-    button:hover { filter: brightness(1.1); }
-
-    .tag {
-      display: inline-block;
-      background: var(--card);
-      padding: 0.2rem 0.7rem;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      margin-right: 0.4rem;
-      margin-bottom: 0.4rem;
-      border: 1px solid var(--border);
-    }
-
-    /* Abas */
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .tab {
-      padding: 0.75rem 1.5rem;
-      cursor: pointer;
-      opacity: 0.7;
-      font-weight: 500;
-      transition: opacity 0.15s;
-    }
-    .tab.active {
-      opacity: 1;
-      border-bottom: 2px solid var(--em);
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-
-    /* Grids (mesmo estilo do portfolio) */
-    .music-grid, .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1rem;
-    }
-    .music-card, .game-card {
-      background: var(--card);
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      transition: transform 0.15s;
-    }
-    .music-card:hover, .game-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(255,255,255,0.2);
-    }
-    .music-thumb {
-      width: 100%;
-      aspect-ratio: 16/9;
-      object-fit: cover;
-      background: var(--bg);
-    }
-    .music-info, .game-info {
-      padding: 1rem;
-    }
-    .music-title, .game-name {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .tags-area {
-      margin: 0.5rem 0;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .tag-input {
-      display: flex;
-      gap: 0.5rem;
-      margin: 0.5rem 0;
-    }
-    .lyrics-box {
-      margin: 0.5rem 0;
-      font-family: monospace;
-      font-size: 0.8rem;
-      resize: vertical;
-    }
-    .save-btn {
-      background: #00a86b;
-      width: 100%;
-      margin-top: 0.5rem;
-    }
-    .status {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 0.3rem;
-      text-align: center;
-    }
-
-    /* Estado de carregamento */
-    .state {
-      text-align: center;
-      padding: 3rem;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-    }
-    .spinner {
-      width: 22px;
-      height: 22px;
-      border: 2px solid var(--border);
-      border-top-color: var(--muted);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin: 0 auto 0.75rem;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .footer {
-      text-align: center;
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 2rem;
-    }
+    :root { --bg:#0d0f18; --surface:#161927; --card:#1c1f30; --border:rgba(255,255,255,0.07); --text:#e2e4ef; --muted:#6b7194; --em:#2979ff; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; padding:2rem; }
+    .container { max-width:1200px; margin:0 auto; }
+    .card { background:var(--surface); border-radius:20px; padding:1.75rem 2rem; margin-bottom:1.5rem; border:1px solid var(--border); }
+    .login-card { max-width:400px; margin:2rem auto; text-align:center; }
+    input, textarea, select { background:var(--card); border:1px solid var(--border); color:var(--text); padding:0.6rem 1rem; border-radius:10px; width:100%; }
+    button { background:var(--em); border:none; color:white; padding:0.6rem 1.2rem; border-radius:10px; font-weight:500; cursor:pointer; transition:filter 0.15s; }
+    button:hover { filter:brightness(1.1); }
+    .tag { display:inline-block; background:var(--card); padding:0.2rem 0.7rem; border-radius:20px; font-size:0.7rem; margin-right:0.4rem; margin-bottom:0.4rem; border:1px solid var(--border); }
+    .tabs { display:flex; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); }
+    .tab { padding:0.75rem 1.5rem; cursor:pointer; opacity:0.7; font-weight:500; }
+    .tab.active { opacity:1; border-bottom:2px solid var(--em); }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .music-grid, .games-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1rem; }
+    .music-card, .game-card { background:var(--card); border-radius:16px; overflow:hidden; border:1px solid var(--border); transition:transform 0.15s; }
+    .music-card:hover, .game-card:hover { transform:translateY(-3px); border-color:rgba(255,255,255,0.2); }
+    .music-thumb { width:100%; aspect-ratio:16/9; object-fit:cover; }
+    .music-info, .game-info { padding:1rem; }
+    .music-title, .game-name { font-size:0.9rem; font-weight:600; margin-bottom:0.5rem; }
+    .tags-area { margin:0.5rem 0; display:flex; flex-wrap:wrap; }
+    .tag-input { display:flex; gap:0.5rem; margin:0.5rem 0; }
+    .lyrics-box { margin:0.5rem 0; font-family:monospace; font-size:0.8rem; resize:vertical; }
+    .save-btn { background:#00a86b; width:100%; margin-top:0.5rem; }
+    .status { font-size:0.7rem; color:var(--muted); margin-top:0.3rem; text-align:center; }
+    .refresh-btn { background:var(--muted); margin-bottom:1rem; }
+    .state { text-align:center; padding:3rem; color:var(--muted); }
+    .spinner { width:22px; height:22px; border:2px solid var(--border); border-top-color:var(--muted); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 0.75rem; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .footer { text-align:center; font-size:0.7rem; color:var(--muted); margin-top:2rem; }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1 style="margin-bottom: 1rem;">🎛️ Admin Dashboard</h1>
+  <h1 style="margin-bottom:1rem;">🎛️ Admin Dashboard</h1>
 
-  <!-- Tela de login (igual ao estilo) -->
   <div id="login-section" class="card login-card">
-    <h2 style="margin-bottom: 1rem;">Login</h2>
-    <input type="password" id="admin-password" placeholder="Senha" style="margin-bottom: 1rem;">
+    <h2 style="margin-bottom:1rem;">Login</h2>
+    <input type="password" id="admin-password" placeholder="Senha" style="margin-bottom:1rem;">
     <button id="login-btn">Entrar</button>
     <div id="login-error" class="status" style="color:#e53935; margin-top:0.5rem;"></div>
   </div>
 
-  <!-- Conteúdo administrativo (só aparece após login) -->
   <div id="admin-content" style="display:none;">
     <div class="tabs">
       <div class="tab active" data-tab="music">🎵 Músicas (letras + tags)</div>
@@ -218,6 +59,7 @@
     </div>
 
     <div id="music-tab" class="tab-content active">
+      <button id="refresh-playlist-btn" class="refresh-btn" style="margin-bottom:1rem;">🔄 Forçar atualização da playlist (cache)</button>
       <div id="music-list" class="music-grid">
         <div class="state"><div class="spinner"></div>Carregando músicas...</div>
       </div>
@@ -236,7 +78,7 @@
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let authToken = null;
 
-  // ========== LOGIN ==========
+  // Login
   document.getElementById('login-btn').onclick = async () => {
     const password = document.getElementById('admin-password').value;
     try {
@@ -292,7 +134,32 @@
     };
   });
 
-  // ========== CARREGAR MÚSICAS (com tags e letras) ==========
+  // Botão refresh playlist (limpa cache do Worker)
+  document.getElementById('refresh-playlist-btn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('refresh-playlist-btn');
+    const originalText = btn.innerText;
+    btn.innerText = '🔄 Atualizando...';
+    btn.disabled = true;
+    try {
+      const res = await fetch(`${WORKER_URL}/refresh`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (res.ok) {
+        alert('Cache da playlist limpo! Recarregando dados...');
+        await loadMusicData(); // recarrega a lista (forçará nova busca no Worker)
+      } else {
+        alert('Erro ao limpar cache');
+      }
+    } catch (err) {
+      alert('Erro de rede');
+    } finally {
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
+  });
+
+  // Carregar músicas (com admin=true)
   async function loadMusicData() {
     const container = document.getElementById('music-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando músicas...</div>';
@@ -333,7 +200,7 @@
     }
   }
 
-  // ========== CARREGAR JOGOS (do config.js + tags) ==========
+  // Carregar jogos do config.js
   async function loadGamesData() {
     const container = document.getElementById('games-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
@@ -359,7 +226,7 @@
           </div>
         `;
         container.appendChild(card);
-        // Buscar tags para este jogo
+        // Buscar tags
         try {
           const res = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
@@ -377,7 +244,6 @@
     }
   }
 
-  // ========== FUNÇÕES GLOBAIS PARA TAGS E LETRAS ==========
   window.addTag = async (id, type) => {
     const input = document.getElementById(`newtag-${id}`);
     const newTag = input.value.trim();
