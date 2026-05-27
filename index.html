@@ -336,7 +336,7 @@
       flex-wrap: wrap;
     }
 
-    /* Description with custom scrollbar (no collapse button) */
+    /* Description with custom scrollbar */
     .detail-description {
       font-size: 0.8rem;
       line-height: 1.5;
@@ -350,7 +350,7 @@
       max-height: 200px;
       overflow-y: auto;
     }
-    /* Custom scrollbar - subtle and dark themed */
+    /* Custom scrollbar - subtle */
     .detail-description::-webkit-scrollbar {
       width: 6px;
     }
@@ -604,7 +604,7 @@
     </div>
   </div>
 
-  <!-- DETALHE DO VÍDEO (player + descrição com scroll) -->
+  <!-- DETALHE DO VÍDEO -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
@@ -635,7 +635,18 @@
 </div>
 
 <script>
+  // Navigation with cleanup for video detail
   function goTo(viewId) {
+    // If leaving the video detail view, stop the iframe
+    const videoDetailView = document.getElementById('view-video-detail');
+    if (videoDetailView && videoDetailView.classList.contains('active') && viewId !== 'view-video-detail') {
+      // Find any iframe inside the detail card and reset its src to stop playback
+      const detailCard = document.getElementById('detail-card');
+      const iframe = detailCard ? detailCard.querySelector('iframe') : null;
+      if (iframe && iframe.src) {
+        iframe.src = 'about:blank';
+      }
+    }
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     const target = document.getElementById(viewId);
     if (target) {
@@ -762,7 +773,6 @@
     const video = musicItemsRaw.find(v => v.id === videoId);
     if (!video) return;
 
-    // Remove leading/trailing whitespace and extra line breaks at start/end
     let descriptionText = video.description ? video.description.trim() : '';
     if (descriptionText === '') descriptionText = 'No description available.';
 
