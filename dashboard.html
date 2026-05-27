@@ -4,122 +4,260 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - GenericBR</title>
-  <script src="config.js"></script> <!-- para ter acesso aos jogos e dados do perfil -->
+  <script src="config.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* ===== MESMOS ESTILOS DO PORTFÓLIO PRINCIPAL ===== */
+    :root {
+      --bg:      #0d0f18;
+      --surface: #161927;
+      --card:    #1c1f30;
+      --border:  rgba(255,255,255,0.07);
+      --text:    #e2e4ef;
+      --muted:   #6b7194;
+      --yt:      #e53935;
+      --dc:      #5865f2;
+      --em:      #2979ff;
+      --pf:      #2a2d40;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      background: #0d0f18;
-      color: #e2e4ef;
+      background: var(--bg);
+      color: var(--text);
       font-family: 'DM Sans', sans-serif;
       padding: 2rem;
+      min-height: 100vh;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Cards e elementos */
     .card {
-      background: #161927;
+      background: var(--surface);
       border-radius: 20px;
-      padding: 1.5rem;
+      padding: 1.75rem 2rem;
       margin-bottom: 1.5rem;
-      border: 1px solid rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
     }
-    h1, h2 { font-weight: 500; margin-bottom: 1rem; }
+
+    .login-card {
+      max-width: 400px;
+      margin: 2rem auto;
+      text-align: center;
+    }
+
     input, textarea, select {
-      background: #1c1f30;
-      border: 1px solid #2a2d40;
-      color: #e2e4ef;
-      padding: 0.5rem;
-      border-radius: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
       font-family: inherit;
+      font-size: 0.85rem;
+      width: 100%;
     }
+
     button {
-      background: #2979ff;
+      background: var(--em);
       border: none;
       color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
       font-weight: 500;
+      cursor: pointer;
+      transition: filter 0.15s;
+      font-family: inherit;
     }
     button:hover { filter: brightness(1.1); }
-    .login-form { max-width: 300px; margin: 2rem auto; }
-    .tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid #2a2d40; }
-    .tab { padding: 0.5rem 1rem; cursor: pointer; opacity: 0.7; }
-    .tab.active { opacity: 1; border-bottom: 2px solid #2979ff; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .item-card {
-      background: #1c1f30;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    .item-title { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; }
-    .tags-area { margin: 0.5rem 0; }
+
     .tag {
       display: inline-block;
-      background: #2a2d40;
-      padding: 0.2rem 0.6rem;
+      background: var(--card);
+      padding: 0.2rem 0.7rem;
       border-radius: 20px;
       font-size: 0.7rem;
-      margin-right: 0.3rem;
-      margin-bottom: 0.3rem;
+      margin-right: 0.4rem;
+      margin-bottom: 0.4rem;
+      border: 1px solid var(--border);
     }
-    .tag-input { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-    .lyrics-box { width: 100%; min-height: 100px; margin-top: 0.5rem; }
-    .save-btn { margin-top: 0.5rem; background: #00a86b; }
-    .status { margin-top: 0.5rem; font-size: 0.8rem; color: #6b7194; }
+
+    /* Abas */
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      font-weight: 500;
+      transition: opacity 0.15s;
+    }
+    .tab.active {
+      opacity: 1;
+      border-bottom: 2px solid var(--em);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Grids (mesmo estilo do portfolio) */
+    .music-grid, .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .music-card, .game-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.15s;
+    }
+    .music-card:hover, .game-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .music-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      background: var(--bg);
+    }
+    .music-info, .game-info {
+      padding: 1rem;
+    }
+    .music-title, .game-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .tags-area {
+      margin: 0.5rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .tag-input {
+      display: flex;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    .lyrics-box {
+      margin: 0.5rem 0;
+      font-family: monospace;
+      font-size: 0.8rem;
+      resize: vertical;
+    }
+    .save-btn {
+      background: #00a86b;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .status {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      text-align: center;
+    }
+
+    /* Estado de carregamento */
+    .state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-top-color: var(--muted);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 2rem;
+    }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>🎛️ Admin Dashboard</h1>
+  <h1 style="margin-bottom: 1rem;">🎛️ Admin Dashboard</h1>
 
-  <div id="login-section" class="card login-form">
-    <h2>Login</h2>
-    <input type="password" id="admin-password" placeholder="Senha" style="width:100%; margin-bottom:1rem;">
+  <!-- Tela de login (igual ao estilo) -->
+  <div id="login-section" class="card login-card">
+    <h2 style="margin-bottom: 1rem;">Login</h2>
+    <input type="password" id="admin-password" placeholder="Senha" style="margin-bottom: 1rem;">
     <button id="login-btn">Entrar</button>
-    <div id="login-error" class="status" style="color:#e53935;"></div>
+    <div id="login-error" class="status" style="color:#e53935; margin-top:0.5rem;"></div>
   </div>
 
+  <!-- Conteúdo administrativo (só aparece após login) -->
   <div id="admin-content" style="display:none;">
     <div class="tabs">
-      <div class="tab active" data-tab="music">🎵 Músicas (lyrics + tags)</div>
+      <div class="tab active" data-tab="music">🎵 Músicas (letras + tags)</div>
       <div class="tab" data-tab="games">🎮 Jogos (tags)</div>
     </div>
 
     <div id="music-tab" class="tab-content active">
-      <div id="music-list"></div>
+      <div id="music-list" class="music-grid">
+        <div class="state"><div class="spinner"></div>Carregando músicas...</div>
+      </div>
     </div>
 
     <div id="games-tab" class="tab-content">
-      <div id="games-list"></div>
+      <div id="games-list" class="games-grid">
+        <div class="state"><div class="spinner"></div>Carregando jogos...</div>
+      </div>
     </div>
   </div>
+  <div class="footer">GenericBR Admin · Alterações salvas via Cloudflare KV</div>
 </div>
 
 <script>
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let authToken = null;
 
-  // Login
+  // ========== LOGIN ==========
   document.getElementById('login-btn').onclick = async () => {
     const password = document.getElementById('admin-password').value;
-    const res = await fetch(`${WORKER_URL}/auth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password })
-    });
-    const data = await res.json();
-    if (res.ok && data.token) {
-      authToken = data.token;
-      localStorage.setItem('adminToken', authToken);
-      document.getElementById('login-section').style.display = 'none';
-      document.getElementById('admin-content').style.display = 'block';
-      loadMusicData();
-      loadGamesData();
-    } else {
-      document.getElementById('login-error').innerText = data.error || 'Falha no login';
+    try {
+      const res = await fetch(`${WORKER_URL}/auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        authToken = data.token;
+        localStorage.setItem('adminToken', authToken);
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('admin-content').style.display = 'block';
+        loadMusicData();
+        loadGamesData();
+      } else {
+        document.getElementById('login-error').innerText = data.error || 'Falha no login';
+      }
+    } catch (err) {
+      document.getElementById('login-error').innerText = 'Erro de rede';
     }
   };
 
@@ -127,18 +265,20 @@
   (async () => {
     const savedToken = localStorage.getItem('adminToken');
     if (savedToken) {
-      const res = await fetch(`${WORKER_URL}/auth/check`, {
-        headers: { 'Authorization': `Bearer ${savedToken}` }
-      });
-      if (res.ok) {
-        authToken = savedToken;
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('admin-content').style.display = 'block';
-        loadMusicData();
-        loadGamesData();
-      } else {
-        localStorage.removeItem('adminToken');
-      }
+      try {
+        const res = await fetch(`${WORKER_URL}/auth/check`, {
+          headers: { 'Authorization': `Bearer ${savedToken}` }
+        });
+        if (res.ok) {
+          authToken = savedToken;
+          document.getElementById('login-section').style.display = 'none';
+          document.getElementById('admin-content').style.display = 'block';
+          loadMusicData();
+          loadGamesData();
+        } else {
+          localStorage.removeItem('adminToken');
+        }
+      } catch(e) {}
     }
   })();
 
@@ -152,102 +292,139 @@
     };
   });
 
-  // Carregar músicas (playlist + tags/lyrics via admin=true)
+  // ========== CARREGAR MÚSICAS (com tags e letras) ==========
   async function loadMusicData() {
-    const res = await fetch(`${WORKER_URL}?admin=true`, {
-      headers: { 'Authorization': `Bearer ${authToken}` }
-    });
-    const videos = await res.json();
     const container = document.getElementById('music-list');
-    container.innerHTML = '';
-    for (const video of videos) {
-      const div = document.createElement('div');
-      div.className = 'item-card';
-      div.innerHTML = `
-        <div class="item-title">${escapeHtml(video.title)}</div>
-        <div class="tags-area" id="tags-${video.id}">${(video.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
-        <div class="tag-input">
-          <input type="text" placeholder="Nova tag" id="newtag-${video.id}" style="flex:1">
-          <button onclick="addTag('${video.id}', 'music')">+</button>
-        </div>
-        <div><strong>Lyrics / tradução:</strong></div>
-        <textarea id="lyrics-${video.id}" class="lyrics-box">${escapeHtml(video.lyrics || '')}</textarea>
-        <button class="save-btn" onclick="saveLyrics('${video.id}')">Salvar letra</button>
-        <div class="status" id="status-${video.id}"></div>
-      `;
-      container.appendChild(div);
+    container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando músicas...</div>';
+    try {
+      const res = await fetch(`${WORKER_URL}?admin=true`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      const videos = await res.json();
+      if (!videos.length) {
+        container.innerHTML = '<div class="state">Nenhuma música encontrada.</div>';
+        return;
+      }
+      container.innerHTML = '';
+      for (const video of videos) {
+        const card = document.createElement('div');
+        card.className = 'music-card';
+        card.innerHTML = `
+          <img class="music-thumb" src="${escapeHtml(video.thumbnail)}" alt="${escapeHtml(video.title)}" loading="lazy">
+          <div class="music-info">
+            <div class="music-title">${escapeHtml(video.title)}</div>
+            <div class="tags-area" id="tags-${video.id}">
+              ${(video.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
+            </div>
+            <div class="tag-input">
+              <input type="text" placeholder="Nova tag" id="newtag-${video.id}" style="flex:1">
+              <button onclick="addTag('${video.id}', 'music')">+</button>
+            </div>
+            <div><strong>Letra / Tradução</strong></div>
+            <textarea id="lyrics-${video.id}" class="lyrics-box" rows="4">${escapeHtml(video.lyrics || '')}</textarea>
+            <button class="save-btn" onclick="saveLyrics('${video.id}')">Salvar letra</button>
+            <div class="status" id="status-${video.id}"></div>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    } catch (err) {
+      container.innerHTML = `<div class="state">Erro ao carregar músicas: ${err.message}</div>`;
     }
   }
 
-  // Carregar jogos diretamente do config.js (variável global CONFIG)
-  function loadGamesData() {
-    const games = CONFIG.steam?.games || [];
+  // ========== CARREGAR JOGOS (do config.js + tags) ==========
+  async function loadGamesData() {
     const container = document.getElementById('games-list');
-    container.innerHTML = '';
-    for (const game of games) {
-      const div = document.createElement('div');
-      div.className = 'item-card';
-      div.innerHTML = `
-        <div class="item-title">${escapeHtml(game.name)} (${game.appId})</div>
-        <div class="tags-area" id="tags-${game.appId}">Carregando tags...</div>
-        <div class="tag-input">
-          <input type="text" placeholder="Nova tag" id="newtag-${game.appId}" style="flex:1">
-          <button onclick="addTag('${game.appId}', 'game')">+</button>
-        </div>
-        <div class="status" id="status-${game.appId}"></div>
-      `;
-      container.appendChild(div);
-      // Buscar tags atuais para este jogo
-      fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      })
-        .then(res => res.json())
-        .then(data => {
+    container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
+    try {
+      const games = CONFIG.steam?.games || [];
+      if (!games.length) {
+        container.innerHTML = '<div class="state">Nenhum jogo configurado em config.js</div>';
+        return;
+      }
+      container.innerHTML = '';
+      for (const game of games) {
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.innerHTML = `
+          <div class="game-info">
+            <div class="game-name">${escapeHtml(game.name)} (${game.appId})</div>
+            <div class="tags-area" id="tags-${game.appId}">Carregando tags...</div>
+            <div class="tag-input">
+              <input type="text" placeholder="Nova tag" id="newtag-${game.appId}" style="flex:1">
+              <button onclick="addTag('${game.appId}', 'game')">+</button>
+            </div>
+            <div class="status" id="status-${game.appId}"></div>
+          </div>
+        `;
+        container.appendChild(card);
+        // Buscar tags para este jogo
+        try {
+          const res = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+          });
+          const data = await res.json();
           const tagsDiv = document.getElementById(`tags-${game.appId}`);
           if (tagsDiv) tagsDiv.innerHTML = (data.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
-        })
-        .catch(console.error);
+        } catch(e) {
+          const tagsDiv = document.getElementById(`tags-${game.appId}`);
+          if (tagsDiv) tagsDiv.innerHTML = '<span class="tag">erro ao carregar</span>';
+        }
+      }
+    } catch (err) {
+      container.innerHTML = `<div class="state">Erro ao carregar jogos: ${err.message}</div>`;
     }
   }
 
+  // ========== FUNÇÕES GLOBAIS PARA TAGS E LETRAS ==========
   window.addTag = async (id, type) => {
     const input = document.getElementById(`newtag-${id}`);
     const newTag = input.value.trim();
     if (!newTag) return;
     const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
-    const res = await fetch(`${WORKER_URL}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify({ id, tag: newTag })
-    });
-    if (res.ok) {
-      input.value = '';
-      if (type === 'music') loadMusicData();
-      else loadGamesData();
-    } else {
-      alert('Erro ao adicionar tag');
+    try {
+      const res = await fetch(`${WORKER_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ id, tag: newTag })
+      });
+      if (res.ok) {
+        input.value = '';
+        if (type === 'music') loadMusicData();
+        else loadGamesData();
+      } else {
+        alert('Erro ao adicionar tag');
+      }
+    } catch (err) {
+      alert('Erro de rede');
     }
   };
 
   window.saveLyrics = async (videoId) => {
     const lyrics = document.getElementById(`lyrics-${videoId}`).value;
-    const res = await fetch(`${WORKER_URL}/api/music/lyrics`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`
-      },
-      body: JSON.stringify({ id: videoId, lyrics })
-    });
     const statusDiv = document.getElementById(`status-${videoId}`);
-    if (res.ok) {
-      statusDiv.innerText = '✅ Salvo!';
-      setTimeout(() => statusDiv.innerText = '', 2000);
-    } else {
-      statusDiv.innerText = '❌ Erro ao salvar';
+    statusDiv.innerText = 'Salvando...';
+    try {
+      const res = await fetch(`${WORKER_URL}/api/music/lyrics`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ id: videoId, lyrics })
+      });
+      if (res.ok) {
+        statusDiv.innerText = '✅ Salvo!';
+        setTimeout(() => statusDiv.innerText = '', 2000);
+      } else {
+        statusDiv.innerText = '❌ Erro ao salvar';
+      }
+    } catch (err) {
+      statusDiv.innerText = '❌ Erro de rede';
     }
   };
 
