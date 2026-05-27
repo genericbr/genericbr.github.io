@@ -109,7 +109,6 @@
       line-height: 1.65;
     }
 
-    /* Removidos os .nav-links (Steam e Music) da home */
     .contact-buttons {
       display: flex;
       flex-direction: column;
@@ -137,7 +136,6 @@
     .btn-em { background: var(--em); }
     .btn-pf { background: var(--pf); border: 1px solid var(--border); }
 
-    /* Estilos para a tela de seleção de portfolio (botões quadrados) */
     .portfolio-grid {
       display: flex;
       gap: 1.5rem;
@@ -171,14 +169,6 @@
       stroke: white;
       stroke-width: 1.5;
       fill: none;
-    }
-    .portfolio-card .steam-icon {
-      fill: none;
-      stroke: white;
-    }
-    .portfolio-card .music-icon {
-      fill: none;
-      stroke: white;
     }
     .portfolio-card span {
       font-size: 0.8rem;
@@ -265,6 +255,7 @@
       overflow: hidden;
       border: 1px solid var(--border);
       transition: border-color .2s, transform .2s;
+      cursor: pointer;
     }
     .music-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
     .music-thumb {
@@ -290,6 +281,99 @@
     }
     .music-views, .music-date { display: flex; align-items: center; gap: 0.3rem; }
     .music-channel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Video Detail View */
+    .detail-hero {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .detail-thumb {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 280px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--card);
+    }
+    .detail-thumb img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+    }
+    .detail-info {
+      flex: 1;
+    }
+    .detail-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .detail-channel {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .detail-stats {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .detail-description {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--text);
+      background: rgba(255,255,255,0.03);
+      padding: 0.8rem;
+      border-radius: 12px;
+      margin-top: 0.5rem;
+    }
+    .other-videos-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      margin: 1.5rem 0 1rem 0;
+      color: var(--muted);
+    }
+    .other-videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
+    }
+    .other-video-card {
+      background: var(--card);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .other-video-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
+    .other-video-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+    .other-video-info {
+      padding: 0.5rem;
+    }
+    .other-video-title {
+      font-size: 0.7rem;
+      font-weight: 500;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .other-video-views {
+      font-size: 0.55rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
 
     .games-grid {
       display: grid;
@@ -374,6 +458,8 @@
       .music-grid { grid-template-columns: 1fr; }
       .portfolio-card { width: 120px; height: 120px; }
       .portfolio-card svg { width: 40px; height: 40px; }
+      .detail-hero { flex-direction: column; }
+      .detail-thumb { max-width: 100%; }
     }
   </style>
 </head>
@@ -397,13 +483,11 @@
         <p class="profile-bio" id="profile-bio">
           Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.
         </p>
-        <!-- Botões de contato (sem os links Steam/Music) -->
       </div>
       <div class="contact-buttons">
         <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener" aria-label="YouTube">Youtube<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg></a>
         <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener" aria-label="Discord">Discord<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg></a>
         <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
-        <!-- Botão Portfolio agora abre a pasta de seleção -->
         <div class="btn btn-pf" onclick="goTo('view-portfolio-pasta')" role="button" tabindex="0" aria-label="Portfolio">Portfolio
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </div>
@@ -412,7 +496,7 @@
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
 
-  <!-- ══ PASTA DE SELEÇÃO DE PORTFOLIO (botões quadrados) ════════ -->
+  <!-- ══ PASTA DE SELEÇÃO DE PORTFOLIO ═════════════════════════ -->
   <div class="view" id="view-portfolio-pasta">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-home')" title="Voltar" role="button" tabindex="0">
@@ -422,17 +506,15 @@
     </div>
     <div class="card" style="text-align: center;">
       <div class="portfolio-grid">
-        <!-- Botão Steam (quadrado) -->
         <div class="portfolio-card" onclick="goTo('view-games')" role="button" tabindex="0">
-          <svg class="steam-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="9" />
             <path d="M12 8v8M8 12h8" />
           </svg>
           <span>Steam</span>
         </div>
-        <!-- Botão Música (quadrado) -->
         <div class="portfolio-card" onclick="goTo('view-music')" role="button" tabindex="0">
-          <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 18V5l12-2v13" />
             <circle cx="6" cy="18" r="3" />
             <circle cx="18" cy="16" r="3" />
@@ -443,7 +525,7 @@
     </div>
   </div>
 
-  <!-- ══ VIEW: MUSIC (YouTube) ══════════════════════════════════ -->
+  <!-- ══ VIEW: MUSIC (lista de vídeos) ═════════════════════════ -->
   <div class="view" id="view-music">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
@@ -470,6 +552,20 @@
       <div class="music-grid" id="music-grid">
         <div class="state"><div class="spinner"></div>Loading YouTube...</div>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW: DETALHE DO VÍDEO (com outros vídeos do mesmo canal) ══ -->
+  <div class="view" id="view-video-detail">
+    <div class="section-header">
+      <div class="back-btn" onclick="goTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">Video Details</span>
+    </div>
+    <div class="card" id="detail-card">
+      <!-- Conteúdo preenchido dinamicamente -->
+      <div class="state"><div class="spinner"></div>Loading...</div>
     </div>
   </div>
 
@@ -565,7 +661,6 @@
           sortSelect.removeEventListener('change', handleSortChange);
           sortSelect.addEventListener('change', handleSortChange);
         }
-        // Badge removida
       } else {
         grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
         statsDiv.style.display = 'none';
@@ -595,7 +690,7 @@
       default: sorted = [...musicItemsRaw];
     }
     grid.innerHTML = sorted.map(v => `
-      <a class="music-card" href="https://youtube.com/watch?v=${v.id}" target="_blank" rel="noopener" aria-label="Watch ${esc(v.title)}">
+      <div class="music-card" onclick="showVideoDetail('${v.id}')" role="button" tabindex="0">
         ${v.thumbnail
           ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail of ${esc(v.title)}" loading="lazy">`
           : `<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`
@@ -608,7 +703,7 @@
             <div class="music-channel">🎤 ${esc(v.channelTitle)}</div>
           </div>
         </div>
-      </a>
+      </div>
     `).join('');
     updateTotalViews();
   }
@@ -616,6 +711,56 @@
   function updateTotalViews() {
     const total = musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0);
     document.getElementById('total-views-count').innerText = formatNumber(total);
+  }
+
+  // ── VIDEO DETAIL VIEW ──────────────────────────────────────
+  function showVideoDetail(videoId) {
+    const video = musicItemsRaw.find(v => v.id === videoId);
+    if (!video) return;
+
+    // Outros vídeos do mesmo canal (excluindo o atual)
+    const otherVideos = musicItemsRaw.filter(v => v.channelTitle === video.channelTitle && v.id !== video.id);
+
+    const detailCard = document.getElementById('detail-card');
+    detailCard.innerHTML = `
+      <div class="detail-hero">
+        <div class="detail-thumb">
+          <img src="${esc(video.thumbnail)}" alt="${esc(video.title)}">
+        </div>
+        <div class="detail-info">
+          <div class="detail-title">${esc(video.title)}</div>
+          <div class="detail-channel">${esc(video.channelTitle)}</div>
+          <div class="detail-stats">
+            <span>👁️ ${formatNumber(video.viewCount)} views</span>
+            <span>📅 ${formatDate(video.publishedAt)}</span>
+          </div>
+          <a href="https://youtube.com/watch?v=${video.id}" target="_blank" rel="noopener" class="btn" style="background: var(--yt); justify-content: center; gap: 0.5rem; text-decoration: none; display: inline-flex; width: auto;">▶ Watch on YouTube</a>
+        </div>
+      </div>
+      <!-- Aqui futuramente você pode adicionar a letra traduzida -->
+      <div class="detail-description" id="lyrics-placeholder" style="font-style: italic; color: var(--muted);">
+        ✍️ Lyrics / translation will appear here later.
+      </div>
+      ${otherVideos.length ? `
+        <div class="other-videos-title">🎵 Other videos from ${esc(video.channelTitle)}</div>
+        <div class="other-videos-grid" id="other-videos-grid"></div>
+      ` : '<div class="other-videos-title">No other videos from this channel in the playlist.</div>'}
+    `;
+
+    if (otherVideos.length) {
+      const gridContainer = detailCard.querySelector('#other-videos-grid');
+      gridContainer.innerHTML = otherVideos.map(v => `
+        <div class="other-video-card" onclick="showVideoDetail('${v.id}')">
+          <img class="other-video-thumb" src="${esc(v.thumbnail)}" alt="${esc(v.title)}" loading="lazy">
+          <div class="other-video-info">
+            <div class="other-video-title">${esc(v.title)}</div>
+            <div class="other-video-views">👁️ ${formatNumber(v.viewCount)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    goTo('view-video-detail');
   }
 
   // ── STEAM games ────────────────────────────────────────────
