@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>GenericBR</title>
+    <script>
+      // ⚠️ Se você não estiver usando um domínio customizado (seu site é genericbr.github.io),
+      // mantenha pathSegmentsToKeep = 0. Se estiver em um subdiretório (ex: genericbr.github.io/meu-projeto),
+      // mude para 1 (ou mais, conforme a estrutura).
+      var pathSegmentsToKeep = 0;
+
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+        l.hash
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
