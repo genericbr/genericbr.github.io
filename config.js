@@ -16,8 +16,8 @@ const CONFIG = {
   // ── Links ────────────────────────────────────────────────────
   links: {
     youtube:   "https://www.youtube.com/@GenericBR",   // canal (botão YouTube)
-    discord:   "https://discord.gg/RGAuGPaS",
-    email:     "seuemail@exemplo.com",
+    discord:   "https://discord.gg/dst2C2yU6H",
+    email:     "genericbr.business@gmail.com",
     portfolio: "https://genericbr.carrd.co",
   },
 
