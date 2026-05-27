@@ -43,11 +43,10 @@
 
     .view-wrap {
       width: 100%;
-      max-width: 720px;  /* padrão para home e pasta */
+      max-width: 720px;
       position: relative;
       transition: max-width 0.2s ease;
     }
-    /* Aumenta a largura apenas quando a view de detalhe está ativa */
     .view-wrap:has(#view-video-detail.active) {
       max-width: 980px;
     }
@@ -337,7 +336,7 @@
       flex-wrap: wrap;
     }
 
-    /* Description collapsible (sem barras de rolagem) */
+    /* Description with custom scrollbar (no collapse button) */
     .detail-description {
       font-size: 0.8rem;
       line-height: 1.5;
@@ -348,29 +347,23 @@
       margin-top: 0.5rem;
       white-space: pre-wrap;
       word-break: break-word;
-      transition: all 0.2s ease;
+      max-height: 200px;
+      overflow-y: auto;
     }
-    .detail-description.collapsed {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    /* Custom scrollbar - subtle and dark themed */
+    .detail-description::-webkit-scrollbar {
+      width: 6px;
     }
-
-    .btn-expand {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 0.7rem;
-      cursor: pointer;
-      font-family: 'DM Mono', monospace;
-      padding: 0.2rem 0;
-      margin-top: 0.3rem;
-      transition: color 0.15s;
+    .detail-description::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
     }
-    .btn-expand:hover {
-      color: var(--text);
+    .detail-description::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+    }
+    .detail-description::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.3);
     }
 
     .lyrics-placeholder {
@@ -611,7 +604,7 @@
     </div>
   </div>
 
-  <!-- DETALHE DO VÍDEO (com player e descrição colapsável) -->
+  <!-- DETALHE DO VÍDEO (player + descrição com scroll) -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
@@ -769,6 +762,10 @@
     const video = musicItemsRaw.find(v => v.id === videoId);
     if (!video) return;
 
+    // Remove leading/trailing whitespace and extra line breaks at start/end
+    let descriptionText = video.description ? video.description.trim() : '';
+    if (descriptionText === '') descriptionText = 'No description available.';
+
     const otherVideos = musicItemsRaw.filter(v => v.channelTitle === video.channelTitle && v.id !== video.id);
 
     const detailCard = document.getElementById('detail-card');
@@ -786,10 +783,7 @@
             <span>👁️ ${formatNumber(video.viewCount)} views</span>
             <span>📅 ${formatDate(video.publishedAt)}</span>
           </div>
-          <div class="detail-description collapsed" id="video-description-${video.id}">
-            ${esc(video.description) || 'No description available.'}
-          </div>
-          <button class="btn-expand" data-id="${video.id}">▼ ver mais</button>
+          <div class="detail-description">${esc(descriptionText)}</div>
           <div class="lyrics-placeholder" id="lyrics-placeholder">
             ✍️ <strong>Lyrics / Translation</strong><br>
             <em>Will be loaded from backend soon.</em>
@@ -813,22 +807,6 @@
           </div>
         </div>
       `).join('');
-    }
-
-    // Expansão da descrição
-    const expandBtn = detailCard.querySelector(`.btn-expand[data-id="${video.id}"]`);
-    const descDiv = detailCard.querySelector(`#video-description-${video.id}`);
-    if (expandBtn && descDiv) {
-      expandBtn.onclick = () => {
-        const isCollapsed = descDiv.classList.contains('collapsed');
-        if (isCollapsed) {
-          descDiv.classList.remove('collapsed');
-          expandBtn.innerHTML = '▲ ver menos';
-        } else {
-          descDiv.classList.add('collapsed');
-          expandBtn.innerHTML = '▼ ver mais';
-        }
-      };
     }
 
     goTo('view-video-detail');
