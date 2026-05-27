@@ -4,15 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GenericBR - Portfólio de Tradução</title>
-  <!-- CONFIG.JS (dados pessoais, links, steam.games, etc.) -->
   <script src="config.js"></script>
-  <!-- FONTS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* ============================================================
-       ROOT VARIÁVEIS (cores do tema escuro)
-    ============================================================ */
     :root {
       --bg:      #0d0f18;
       --surface: #161927;
@@ -26,7 +21,6 @@
       --pf:      #2a2d40;
     }
 
-    /* RESET E ESTILOS GLOBAIS */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
@@ -47,21 +41,16 @@
       border-radius: 4px;
     }
 
-    /* ============================================================
-       VIEW WRAPPER – LARGURA CONDICIONAL (maior apenas na tela de detalhe)
-    ============================================================ */
     .view-wrap {
       width: 100%;
-      max-width: 720px;    /* padrão: home, pasta de portfolio, lista de músicas, games */
+      max-width: 720px;
       position: relative;
       transition: max-width 0.2s ease;
     }
-    /* Quando a view de detalhe do vídeo está ativa, aumenta a largura */
     .view-wrap:has(#view-video-detail.active) {
       max-width: 980px;
     }
 
-    /* VIEWS – sistema de abas (aparece apenas a view .active) */
     .view {
       width: 100%;
       display: none;
@@ -76,24 +65,22 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* CARD – estilo base para todas as caixas */
     .card {
       background: var(--surface);
       border-radius: 20px;
       padding: 1.75rem 2rem;
     }
 
-    /* ============================================================
-       VIEW HOME (PERFIL E BOTÕES DE CONTATO)
-    ============================================================ */
     #view-home .card {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 1.5rem 2.5rem;
       align-items: start;
     }
+
     .profile-left { display: flex; flex-direction: column; gap: 1rem; }
     .profile-top { display: flex; align-items: center; gap: 1rem; }
+
     .avatar {
       width: 80px; height: 80px;
       border-radius: 50%;
@@ -105,6 +92,7 @@
       overflow: hidden;
     }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
     .profile-meta { display: flex; flex-direction: column; gap: .2rem; }
     .tagline {
       font-family: 'DM Mono', monospace;
@@ -113,10 +101,18 @@
       text-transform: uppercase;
       color: var(--muted);
     }
-    .profile-name { font-size: 1.6rem; font-weight: 600; line-height: 1; letter-spacing: -.01em; }
-    .profile-bio { font-size: .875rem; color: var(--muted); line-height: 1.65; }
+    .profile-name {
+      font-size: 1.6rem;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -.01em;
+    }
+    .profile-bio {
+      font-size: .875rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
 
-    /* Botões de contato (YouTube, Discord, Email, Portfolio) */
     .contact-buttons {
       display: flex;
       flex-direction: column;
@@ -144,9 +140,6 @@
     .btn-em { background: var(--em); }
     .btn-pf { background: var(--pf); border: 1px solid var(--border); }
 
-    /* ============================================================
-       PASTA DE SELEÇÃO (Portfolio: Steam ou Music)
-    ============================================================ */
     .portfolio-grid {
       display: flex;
       gap: 1.5rem;
@@ -170,13 +163,23 @@
       text-decoration: none;
       color: var(--text);
     }
-    .portfolio-card:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-4px); }
-    .portfolio-card svg { width: 48px; height: 48px; stroke: white; stroke-width: 1.5; fill: none; }
-    .portfolio-card span { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.02em; }
+    .portfolio-card:hover {
+      border-color: rgba(255,255,255,0.25);
+      transform: translateY(-4px);
+    }
+    .portfolio-card svg {
+      width: 48px;
+      height: 48px;
+      stroke: white;
+      stroke-width: 1.5;
+      fill: none;
+    }
+    .portfolio-card span {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
 
-    /* ============================================================
-       CABEÇALHO DAS VIEWS (título + botão voltar + controles de ordenação)
-    ============================================================ */
     .section-header {
       display: flex;
       align-items: center;
@@ -206,7 +209,6 @@
       color: var(--muted);
     }
 
-    /* Controles de ordenação (dropdown) */
     .sort-controls {
       display: flex;
       align-items: center;
@@ -228,7 +230,6 @@
     .sort-controls select:focus { outline: none; }
     .sort-controls label { font-size: 0.65rem; color: var(--muted); }
 
-    /* Barra de estatísticas (total de views) */
     .stats-bar {
       background: var(--card);
       border-radius: 12px;
@@ -244,9 +245,6 @@
     .total-views { font-size: 0.8rem; font-family: 'DM Mono', monospace; }
     .total-views strong { color: #fff; font-size: 1.1rem; }
 
-    /* ============================================================
-       GRADE DE MÚSICAS (cards de vídeo)
-    ============================================================ */
     .music-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -288,9 +286,6 @@
     .music-views, .music-date { display: flex; align-items: center; gap: 0.3rem; }
     .music-channel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ============================================================
-       VIEW DE DETALHE DO VÍDEO (player + descrição com scroll + outros vídeos)
-    ============================================================ */
     .detail-container {
       display: flex;
       flex-wrap: wrap;
@@ -306,7 +301,7 @@
     }
     .video-embed {
       position: relative;
-      padding-bottom: 56.25%; /* 16:9 */
+      padding-bottom: 56.25%;
       height: 0;
       border-radius: 12px;
       overflow: hidden;
@@ -335,7 +330,6 @@
       margin-bottom: 1rem;
       flex-wrap: wrap;
     }
-    /* Descrição com scroll personalizado (sem botão "ver mais") */
     .detail-description {
       font-size: 0.8rem;
       line-height: 1.5;
@@ -349,7 +343,6 @@
       max-height: 200px;
       overflow-y: auto;
     }
-    /* Barra de rolagem customizada (discreta) */
     .detail-description::-webkit-scrollbar {
       width: 6px;
     }
@@ -365,7 +358,6 @@
       background: rgba(255,255,255,0.3);
     }
 
-    /* Placeholder para letras traduzidas (futuro backend) */
     .lyrics-placeholder {
       margin-top: 1rem;
       background: rgba(255,255,255,0.02);
@@ -375,8 +367,6 @@
       color: var(--muted);
       font-size: 0.75rem;
     }
-
-    /* Seção "Outros vídeos do mesmo canal" */
     .other-videos-title {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
@@ -418,9 +408,6 @@
       margin-top: 0.2rem;
     }
 
-    /* ============================================================
-       GRADE DE JOGOS STEAM
-    ============================================================ */
     .games-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -440,7 +427,6 @@
       object-fit: cover; display: block;
       background: var(--bg);
     }
-    /* Fallback para quando a imagem da Steam não carrega */
     .game-img-fallback {
       width: 100%; height: 135px;
       background: var(--card);
@@ -468,7 +454,6 @@
       background: rgba(255,255,255,.06); color: var(--muted);
     }
 
-    /* Estados de carregamento e erro */
     .state {
       padding: 3rem 1rem; text-align: center;
       font-family: 'DM Mono', monospace;
@@ -499,9 +484,6 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ============================================================
-       MEDIA QUERIES (responsividade)
-    ============================================================ */
     @media (max-width: 760px) {
       .detail-container { flex-direction: column; }
       .view-wrap:has(#view-video-detail.active) { max-width: 720px; }
@@ -520,10 +502,7 @@
 
 <div class="view-wrap">
 
-  /* ============================================================
-     VIEW 1: HOME (perfil + contatos)
-     - Botão "Portfolio" leva à pasta de seleção
-     ============================================================ */
+  <!-- VIEW HOME -->
   <div class="view active" id="view-home">
     <div class="card">
       <div class="profile-left">
@@ -552,9 +531,7 @@
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
 
-  /* ============================================================
-     VIEW 2: PASTA DE SELEÇÃO (Portfolio: Steam ou Music)
-     ============================================================ */
+  <!-- VIEW PASTA DE SELEÇÃO -->
   <div class="view" id="view-portfolio-pasta">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-home')" title="Voltar" role="button" tabindex="0">
@@ -583,10 +560,7 @@
     </div>
   </div>
 
-  /* ============================================================
-     VIEW 3: LISTA DE VÍDEOS (MUSIC)
-     - Possui dropdown de ordenação e total de views
-     ============================================================ */
+  <!-- VIEW LISTA DE MÚSICAS -->
   <div class="view" id="view-music">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
@@ -616,9 +590,7 @@
     </div>
   </div>
 
-  /* ============================================================
-     VIEW 4: DETALHE DO VÍDEO (player + descrição + outros vídeos + letras futuras)
-     ============================================================ */
+  <!-- VIEW DETALHE DO VÍDEO -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
@@ -631,9 +603,7 @@
     </div>
   </div>
 
-  /* ============================================================
-     VIEW 5: LISTA DE JOGOS (STEAM)
-     ============================================================ */
+  <!-- VIEW JOGOS STEAM -->
   <div class="view" id="view-games">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
@@ -651,28 +621,13 @@
 </div>
 
 <script>
-  /* ============================================================
-     ████████  JavaScript principal ████████
-     - Navegação (goTo com limpeza de iframe)
-     - Helpers (esc, formatNumber, formatDate)
-     - Configuração (applyConfig) a partir do config.js
-     - Carregamento da música (loadMusic, cache via Worker)
-     - Ordenação e renderização da grade de vídeos
-     - Detalhe do vídeo (showVideoDetail) com player e descrição
-     - Carregamento dos jogos Steam (loadGames)
-     - Preparado para futuro: painel admin, atualização manual, letras traduzidas
-    ============================================================ */
-
-  // 1. NAVEGAÇÃO ENTRE VIEWS (com limpeza do iframe para parar o vídeo)
+  // ==================== NAVEGAÇÃO E AJUDA ====================
   function goTo(viewId) {
     const videoDetailView = document.getElementById('view-video-detail');
-    // Se estamos saindo da view de detalhe, mata o iframe
     if (videoDetailView && videoDetailView.classList.contains('active') && viewId !== 'view-video-detail') {
       const detailCard = document.getElementById('detail-card');
       const iframe = detailCard ? detailCard.querySelector('iframe') : null;
-      if (iframe && iframe.src) {
-        iframe.src = 'about:blank';  // para a reprodução
-      }
+      if (iframe && iframe.src) iframe.src = 'about:blank';
     }
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     const target = document.getElementById(viewId);
@@ -682,7 +637,6 @@
     }
   }
 
-  // 2. HELPERS (escape HTML, formatação de números e datas)
   function esc(s) {
     const d = document.createElement('div');
     d.textContent = String(s || '');
@@ -699,7 +653,6 @@
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
-  // 3. APLICA AS CONFIGURAÇÕES DO config.js (perfil, links, steam.games)
   function applyConfig() {
     const c = CONFIG;
     const name   = c.name   || 'GenericBR';
@@ -722,109 +675,47 @@
     if (L.email)     document.getElementById('btn-em').href = 'mailto:' + L.email;
   }
 
-  /* ============================================================
-     SEÇÃO: MÚSICA (YouTube)
-     - Variáveis globais: musicItemsRaw (dados crus), currentSort
-     - loadMusic() busca via Cloudflare Worker (cache global de 1h)
-     - renderMusicGrid() aplica ordenação e gera os cards
-     - showVideoDetail() monta a view de detalhe com player, descrição e outros vídeos
-     - FUTURO: botão para forçar atualização (ex: ?refresh=true no Worker)
-     - FUTURO: integração com backend de letras traduzidas
-    ============================================================ */
-let musicItemsRaw = [];
-let currentSort = 'original';
-const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev'; // declaração global para uso em outras funções
+  // ==================== MÚSICA ====================
+  let musicItemsRaw = [];
+  let currentSort = 'original';
+  const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
 
-async function loadMusic() {
-  const grid = document.getElementById('music-grid');
-  const statsDiv = document.getElementById('music-stats');
+  async function loadMusic() {
+    const grid = document.getElementById('music-grid');
+    const statsDiv = document.getElementById('music-stats');
 
-  try {
-    grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube via proxy...</div>`;
-    const response = await fetch(WORKER_URL);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const videoData = await response.json();
+    try {
+      grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube via proxy...</div>`;
+      const response = await fetch(WORKER_URL);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const videoData = await response.json();
 
-    if (videoData && videoData.length) {
-      musicItemsRaw = videoData;
-      renderMusicGrid();
-      statsDiv.style.display = 'flex';
-      updateTotalViews();
-      const sortSelect = document.getElementById('sort-music');
-      if (sortSelect) {
-        sortSelect.removeEventListener('change', handleSortChange);
-        sortSelect.addEventListener('change', handleSortChange);
+      if (videoData && videoData.length) {
+        musicItemsRaw = videoData;
+        renderMusicGrid();
+        statsDiv.style.display = 'flex';
+        updateTotalViews();
+        const sortSelect = document.getElementById('sort-music');
+        if (sortSelect) {
+          sortSelect.removeEventListener('change', handleSortChange);
+          sortSelect.addEventListener('change', handleSortChange);
+        }
+      } else {
+        grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
+        statsDiv.style.display = 'none';
       }
-    } else {
-      grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
+    } catch (err) {
+      console.error(err);
+      grid.innerHTML = `<div class="error-msg">❌ Error: <code>${esc(err.message)}</code></div>`;
       statsDiv.style.display = 'none';
     }
-  } catch (err) {
-    console.error(err);
-    grid.innerHTML = `<div class="error-msg">❌ Error: <code>${esc(err.message)}</code></div>`;
-    statsDiv.style.display = 'none';
   }
-}
 
-function handleSortChange(e) {
-  currentSort = e.target.value;
-  renderMusicGrid();
-}
-
-function renderMusicGrid() {
-  const grid = document.getElementById('music-grid');
-  let sorted = [...musicItemsRaw];
-  switch(currentSort) {
-    case 'views_desc': sorted.sort((a,b) => b.viewCount - a.viewCount); break;
-    case 'views_asc':  sorted.sort((a,b) => a.viewCount - b.viewCount); break;
-    case 'date_desc':  sorted.sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt)); break;
-    case 'date_asc':   sorted.sort((a,b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
-    case 'title_asc':  sorted.sort((a,b) => a.title.localeCompare(b.title)); break;
-    case 'title_desc': sorted.sort((a,b) => b.title.localeCompare(a.title)); break;
-    default: sorted = [...musicItemsRaw];
+  function handleSortChange(e) {
+    currentSort = e.target.value;
+    renderMusicGrid();
   }
-  grid.innerHTML = sorted.map(v => `
-    <div class="music-card" onclick="showVideoDetail('${v.id}')" role="button" tabindex="0">
-      ${v.thumbnail
-        ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail of ${esc(v.title)}" loading="lazy">`
-        : `<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`
-      }
-      <div class="music-info">
-        <div class="music-title">${esc(v.title)}</div>
-        <div class="music-meta">
-          <div class="music-views">👁️ ${formatNumber(v.viewCount)} views</div>
-          <div class="music-date">📅 ${formatDate(v.publishedAt)}</div>
-          <div class="music-channel">🎤 ${esc(v.channelTitle)}</div>
-        </div>
-      </div>
-    </div>
-  `).join('');
-  updateTotalViews();
-}
 
-// Função para buscar e exibir as letras no detalhe do vídeo
-async function loadLyrics(videoId, placeholderElement) {
-  try {
-    const res = await fetch(`${WORKER_URL}/api/music/lyrics?id=${videoId}`);
-    const data = await res.json();
-    if (data.lyrics && data.lyrics.trim() !== '') {
-      placeholderElement.innerHTML = `
-        ✍️ <strong>Lyrics / Translation</strong><br>
-        <div style="white-space: pre-wrap; margin-top: 0.5rem;">${esc(data.lyrics)}</div>
-      `;
-    } else {
-      placeholderElement.innerHTML = `
-        ✍️ <strong>Lyrics / Translation</strong><br>
-        <em>No lyrics available yet.</em>
-      `;
-    }
-  } catch (err) {
-    placeholderElement.innerHTML = `
-      ✍️ <strong>Lyrics / Translation</strong><br>
-      <em>Failed to load lyrics.</em>
-    `;
-  }
-}
   function renderMusicGrid() {
     const grid = document.getElementById('music-grid');
     let sorted = [...musicItemsRaw];
@@ -835,7 +726,7 @@ async function loadLyrics(videoId, placeholderElement) {
       case 'date_asc':   sorted.sort((a,b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
       case 'title_asc':  sorted.sort((a,b) => a.title.localeCompare(b.title)); break;
       case 'title_desc': sorted.sort((a,b) => b.title.localeCompare(a.title)); break;
-      default: sorted = [...musicItemsRaw]; // original order (como vem da API)
+      default: sorted = [...musicItemsRaw];
     }
     grid.innerHTML = sorted.map(v => `
       <div class="music-card" onclick="showVideoDetail('${v.id}')" role="button" tabindex="0">
@@ -854,7 +745,6 @@ async function loadLyrics(videoId, placeholderElement) {
       </div>
     `).join('');
     updateTotalViews();
-    
   }
 
   function updateTotalViews() {
@@ -862,66 +752,86 @@ async function loadLyrics(videoId, placeholderElement) {
     document.getElementById('total-views-count').innerText = formatNumber(total);
   }
 
-  function showVideoDetail(videoId) {
-  const video = musicItemsRaw.find(v => v.id === videoId);
-  if (!video) return;
-
-  let descriptionText = video.description ? video.description.trim() : '';
-  if (descriptionText === '') descriptionText = 'No description available.';
-
-  const otherVideos = musicItemsRaw.filter(v => v.channelTitle === video.channelTitle && v.id !== video.id);
-
-  const detailCard = document.getElementById('detail-card');
-  detailCard.innerHTML = `
-    <div class="detail-container">
-      <div class="detail-player">
-        <div class="video-embed">
-          <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
-        </div>
-      </div>
-      <div class="detail-info">
-        <div class="detail-title">${esc(video.title)}</div>
-        <div class="detail-channel">${esc(video.channelTitle)}</div>
-        <div class="detail-stats">
-          <span>👁️ ${formatNumber(video.viewCount)} views</span>
-          <span>📅 ${formatDate(video.publishedAt)}</span>
-        </div>
-        <div class="detail-description">${esc(descriptionText)}</div>
-        <div class="lyrics-placeholder" id="lyrics-placeholder">
+  async function loadLyrics(videoId, placeholderElement) {
+    try {
+      const res = await fetch(`${WORKER_URL}/api/music/lyrics?id=${videoId}`);
+      const data = await res.json();
+      if (data.lyrics && data.lyrics.trim() !== '') {
+        placeholderElement.innerHTML = `
           ✍️ <strong>Lyrics / Translation</strong><br>
-          <em>Loading...</em>
-        </div>
-      </div>
-    </div>
-    ${otherVideos.length ? `
-      <div class="other-videos-title">🎵 Other videos from ${esc(video.channelTitle)}</div>
-      <div class="other-videos-grid" id="other-videos-grid"></div>
-    ` : '<div class="other-videos-title">No other videos from this channel in the playlist.</div>'}
-  `;
-
-  if (otherVideos.length) {
-    const gridContainer = detailCard.querySelector('#other-videos-grid');
-    gridContainer.innerHTML = otherVideos.map(v => `
-      <div class="other-video-card" onclick="showVideoDetail('${v.id}')">
-        <img class="other-video-thumb" src="${esc(v.thumbnail)}" alt="${esc(v.title)}" loading="lazy">
-        <div class="other-video-info">
-          <div class="other-video-title">${esc(v.title)}</div>
-          <div class="other-video-views">👁️ ${formatNumber(v.viewCount)}</div>
-        </div>
-      </div>
-    `).join('');
+          <div style="white-space: pre-wrap; margin-top: 0.5rem;">${esc(data.lyrics)}</div>
+        `;
+      } else {
+        placeholderElement.innerHTML = `
+          ✍️ <strong>Lyrics / Translation</strong><br>
+          <em>No lyrics available yet.</em>
+        `;
+      }
+    } catch (err) {
+      placeholderElement.innerHTML = `
+        ✍️ <strong>Lyrics / Translation</strong><br>
+        <em>Failed to load lyrics.</em>
+      `;
+    }
   }
 
-  // Carregar letras do backend
-  const lyricsPlaceholder = detailCard.querySelector('#lyrics-placeholder');
-  if (lyricsPlaceholder) {
-    loadLyrics(video.id, lyricsPlaceholder);
+  function showVideoDetail(videoId) {
+    const video = musicItemsRaw.find(v => v.id === videoId);
+    if (!video) return;
+
+    let descriptionText = video.description ? video.description.trim() : '';
+    if (descriptionText === '') descriptionText = 'No description available.';
+
+    const otherVideos = musicItemsRaw.filter(v => v.channelTitle === video.channelTitle && v.id !== video.id);
+
+    const detailCard = document.getElementById('detail-card');
+    detailCard.innerHTML = `
+      <div class="detail-container">
+        <div class="detail-player">
+          <div class="video-embed">
+            <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
+          </div>
+        </div>
+        <div class="detail-info">
+          <div class="detail-title">${esc(video.title)}</div>
+          <div class="detail-channel">${esc(video.channelTitle)}</div>
+          <div class="detail-stats">
+            <span>👁️ ${formatNumber(video.viewCount)} views</span>
+            <span>📅 ${formatDate(video.publishedAt)}</span>
+          </div>
+          <div class="detail-description">${esc(descriptionText)}</div>
+          <div class="lyrics-placeholder" id="lyrics-placeholder">
+            ✍️ <strong>Lyrics / Translation</strong><br>
+            <em>Loading...</em>
+          </div>
+        </div>
+      </div>
+      ${otherVideos.length ? `
+        <div class="other-videos-title">🎵 Other videos from ${esc(video.channelTitle)}</div>
+        <div class="other-videos-grid" id="other-videos-grid"></div>
+      ` : '<div class="other-videos-title">No other videos from this channel in the playlist.</div>'}
+    `;
+
+    if (otherVideos.length) {
+      const gridContainer = detailCard.querySelector('#other-videos-grid');
+      gridContainer.innerHTML = otherVideos.map(v => `
+        <div class="other-video-card" onclick="showVideoDetail('${v.id}')">
+          <img class="other-video-thumb" src="${esc(v.thumbnail)}" alt="${esc(v.title)}" loading="lazy">
+          <div class="other-video-info">
+            <div class="other-video-title">${esc(v.title)}</div>
+            <div class="other-video-views">👁️ ${formatNumber(v.viewCount)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    const lyricsPlaceholder = detailCard.querySelector('#lyrics-placeholder');
+    if (lyricsPlaceholder) loadLyrics(video.id, lyricsPlaceholder);
+
+    goTo('view-video-detail');
   }
 
-  goTo('view-video-detail');
-}
-
-  // 5. SEÇÃO: JOGOS STEAM
+  // ==================== STEAM JOGOS ====================
   async function loadGames() {
     const grid  = document.getElementById('games-grid');
     const games = CONFIG.steam?.games || [];
@@ -931,7 +841,6 @@ async function loadLyrics(videoId, placeholderElement) {
       return;
     }
 
-    // Tenta buscar dados do SteamSpy para jogos sem nome preenchido
     const needsFetch = games.filter(g => !g.name);
     const spyMap = {};
     if (needsFetch.length) {
@@ -971,35 +880,12 @@ async function loadLyrics(videoId, placeholderElement) {
     }).join('');
   }
 
-  // 6. INICIALIZAÇÃO (quando o DOM estiver pronto)
+  // ==================== INICIALIZAÇÃO ====================
   document.addEventListener('DOMContentLoaded', () => {
     applyConfig();
     loadMusic();
     loadGames();
   });
-
-  // ============================================================
-  // FUTURAS ADIÇÕES (painel admin, atualização manual, backend de letras)
-  // ============================================================
-  // a) Botão para forçar atualização da playlist:
-  //    Adicione no HTML um botão que chame refreshPlaylist():
-  //    async function refreshPlaylist() {
-  //      const response = await fetch('https://portfolio.genericbr-business.workers.dev?refresh=true');
-  //      if (response.ok) loadMusic(); // recarrega os dados
-  //    }
-  //    (Requer modificação no Worker para limpar o cache ao receber ?refresh=true)
-  //
-  // b) Autenticação via Worker (login):
-  //    O front-end enviaria usuário/senha para um endpoint /auth no Worker,
-  //    que retorna um token JWT ou session cookie. O front-end armazena e envia
-  //    nas requisições de edição de letras.
-  //
-  // c) Edição de letras:
-  //    Dentro de showVideoDetail, substituir .lyrics-placeholder por um editor
-  //    (textarea ou contenteditable) que envia PUT/PATCH para o Worker,
-  //    que salva em um KV Store (Cloudflare Workers KV).
-  //    As letras seriam carregadas via endpoint /lyrics?videoId=...
-  // ============================================================
 </script>
 </body>
 </html>
