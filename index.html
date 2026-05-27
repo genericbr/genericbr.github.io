@@ -174,6 +174,11 @@
       stroke-width: 1.5;
       fill: none;
     }
+    .portfolio-card img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
     .portfolio-card span {
       font-size: 0.8rem;
       font-weight: 500;
@@ -229,17 +234,6 @@
     }
     .sort-controls select:focus { outline: none; }
     .sort-controls label { font-size: 0.65rem; color: var(--muted); }
-    .refresh-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 0.3rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      cursor: pointer;
-      color: var(--text);
-      transition: background 0.15s;
-    }
-    .refresh-btn:hover { background: rgba(255,255,255,0.1); }
 
     .stats-bar {
       background: var(--card);
@@ -535,7 +529,7 @@
       .contact-buttons { display: grid; grid-template-columns: 1fr 1fr; min-width: unset; }
       .music-grid { grid-template-columns: 1fr; }
       .portfolio-card { width: 120px; height: 120px; }
-      .portfolio-card svg { width: 40px; height: 40px; }
+      .portfolio-card img, .portfolio-card svg { width: 40px; height: 40px; }
     }
   </style>
 </head>
@@ -582,10 +576,8 @@
     </div>
     <div class="card" style="text-align: center;">
       <div class="portfolio-grid">
-       <div class="portfolio-card" onclick="navigateTo('view-games')" role="button" tabindex="0">
-  <img src="images/steam-icon.png" alt="Steam" style="width: 48px; height: 48px; object-fit: contain;">
-  <span>Steam</span>
-         </div>
+        <div class="portfolio-card" onclick="navigateTo('view-games')" role="button" tabindex="0">
+          <img src="images/steam-icon.png" alt="Steam" style="width: 48px; height: 48px; object-fit: contain;">
           <span>Steam</span>
         </div>
         <div class="portfolio-card" onclick="navigateTo('view-music')" role="button" tabindex="0">
@@ -607,20 +599,17 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">All My Music-Related Cameos Thus Far</span>
-      <div style="display: flex; gap: 0.5rem;">
-        <div class="sort-controls">
-          <label>Sort by:</label>
-          <select id="sort-music">
-            <option value="original">Original order</option>
-            <option value="views_desc">Most views</option>
-            <option value="views_asc">Least views</option>
-            <option value="date_desc">Newest first</option>
-            <option value="date_asc">Oldest first</option>
-            <option value="title_asc">Title A–Z</option>
-            <option value="title_desc">Title Z–A</option>
-          </select>
-        </div>
-        <button id="refresh-music-btn" class="refresh-btn">🔄 Recarregar</button>
+      <div class="sort-controls">
+        <label>Sort by:</label>
+        <select id="sort-music">
+          <option value="original">Original order</option>
+          <option value="views_desc">Most views</option>
+          <option value="views_asc">Least views</option>
+          <option value="date_desc">Newest first</option>
+          <option value="date_asc">Oldest first</option>
+          <option value="title_asc">Title A–Z</option>
+          <option value="title_desc">Title Z–A</option>
+        </select>
       </div>
     </div>
     <div class="card">
@@ -665,14 +654,6 @@
 
 <script>
   // ==================== ROTEAMENTO COM HISTORY API ====================
-  const routes = {
-    'view-home': '/',
-    'view-portfolio-pasta': '/portfolio',
-    'view-music': '/music',
-    'view-games': '/games',
-    'view-video-detail': (videoId) => `/video/${videoId}`
-  };
-
   function navigateTo(viewId, videoId = null) {
     if (viewId === 'view-video-detail' && videoId) {
       const newUrl = `/video/${videoId}`;
@@ -923,32 +904,6 @@
     if (lyricsContainer) loadLyrics(video.id, lyricsContainer);
 
     setActiveView('view-video-detail');
-  }
-
-  // ==================== BOTÃO RECARREGAR ====================
-  const refreshBtn = document.getElementById('refresh-music-btn');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', async () => {
-      refreshBtn.innerText = '🔄 Carregando...';
-      refreshBtn.disabled = true;
-      try {
-        const response = await fetch(WORKER_URL + '?t=' + Date.now(), { cache: 'no-cache' });
-        const videoData = await response.json();
-        if (videoData && videoData.length) {
-          musicItemsRaw = videoData;
-          renderMusicGrid();
-          updateTotalViews();
-        } else {
-          alert('Falha ao recarregar dados');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Erro ao recarregar');
-      } finally {
-        refreshBtn.innerText = '🔄 Recarregar';
-        refreshBtn.disabled = false;
-      }
-    });
   }
 
   // ==================== STEAM JOGOS ====================
