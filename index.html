@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* (mesmo CSS do último código fornecido - manter igual) */
     :root {
       --bg:      #0d0f18;
       --surface: #161927;
@@ -346,7 +347,6 @@
       max-height: 200px;
       overflow-y: auto;
     }
-    /* Scrollbars */
     .detail-description::-webkit-scrollbar,
     .lyrics-box-scroll::-webkit-scrollbar {
       width: 6px;
@@ -366,7 +366,6 @@
       background: rgba(255,255,255,0.3);
     }
 
-    /* Letras */
     .lyrics-section {
       margin-top: 1rem;
     }
@@ -398,7 +397,6 @@
       font-style: italic;
     }
 
-    /* Outros vídeos (agora dentro da coluna do player) */
     .other-videos-title {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
@@ -556,7 +554,7 @@
         <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener" aria-label="YouTube">Youtube<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg></a>
         <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener" aria-label="Discord">Discord<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg></a>
         <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
-        <div class="btn btn-pf" onclick="goTo('view-portfolio-pasta')" role="button" tabindex="0" aria-label="Portfolio">Portfolio
+        <div class="btn btn-pf" onclick="navigateTo('view-portfolio-pasta')" role="button" tabindex="0" aria-label="Portfolio">Portfolio
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </div>
       </div>
@@ -567,21 +565,21 @@
   <!-- VIEW PASTA DE SELEÇÃO -->
   <div class="view" id="view-portfolio-pasta">
     <div class="section-header">
-      <div class="back-btn" onclick="goTo('view-home')" title="Voltar" role="button" tabindex="0">
+      <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar" role="button" tabindex="0">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">Choose your portfolio</span>
     </div>
     <div class="card" style="text-align: center;">
       <div class="portfolio-grid">
-        <div class="portfolio-card" onclick="goTo('view-games')" role="button" tabindex="0">
+        <div class="portfolio-card" onclick="navigateTo('view-games')" role="button" tabindex="0">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="9" />
             <path d="M12 8v8M8 12h8" />
           </svg>
           <span>Steam</span>
         </div>
-        <div class="portfolio-card" onclick="goTo('view-music')" role="button" tabindex="0">
+        <div class="portfolio-card" onclick="navigateTo('view-music')" role="button" tabindex="0">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 18V5l12-2v13" />
             <circle cx="6" cy="18" r="3" />
@@ -596,7 +594,7 @@
   <!-- VIEW LISTA DE MÚSICAS -->
   <div class="view" id="view-music">
     <div class="section-header">
-      <div class="back-btn" onclick="goTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
+      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">All My Music-Related Cameos Thus Far</span>
@@ -626,7 +624,7 @@
   <!-- VIEW DETALHE DO VÍDEO -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
-      <div class="back-btn" onclick="goTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
+      <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">Video Details</span>
@@ -639,7 +637,7 @@
   <!-- VIEW JOGOS STEAM -->
   <div class="view" id="view-games">
     <div class="section-header">
-      <div class="back-btn" onclick="goTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
+      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">All My Gaming-Related Cameos Thus Far</span>
@@ -654,8 +652,41 @@
 </div>
 
 <script>
-  // ==================== NAVEGAÇÃO E AJUDA ====================
-  function goTo(viewId) {
+  // ==================== ROTEAMENTO COM HISTORY API ====================
+  // Mapeamento de viewId para path da URL
+  const routes = {
+    'view-home': '/',
+    'view-portfolio-pasta': '/portfolio',
+    'view-music': '/music',
+    'view-games': '/games',
+    'view-video-detail': (videoId) => `/video/${videoId}`
+  };
+
+  // Função de navegação principal (substitui o antigo goTo)
+  function navigateTo(viewId, videoId = null) {
+    // Se for detail e tiver videoId, trata separado
+    if (viewId === 'view-video-detail' && videoId) {
+      // Atualiza a URL com /video/:id
+      const newUrl = `/video/${videoId}`;
+      history.pushState({ view: viewId, videoId }, '', newUrl);
+      // Chama a função que monta o detalhe
+      showVideoDetail(videoId);
+    } else {
+      // Para outras views, mapeia o path
+      let path = '/';
+      if (viewId === 'view-portfolio-pasta') path = '/portfolio';
+      else if (viewId === 'view-music') path = '/music';
+      else if (viewId === 'view-games') path = '/games';
+      else path = '/';
+      history.pushState({ view: viewId }, '', path);
+      // Ativa a view
+      setActiveView(viewId);
+    }
+  }
+
+  // Ativa uma view pelo ID (sem alterar URL)
+  function setActiveView(viewId) {
+    // Limpa o iframe se estiver saindo da view de detalhe
     const videoDetailView = document.getElementById('view-video-detail');
     if (videoDetailView && videoDetailView.classList.contains('active') && viewId !== 'view-video-detail') {
       const detailCard = document.getElementById('detail-card');
@@ -670,6 +701,47 @@
     }
   }
 
+  // Restaura a view com base na URL atual (chamado no load e no popstate)
+  function restoreFromPath() {
+    const path = window.location.pathname;
+    if (path === '/portfolio') {
+      setActiveView('view-portfolio-pasta');
+    } else if (path === '/music') {
+      setActiveView('view-music');
+      // Se a lista de vídeos ainda não foi carregada, carrega (já é feito no DOMContentLoaded)
+    } else if (path === '/games') {
+      setActiveView('view-games');
+    } else if (path.startsWith('/video/')) {
+      const videoId = path.split('/video/')[1];
+      if (videoId && musicItemsRaw.length > 0) {
+        // Aguarda os dados estarem prontos
+        if (musicItemsRaw.length) {
+          showVideoDetail(videoId);
+        } else {
+          // Se os dados ainda não chegaram, espera e tenta novamente
+          const waitForData = setInterval(() => {
+            if (musicItemsRaw.length) {
+              clearInterval(waitForData);
+              showVideoDetail(videoId);
+            }
+          }, 100);
+        }
+      } else {
+        // Fallback: vai para home
+        setActiveView('view-home');
+        history.replaceState({ view: 'view-home' }, '', '/');
+      }
+    } else {
+      setActiveView('view-home');
+    }
+  }
+
+  // Escuta os eventos de voltar/avançar no navegador
+  window.addEventListener('popstate', (event) => {
+    restoreFromPath();
+  });
+
+  // Helper para escapar HTML (igual antes)
   function esc(s) {
     const d = document.createElement('div');
     d.textContent = String(s || '');
@@ -733,6 +805,11 @@
           sortSelect.removeEventListener('change', handleSortChange);
           sortSelect.addEventListener('change', handleSortChange);
         }
+        // Se a URL atual é /video/... e os dados acabaram de carregar, tenta restaurar o vídeo
+        if (window.location.pathname.startsWith('/video/')) {
+          const videoId = window.location.pathname.split('/video/')[1];
+          if (videoId) showVideoDetail(videoId);
+        }
       } else {
         grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
         statsDiv.style.display = 'none';
@@ -762,7 +839,7 @@
       default: sorted = [...musicItemsRaw];
     }
     grid.innerHTML = sorted.map(v => `
-      <div class="music-card" onclick="showVideoDetail('${v.id}')" role="button" tabindex="0">
+      <div class="music-card" onclick="navigateTo('view-video-detail', '${v.id}')" role="button" tabindex="0">
         ${v.thumbnail
           ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail of ${esc(v.title)}" loading="lazy">`
           : `<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`
@@ -841,7 +918,7 @@
     if (otherVideos.length) {
       const gridContainer = detailCard.querySelector('#other-videos-grid');
       gridContainer.innerHTML = otherVideos.map(v => `
-        <div class="other-video-card" onclick="showVideoDetail('${v.id}')">
+        <div class="other-video-card" onclick="navigateTo('view-video-detail', '${v.id}')">
           <img class="other-video-thumb" src="${esc(v.thumbnail)}" alt="${esc(v.title)}" loading="lazy">
           <div class="other-video-info">
             <div class="other-video-title">${esc(v.title)}</div>
@@ -854,7 +931,8 @@
     const lyricsContainer = detailCard.querySelector(`#lyrics-container-${video.id}`);
     if (lyricsContainer) loadLyrics(video.id, lyricsContainer);
 
-    goTo('view-video-detail');
+    // Ativa a view de detalhe
+    setActiveView('view-video-detail');
   }
 
   // ==================== STEAM JOGOS ====================
@@ -907,10 +985,11 @@
   }
 
   // ==================== INICIALIZAÇÃO ====================
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     applyConfig();
-    loadMusic();
-    loadGames();
+    await loadMusic();  // carrega os vídeos primeiro
+    await loadGames();
+    restoreFromPath();  // depois que os dados estão prontos, restaura a URL
   });
 </script>
 </body>
