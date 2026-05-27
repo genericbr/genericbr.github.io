@@ -336,6 +336,8 @@
       margin-bottom: 1rem;
       flex-wrap: wrap;
     }
+
+    /* Description collapsible (sem barras de rolagem) */
     .detail-description {
       font-size: 0.8rem;
       line-height: 1.5;
@@ -344,10 +346,33 @@
       padding: 0.8rem;
       border-radius: 12px;
       margin-top: 0.5rem;
-      max-height: 200px;
-      overflow-y: auto;
       white-space: pre-wrap;
+      word-break: break-word;
+      transition: all 0.2s ease;
     }
+    .detail-description.collapsed {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .btn-expand {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.7rem;
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+      padding: 0.2rem 0;
+      margin-top: 0.3rem;
+      transition: color 0.15s;
+    }
+    .btn-expand:hover {
+      color: var(--text);
+    }
+
     .lyrics-placeholder {
       margin-top: 1rem;
       background: rgba(255,255,255,0.02);
@@ -586,7 +611,7 @@
     </div>
   </div>
 
-  <!-- DETALHE DO VÍDEO (com player e legendas em português) -->
+  <!-- DETALHE DO VÍDEO (com player e descrição colapsável) -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
       <div class="back-btn" onclick="goTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
@@ -761,7 +786,10 @@
             <span>👁️ ${formatNumber(video.viewCount)} views</span>
             <span>📅 ${formatDate(video.publishedAt)}</span>
           </div>
-          <div class="detail-description">${esc(video.description) || 'No description available.'}</div>
+          <div class="detail-description collapsed" id="video-description-${video.id}">
+            ${esc(video.description) || 'No description available.'}
+          </div>
+          <button class="btn-expand" data-id="${video.id}">▼ ver mais</button>
           <div class="lyrics-placeholder" id="lyrics-placeholder">
             ✍️ <strong>Lyrics / Translation</strong><br>
             <em>Will be loaded from backend soon.</em>
@@ -785,6 +813,22 @@
           </div>
         </div>
       `).join('');
+    }
+
+    // Expansão da descrição
+    const expandBtn = detailCard.querySelector(`.btn-expand[data-id="${video.id}"]`);
+    const descDiv = detailCard.querySelector(`#video-description-${video.id}`);
+    if (expandBtn && descDiv) {
+      expandBtn.onclick = () => {
+        const isCollapsed = descDiv.classList.contains('collapsed');
+        if (isCollapsed) {
+          descDiv.classList.remove('collapsed');
+          expandBtn.innerHTML = '▲ ver menos';
+        } else {
+          descDiv.classList.add('collapsed');
+          expandBtn.innerHTML = '▼ ver mais';
+        }
+      };
     }
 
     goTo('view-video-detail');
