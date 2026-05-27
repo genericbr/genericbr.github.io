@@ -42,11 +42,13 @@
     }
 
     .view-wrap {
-      width: 100%;
-      max-width: 980px;  /* Aumentado para acomodar player + descrição */
-      position: relative;
+  width: 100%;
+  max-width: 720px;  /* padrão para telas normais */
+  position: relative;
     }
-
+.view-wrap:has(#view-video-detail.active) {
+  max-width: 980px;  /* aumenta apenas quando a view de detalhe está ativa */
+}
     .view {
       width: 100%;
       display: none;
