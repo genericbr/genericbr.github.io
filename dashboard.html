@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - GenericBR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d0f18;
+      color: #e2e4ef;
+      font-family: 'DM Sans', sans-serif;
+      padding: 2rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card {
+      background: #161927;
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    h1, h2 { font-weight: 500; margin-bottom: 1rem; }
+    input, textarea, select {
+      background: #1c1f30;
+      border: 1px solid #2a2d40;
+      color: #e2e4ef;
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-family: inherit;
+    }
+    button {
+      background: #2979ff;
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover { filter: brightness(1.1); }
+    .login-form { max-width: 300px; margin: 2rem auto; }
+    .tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid #2a2d40; }
+    .tab { padding: 0.5rem 1rem; cursor: pointer; opacity: 0.7; }
+    .tab.active { opacity: 1; border-bottom: 2px solid #2979ff; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .item-card {
+      background: #1c1f30;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .item-title { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .tags-area { margin: 0.5rem 0; }
+    .tag {
+      display: inline-block;
+      background: #2a2d40;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      margin-right: 0.3rem;
+      margin-bottom: 0.3rem;
+    }
+    .tag-input { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .lyrics-box { width: 100%; min-height: 100px; margin-top: 0.5rem; }
+    .save-btn { margin-top: 0.5rem; background: #00a86b; }
+    .status { margin-top: 0.5rem; font-size: 0.8rem; color: #6b7194; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🎛️ Admin Dashboard</h1>
+
+  <!-- Login -->
+  <div id="login-section" class="card login-form">
+    <h2>Login</h2>
+    <input type="password" id="admin-password" placeholder="Senha" style="width:100%; margin-bottom:1rem;">
+    <button id="login-btn">Entrar</button>
+    <div id="login-error" class="status" style="color:#e53935;"></div>
+  </div>
+
+  <!-- Conteúdo administrativo (só aparece após login) -->
+  <div id="admin-content" style="display:none;">
+    <div class="tabs">
+      <div class="tab active" data-tab="music">🎵 Músicas (lyrics + tags)</div>
+      <div class="tab" data-tab="games">🎮 Jogos (tags)</div>
+    </div>
+
+    <!-- Aba Músicas -->
+    <div id="music-tab" class="tab-content active">
+      <div id="music-list"></div>
+    </div>
+
+    <!-- Aba Jogos -->
+    <div id="games-tab" class="tab-content">
+      <div id="games-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev'; // seu Worker
+  let authToken = null;
+
+  // Login
+  document.getElementById('login-btn').onclick = async () => {
+    const password = document.getElementById('admin-password').value;
+    const res = await fetch(`${WORKER_URL}/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      authToken = data.token;
+      localStorage.setItem('adminToken', authToken);
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('admin-content').style.display = 'block';
+      loadMusicData();
+      loadGamesData();
+    } else {
+      document.getElementById('login-error').innerText = data.error || 'Falha no login';
+    }
+  };
+
+  // Verificar token salvo ao carregar a página
+  (async () => {
+    const savedToken = localStorage.getItem('adminToken');
+    if (savedToken) {
+      const res = await fetch(`${WORKER_URL}/auth/check`, {
+        headers: { 'Authorization': `Bearer ${savedToken}` }
+      });
+      if (res.ok) {
+        authToken = savedToken;
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('admin-content').style.display = 'block';
+        loadMusicData();
+        loadGamesData();
+      } else {
+        localStorage.removeItem('adminToken');
+      }
+    }
+  })();
+
+  // Alternar abas
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+    };
+  });
+
+  // Carregar lista de músicas (do mesmo endpoint do front-end)
+  async function loadMusicData() {
+    const res = await fetch(`${WORKER_URL}?admin=true`); // endpoint que retorna playlist + tags/lyrics
+    const videos = await res.json();
+    const container = document.getElementById('music-list');
+    container.innerHTML = '';
+    for (const video of videos) {
+      // Buscar tags e lyrics específicas para esse vídeo
+      const tagsRes = await fetch(`${WORKER_URL}/api/music/tags?id=${video.id}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+      const tagsData = await tagsRes.json();
+      const lyricsRes = await fetch(`${WORKER_URL}/api/music/lyrics?id=${video.id}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+      const lyricsData = await lyricsRes.json();
+
+      const div = document.createElement('div');
+      div.className = 'item-card';
+      div.innerHTML = `
+        <div class="item-title">${escapeHtml(video.title)}</div>
+        <div class="tags-area" id="tags-${video.id}">${(tagsData.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="tag-input">
+          <input type="text" placeholder="Nova tag" id="newtag-${video.id}" style="flex:1">
+          <button onclick="addTag('${video.id}', 'music')">+</button>
+        </div>
+        <div><strong>Lyrics / tradução:</strong></div>
+        <textarea id="lyrics-${video.id}" class="lyrics-box">${escapeHtml(lyricsData.lyrics || '')}</textarea>
+        <button class="save-btn" onclick="saveLyrics('${video.id}')">Salvar letra</button>
+        <div class="status" id="status-${video.id}"></div>
+      `;
+      container.appendChild(div);
+    }
+  }
+
+  async function loadGamesData() {
+    // Pega a lista de jogos do config.js via Worker
+    const res = await fetch(`${WORKER_URL}/api/games`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+    const games = await res.json();
+    const container = document.getElementById('games-list');
+    container.innerHTML = '';
+    for (const game of games) {
+      const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+      const tagsData = await tagsRes.json();
+      const div = document.createElement('div');
+      div.className = 'item-card';
+      div.innerHTML = `
+        <div class="item-title">${escapeHtml(game.name)} (${game.appId})</div>
+        <div class="tags-area" id="tags-${game.appId}">${(tagsData.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+        <div class="tag-input">
+          <input type="text" placeholder="Nova tag" id="newtag-${game.appId}" style="flex:1">
+          <button onclick="addTag('${game.appId}', 'game')">+</button>
+        </div>
+        <div class="status" id="status-${game.appId}"></div>
+      `;
+      container.appendChild(div);
+    }
+  }
+
+  window.addTag = async (id, type) => {
+    const input = document.getElementById(`newtag-${id}`);
+    const newTag = input.value.trim();
+    if (!newTag) return;
+    const endpoint = type === 'music' ? `/api/music/tags` : `/api/games/tags`;
+    const res = await fetch(`${WORKER_URL}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ id, tag: newTag })
+    });
+    if (res.ok) {
+      input.value = '';
+      if (type === 'music') loadMusicData(); else loadGamesData();
+    } else {
+      alert('Erro ao adicionar tag');
+    }
+  };
+
+  window.saveLyrics = async (videoId) => {
+    const lyrics = document.getElementById(`lyrics-${videoId}`).value;
+    const res = await fetch(`${WORKER_URL}/api/music/lyrics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ id: videoId, lyrics })
+    });
+    const statusDiv = document.getElementById(`status-${videoId}`);
+    if (res.ok) {
+      statusDiv.innerText = '✅ Salvo!';
+      setTimeout(() => statusDiv.innerText = '', 2000);
+    } else {
+      statusDiv.innerText = '❌ Erro ao salvar';
+    }
+  };
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+</script>
+</body>
+</html>
