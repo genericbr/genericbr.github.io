@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* (mesmo CSS de antes, adicionamos regras para a view de detalhe do jogo) */
     :root {
       --bg:      #0d0f18;
       --surface: #161927;
@@ -48,6 +49,9 @@
       transition: max-width 0.2s ease;
     }
     .view-wrap:has(#view-video-detail.active) {
+      max-width: 980px;
+    }
+    .view-wrap:has(#view-game-detail.active) {
       max-width: 980px;
     }
 
@@ -291,6 +295,68 @@
     .music-views, .music-date { display: flex; align-items: center; gap: 0.3rem; }
     .music-channel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+    /* ========== ESTILOS PARA DETALHE DO JOGO ========== */
+    .game-detail-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .game-detail-cover {
+      flex: 1;
+      min-width: 200px;
+    }
+    .game-detail-cover img {
+      width: 100%;
+      border-radius: 12px;
+    }
+    .game-detail-info {
+      flex: 2;
+      min-width: 260px;
+    }
+    .game-detail-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .game-detail-role {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .game-detail-description {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      background: rgba(255,255,255,0.03);
+      padding: 0.8rem;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      white-space: pre-wrap;
+    }
+    .game-detail-credits {
+      font-size: 0.85rem;
+      background: rgba(255,255,255,0.02);
+      border-left: 2px solid var(--muted);
+      padding: 0.8rem;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      white-space: pre-wrap;
+    }
+    .game-detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.5rem;
+    }
+    .game-tag {
+      background: var(--card);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      border: 1px solid var(--border);
+    }
+
+    /* (restante do CSS igual ao anterior) */
     .detail-container {
       display: flex;
       flex-wrap: wrap;
@@ -455,6 +521,7 @@
       border-radius: 10px; overflow: hidden;
       border: 1px solid var(--border);
       transition: border-color .2s, transform .2s;
+      cursor: pointer;
     }
     .game-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
     .game-img {
@@ -522,6 +589,7 @@
     @media (max-width: 760px) {
       .detail-container { flex-direction: column; }
       .view-wrap:has(#view-video-detail.active) { max-width: 720px; }
+      .view-wrap:has(#view-game-detail.active) { max-width: 720px; }
     }
     @media (max-width: 520px) {
       body { padding: 1rem .75rem; align-items: flex-start; padding-top: 1.5rem; }
@@ -537,7 +605,7 @@
 
 <div class="view-wrap">
 
-  <!-- VIEW HOME -->
+  <!-- VIEW HOME (idêntica) -->
   <div class="view active" id="view-home">
     <div class="card">
       <div class="profile-left">
@@ -566,7 +634,7 @@
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
 
-  <!-- VIEW PASTA DE SELEÇÃO -->
+  <!-- PASTA DE SELEÇÃO -->
   <div class="view" id="view-portfolio-pasta">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar" role="button" tabindex="0">
@@ -592,7 +660,7 @@
     </div>
   </div>
 
-  <!-- VIEW LISTA DE MÚSICAS -->
+  <!-- VIEW LISTA DE MÚSICAS (igual) -->
   <div class="view" id="view-music">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
@@ -622,7 +690,7 @@
     </div>
   </div>
 
-  <!-- VIEW DETALHE DO VÍDEO -->
+  <!-- VIEW DETALHE DO VÍDEO (igual) -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
@@ -635,7 +703,20 @@
     </div>
   </div>
 
-  <!-- VIEW JOGOS STEAM -->
+  <!-- VIEW DETALHE DO JOGO (NOVA) -->
+  <div class="view" id="view-game-detail">
+    <div class="section-header">
+      <div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista" role="button" tabindex="0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">Game Details</span>
+    </div>
+    <div class="card" id="game-detail-card">
+      <div class="state"><div class="spinner"></div>Loading game info...</div>
+    </div>
+  </div>
+
+  <!-- VIEW JOGOS STEAM (lista) -->
   <div class="view" id="view-games">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
@@ -653,12 +734,16 @@
 </div>
 
 <script>
-  // ==================== ROTEAMENTO COM HISTORY API ====================
-  function navigateTo(viewId, videoId = null) {
-    if (viewId === 'view-video-detail' && videoId) {
-      const newUrl = `/video/${videoId}`;
-      history.pushState({ view: viewId, videoId }, '', newUrl);
-      showVideoDetail(videoId);
+  // ==================== ROTEAMENTO ====================
+  function navigateTo(viewId, param = null) {
+    if (viewId === 'view-video-detail' && param) {
+      const newUrl = `/video/${param}`;
+      history.pushState({ view: viewId, videoId: param }, '', newUrl);
+      showVideoDetail(param);
+    } else if (viewId === 'view-game-detail' && param) {
+      const newUrl = `/game/${param}`;
+      history.pushState({ view: viewId, appId: param }, '', newUrl);
+      showGameDetail(param);
     } else {
       let path = '/';
       if (viewId === 'view-portfolio-pasta') path = '/portfolio';
@@ -687,87 +772,76 @@
 
   function restoreFromPath() {
     const path = window.location.pathname;
-    if (path === '/portfolio') {
-      setActiveView('view-portfolio-pasta');
-    } else if (path === '/music') {
-      setActiveView('view-music');
-    } else if (path === '/games') {
-      setActiveView('view-games');
-    } else if (path.startsWith('/video/')) {
+    if (path === '/portfolio') setActiveView('view-portfolio-pasta');
+    else if (path === '/music') setActiveView('view-music');
+    else if (path === '/games') setActiveView('view-games');
+    else if (path.startsWith('/video/')) {
       const videoId = path.split('/video/')[1];
-      if (videoId && musicItemsRaw.length > 0) {
-        showVideoDetail(videoId);
-      } else if (videoId) {
-        const waitForData = setInterval(() => {
-          if (musicItemsRaw.length) {
-            clearInterval(waitForData);
-            showVideoDetail(videoId);
-          }
+      if (videoId && musicItemsRaw.length) showVideoDetail(videoId);
+      else if (videoId) {
+        const wait = setInterval(() => {
+          if (musicItemsRaw.length) { clearInterval(wait); showVideoDetail(videoId); }
         }, 100);
-      } else {
-        setActiveView('view-home');
-        history.replaceState({ view: 'view-home' }, '', '/');
-      }
-    } else {
-      setActiveView('view-home');
-    }
+      } else setActiveView('view-home');
+    } else if (path.startsWith('/game/')) {
+      const appId = path.split('/game/')[1];
+      if (appId && gamesList.length) showGameDetail(appId);
+      else if (appId) {
+        const wait = setInterval(() => {
+          if (gamesList.length) { clearInterval(wait); showGameDetail(appId); }
+        }, 100);
+      } else setActiveView('view-home');
+    } else setActiveView('view-home');
   }
 
   window.addEventListener('popstate', () => restoreFromPath());
 
+  // Helpers
   function esc(s) {
     const d = document.createElement('div');
     d.textContent = String(s || '');
     return d.innerHTML;
   }
-
   function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
-
   function formatDate(isoString) {
     if (!isoString) return '';
     const d = new Date(isoString);
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
-
   function applyConfig() {
     const c = CONFIG;
-    const name   = c.name   || 'GenericBR';
+    const name = c.name || 'GenericBR';
     const handle = c.handle || '';
-
     document.title = name;
-    document.getElementById('tagline').textContent     = c.tagline || '';
+    document.getElementById('tagline').textContent = c.tagline || '';
     document.getElementById('profile-name').textContent = handle ? `${name} // ${handle}` : name;
-    document.getElementById('profile-bio').textContent  = c.bio    || '';
-    document.getElementById('footer-year').textContent  = new Date().getFullYear();
+    document.getElementById('profile-bio').textContent = c.bio || '';
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
     document.getElementById('avatar-initials').textContent = name.charAt(0).toUpperCase();
-
     if (c.avatar) {
       document.getElementById('avatar-wrap').innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`;
     }
-
     const L = c.links || {};
-    if (L.youtube)   document.getElementById('btn-yt').href = L.youtube;
-    if (L.discord)   document.getElementById('btn-dc').href = L.discord;
-    if (L.email)     document.getElementById('btn-em').href = 'mailto:' + L.email;
+    if (L.youtube) document.getElementById('btn-yt').href = L.youtube;
+    if (L.discord) document.getElementById('btn-dc').href = L.discord;
+    if (L.email) document.getElementById('btn-em').href = 'mailto:' + L.email;
   }
 
   // ==================== MÚSICA ====================
   let musicItemsRaw = [];
-  let currentSort = 'date_desc';  // ALTERADO: padrão agora é "mais recentes primeiro"
+  let currentSort = 'date_desc';
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
 
   async function loadMusic() {
     const grid = document.getElementById('music-grid');
     const statsDiv = document.getElementById('music-stats');
-
     try {
-      grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube via proxy...</div>`;
+      grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube...</div>`;
       const response = await fetch(WORKER_URL);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const videoData = await response.json();
-
       if (videoData && videoData.length) {
         musicItemsRaw = videoData;
         renderMusicGrid();
@@ -783,12 +857,12 @@
           if (videoId) showVideoDetail(videoId);
         }
       } else {
-        grid.innerHTML = `<div class="error-msg">No videos found in this playlist.</div>`;
+        grid.innerHTML = `<div class="error-msg">No videos found.</div>`;
         statsDiv.style.display = 'none';
       }
     } catch (err) {
       console.error(err);
-      grid.innerHTML = `<div class="error-msg">❌ Error: <code>${esc(err.message)}</code></div>`;
+      grid.innerHTML = `<div class="error-msg">❌ Error: ${esc(err.message)}</div>`;
       statsDiv.style.display = 'none';
     }
   }
@@ -812,10 +886,7 @@
     }
     grid.innerHTML = sorted.map(v => `
       <div class="music-card" onclick="navigateTo('view-video-detail', '${v.id}')" role="button" tabindex="0">
-        ${v.thumbnail
-          ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail of ${esc(v.title)}" loading="lazy">`
-          : `<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">♪</div>`
-        }
+        ${v.thumbnail ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail" loading="lazy">` : `<div class="music-thumb">♪</div>`}
         <div class="music-info">
           <div class="music-title">${esc(v.title)}</div>
           <div class="music-meta">
@@ -834,95 +905,72 @@
     document.getElementById('total-views-count').innerText = formatNumber(total);
   }
 
-  async function loadLyrics(videoId, lyricsContainer) {
+  async function loadLyrics(videoId, container) {
     try {
       const res = await fetch(`${WORKER_URL}/api/music/lyrics?id=${videoId}`);
       const data = await res.json();
-      if (data.lyrics && data.lyrics.trim() !== '') {
-        lyricsContainer.innerHTML = `<div class="lyrics-box-scroll">${esc(data.lyrics)}</div>`;
+      if (data.lyrics && data.lyrics.trim()) {
+        container.innerHTML = `<div class="lyrics-box-scroll">${esc(data.lyrics)}</div>`;
       } else {
-        lyricsContainer.innerHTML = `<div class="lyrics-box-scroll empty">No lyrics available yet.</div>`;
+        container.innerHTML = `<div class="lyrics-box-scroll empty">No lyrics available yet.</div>`;
       }
     } catch (err) {
-      lyricsContainer.innerHTML = `<div class="lyrics-box-scroll empty">Failed to load lyrics.</div>`;
+      container.innerHTML = `<div class="lyrics-box-scroll empty">Failed to load lyrics.</div>`;
     }
   }
 
   function showVideoDetail(videoId) {
     const video = musicItemsRaw.find(v => v.id === videoId);
     if (!video) return;
-
-    let descriptionText = video.description ? video.description.trim() : '';
-    if (descriptionText === '') descriptionText = 'No description available.';
-
+    let descriptionText = video.description ? video.description.trim() : 'No description available.';
     const otherVideos = musicItemsRaw.filter(v => v.channelTitle === video.channelTitle && v.id !== video.id);
-
     const detailCard = document.getElementById('detail-card');
     detailCard.innerHTML = `
       <div class="detail-container">
         <div class="detail-player">
-          <div class="video-embed">
-            <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
-          </div>
-          ${otherVideos.length ? `
-            <div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div>
-            <div class="other-videos-grid" id="other-videos-grid"></div>
-          ` : ''}
+          <div class="video-embed"><iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe></div>
+          ${otherVideos.length ? `<div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div><div class="other-videos-grid" id="other-videos-grid"></div>` : ''}
         </div>
         <div class="detail-info">
           <div class="detail-title">${esc(video.title)}</div>
           <div class="detail-channel">${esc(video.channelTitle)}</div>
-          <div class="detail-stats">
-            <span>👁️ ${formatNumber(video.viewCount)} views</span>
-            <span>📅 ${formatDate(video.publishedAt)}</span>
-          </div>
+          <div class="detail-stats"><span>👁️ ${formatNumber(video.viewCount)} views</span><span>📅 ${formatDate(video.publishedAt)}</span></div>
           <div class="detail-description">${esc(descriptionText)}</div>
-          <div class="lyrics-section">
-            <div class="lyrics-header">
-              <span>📝</span> Lyrics / Translation
-            </div>
-            <div id="lyrics-container-${video.id}" class="lyrics-container"></div>
-          </div>
+          <div class="lyrics-section"><div class="lyrics-header"><span>📝</span> Lyrics / Translation</div><div id="lyrics-container-${video.id}" class="lyrics-container"></div></div>
         </div>
       </div>
     `;
-
     if (otherVideos.length) {
       const gridContainer = detailCard.querySelector('#other-videos-grid');
       gridContainer.innerHTML = otherVideos.map(v => `
         <div class="other-video-card" onclick="navigateTo('view-video-detail', '${v.id}')">
-          <img class="other-video-thumb" src="${esc(v.thumbnail)}" alt="${esc(v.title)}" loading="lazy">
-          <div class="other-video-info">
-            <div class="other-video-title">${esc(v.title)}</div>
-            <div class="other-video-views">👁️ ${formatNumber(v.viewCount)}</div>
-          </div>
+          <img class="other-video-thumb" src="${esc(v.thumbnail)}" loading="lazy">
+          <div class="other-video-info"><div class="other-video-title">${esc(v.title)}</div><div class="other-video-views">👁️ ${formatNumber(v.viewCount)}</div></div>
         </div>
       `).join('');
     }
-
     const lyricsContainer = detailCard.querySelector(`#lyrics-container-${video.id}`);
     if (lyricsContainer) loadLyrics(video.id, lyricsContainer);
-
     setActiveView('view-video-detail');
   }
 
-  // ==================== STEAM JOGOS ====================
-  async function loadGames() {
-    const grid  = document.getElementById('games-grid');
-    const games = CONFIG.steam?.games || [];
+  // ==================== JOGOS ====================
+  let gamesList = []; // array de objetos com appId, name, role, note, dev, e dados locais (desc, genre, etc)
+  let rawGamesConfig = [];
 
-    if (!games.length) {
-      grid.innerHTML = `<div class="error-msg">No games in <code>config.js → steam.games</code></div>`;
+  async function loadGames() {
+    const grid = document.getElementById('games-grid');
+    rawGamesConfig = CONFIG.steam?.games || [];
+    if (!rawGamesConfig.length) {
+      grid.innerHTML = `<div class="error-msg">No games in config.js</div>`;
       return;
     }
-
-    const needsFetch = games.filter(g => !g.name);
+    // Buscar dados do SteamSpy apenas para nome/desenvolvedor se não tiver no config
+    const needsFetch = rawGamesConfig.filter(g => !g.name);
     const spyMap = {};
     if (needsFetch.length) {
       const results = await Promise.allSettled(
-        needsFetch.map(g =>
-          fetch(`https://steamspy.com/api.php?request=appdetails&appid=${g.appId}`).then(r => r.json())
-        )
+        needsFetch.map(g => fetch(`https://steamspy.com/api.php?request=appdetails&appid=${g.appId}`).then(r => r.json()))
       );
       results.forEach((r, i) => {
         if (r.status === 'fulfilled' && r.value?.appid) {
@@ -930,29 +978,110 @@
         }
       });
     }
+    // Para cada jogo, tentar carregar arquivo local JSON com detalhes
+    const enriched = [];
+    for (const cfg of rawGamesConfig) {
+      const spy = spyMap[cfg.appId] || {};
+      let localData = null;
+      try {
+        const localRes = await fetch(`/games/${cfg.appId}.json`);
+        if (localRes.ok) localData = await localRes.json();
+      } catch(e) { /* ignorar */ }
+      const game = {
+        appId: cfg.appId,
+        name: cfg.name || spy.name || 'Steam Game',
+        dev: cfg.dev || spy.developer || '',
+        role: cfg.role || 'PT-BR Localization',
+        note: cfg.note || '',
+        description: localData?.description || '',
+        genre: localData?.genre || '',
+        cover: `https://cdn.cloudflare.steamstatic.com/steam/apps/${cfg.appId}/header.jpg`,
+        localData: localData
+      };
+      enriched.push(game);
+    }
+    gamesList = enriched;
+    renderGamesGrid();
+    // Se a URL atual for /game/... e os dados já carregaram
+    if (window.location.pathname.startsWith('/game/')) {
+      const appId = window.location.pathname.split('/game/')[1];
+      if (appId) showGameDetail(appId);
+    }
+  }
 
-    grid.innerHTML = games.map(cfg => {
-      const spy  = spyMap[cfg.appId] || {};
-      const name = cfg.name || spy.name || 'Steam Game';
-      const dev  = cfg.dev  || spy.developer || '';
-      const img  = `https://cdn.cloudflare.steamstatic.com/steam/apps/${cfg.appId}/header.jpg`;
-      const fallbackId = `img-fallback-${cfg.appId}`;
-      return `
-        <a class="game-card" href="https://store.steampowered.com/app/${cfg.appId}" target="_blank" rel="noopener" aria-label="View ${esc(name)} on Steam">
-          <img class="game-img" src="${img}" alt="Cover of ${esc(name)}" loading="lazy"
-            onerror="this.onerror=null; this.style.display='none'; document.getElementById('${fallbackId}').style.display='flex';">
-          <div id="${fallbackId}" class="game-img-fallback" style="display: none;" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
-            <span>${esc(name)}</span>
-          </div>
-          <div class="game-info">
-            <div class="game-role">${esc(cfg.role || 'PT-BR Localization')}</div>
-            <div class="game-name">${esc(name)}</div>
-            ${dev ? `<div class="game-dev">${esc(dev)}</div>` : ''}
-            ${cfg.note ? `<span class="game-note">${esc(cfg.note)}</span>` : ''}
-          </div>
-        </a>`;
-    }).join('');
+  function renderGamesGrid() {
+    const grid = document.getElementById('games-grid');
+    grid.innerHTML = gamesList.map(game => `
+      <div class="game-card" onclick="navigateTo('view-game-detail', '${game.appId}')" role="button" tabindex="0">
+        <img class="game-img" src="${esc(game.cover)}" alt="${esc(game.name)}" loading="lazy"
+          onerror="this.onerror=null; this.style.display='none'; this.nextSibling.style.display='flex';">
+        <div class="game-img-fallback" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
+          <span>${esc(game.name)}</span>
+        </div>
+        <div class="game-info">
+          <div class="game-role">${esc(game.role)}</div>
+          <div class="game-name">${esc(game.name)}</div>
+          ${game.dev ? `<div class="game-dev">${esc(game.dev)}</div>` : ''}
+          ${game.note ? `<span class="game-note">${esc(game.note)}</span>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function loadGameCredits(appId, container) {
+    try {
+      const res = await fetch(`${WORKER_URL}/api/game/credits?id=${appId}`);
+      const data = await res.json();
+      if (data.credits && data.credits.trim()) {
+        container.innerHTML = `<div class="lyrics-box-scroll">${esc(data.credits)}</div>`;
+      } else {
+        container.innerHTML = `<div class="lyrics-box-scroll empty">No proof of participation added yet.</div>`;
+      }
+    } catch (err) {
+      container.innerHTML = `<div class="lyrics-box-scroll empty">Failed to load credits.</div>`;
+    }
+  }
+
+  async function loadGameTags(appId, container) {
+    try {
+      const res = await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`);
+      const data = await res.json();
+      if (data.tags && data.tags.length) {
+        container.innerHTML = data.tags.map(t => `<span class="game-tag">${esc(t)}</span>`).join('');
+      } else {
+        container.innerHTML = '<span class="game-tag" style="opacity:0.5;">No tags</span>';
+      }
+    } catch (err) {
+      container.innerHTML = '<span class="game-tag">Error loading tags</span>';
+    }
+  }
+
+  function showGameDetail(appId) {
+    const game = gamesList.find(g => g.appId === appId);
+    if (!game) return;
+    const detailCard = document.getElementById('game-detail-card');
+    detailCard.innerHTML = `
+      <div class="game-detail-container">
+        <div class="game-detail-cover">
+          <img src="${esc(game.cover)}" alt="${esc(game.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7194%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22/%3E%3C/svg%3E'">
+        </div>
+        <div class="game-detail-info">
+          <div class="game-detail-title">${esc(game.name)}</div>
+          <div class="game-detail-role">${esc(game.role)}</div>
+          ${game.dev ? `<div class="game-detail-role" style="margin-top:-0.2rem;">Developer: ${esc(game.dev)}</div>` : ''}
+          ${game.note ? `<div class="game-note" style="display:inline-block; margin-bottom:0.5rem;">${esc(game.note)}</div>` : ''}
+          <div class="game-detail-description"><strong>📖 Description</strong><br>${esc(game.description) || 'No description provided.'}</div>
+          <div class="game-detail-credits"><strong>🎖️ Proof of participation</strong><br><div id="game-credits-${game.appId}" class="lyrics-container" style="margin-top:0.3rem;">Loading...</div></div>
+          <div class="game-detail-tags" id="game-tags-${game.appId}">Loading tags...</div>
+        </div>
+      </div>
+    `;
+    const creditsContainer = detailCard.querySelector(`#game-credits-${game.appId}`);
+    if (creditsContainer) loadGameCredits(game.appId, creditsContainer);
+    const tagsContainer = detailCard.querySelector(`#game-tags-${game.appId}`);
+    if (tagsContainer) loadGameTags(game.appId, tagsContainer);
+    setActiveView('view-game-detail');
   }
 
   // ==================== INICIALIZAÇÃO ====================
