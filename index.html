@@ -8,22 +8,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* (mesmo CSS de antes, adicionamos regras para a view de detalhe do jogo) */
+    /* CSS completo (mesmo do último envio, sem alterações) */
     :root {
-      --bg:      #0d0f18;
+      --bg: #0d0f18;
       --surface: #161927;
-      --card:    #1c1f30;
-      --border:  rgba(255,255,255,0.07);
-      --text:    #e2e4ef;
-      --muted:   #6b7194;
-      --yt:      #e53935;
-      --dc:      #5865f2;
-      --em:      #2979ff;
-      --pf:      #2a2d40;
+      --card: #1c1f30;
+      --border: rgba(255,255,255,0.07);
+      --text: #e2e4ef;
+      --muted: #6b7194;
+      --yt: #e53935;
+      --dc: #5865f2;
+      --em: #2979ff;
+      --pf: #2a2d40;
     }
-
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -35,26 +33,15 @@
       padding: 1.5rem;
       overflow-x: hidden;
     }
-
-    :focus-visible {
-      outline: 2px solid #6b7194;
-      outline-offset: 2px;
-      border-radius: 4px;
-    }
-
+    :focus-visible { outline: 2px solid #6b7194; outline-offset: 2px; border-radius: 4px; }
     .view-wrap {
       width: 100%;
       max-width: 720px;
       position: relative;
       transition: max-width 0.2s ease;
     }
-    .view-wrap:has(#view-video-detail.active) {
-      max-width: 980px;
-    }
-    .view-wrap:has(#view-game-detail.active) {
-      max-width: 980px;
-    }
-
+    .view-wrap:has(#view-video-detail.active),
+    .view-wrap:has(#view-game-detail.active) { max-width: 980px; }
     .view {
       width: 100%;
       display: none;
@@ -63,40 +50,37 @@
       animation: fadeSlideIn .22s ease both;
     }
     .view.active { display: flex; }
-
     @keyframes fadeSlideIn {
       from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
     .card {
       background: var(--surface);
       border-radius: 20px;
       padding: 1.75rem 2rem;
     }
-
     #view-home .card {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 1.5rem 2.5rem;
       align-items: start;
     }
-
     .profile-left { display: flex; flex-direction: column; gap: 1rem; }
     .profile-top { display: flex; align-items: center; gap: 1rem; }
-
     .avatar {
       width: 80px; height: 80px;
       border-radius: 50%;
       background: var(--card);
       flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: var(--muted);
       font-family: 'DM Mono', monospace;
       overflow: hidden;
     }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
-
     .profile-meta { display: flex; flex-direction: column; gap: .2rem; }
     .tagline {
       font-family: 'DM Mono', monospace;
@@ -105,18 +89,8 @@
       text-transform: uppercase;
       color: var(--muted);
     }
-    .profile-name {
-      font-size: 1.6rem;
-      font-weight: 600;
-      line-height: 1;
-      letter-spacing: -.01em;
-    }
-    .profile-bio {
-      font-size: .875rem;
-      color: var(--muted);
-      line-height: 1.65;
-    }
-
+    .profile-name { font-size: 1.6rem; font-weight: 600; line-height: 1; letter-spacing: -.01em; }
+    .profile-bio { font-size: .875rem; color: var(--muted); line-height: 1.65; }
     .contact-buttons {
       display: flex;
       flex-direction: column;
@@ -136,14 +110,13 @@
       transition: filter .15s, transform .1s;
       cursor: pointer;
     }
-    .btn:hover  { filter: brightness(1.13); }
+    .btn:hover { filter: brightness(1.13); }
     .btn:active { transform: scale(.97); }
-    .btn svg    { width: 19px; height: 19px; flex-shrink: 0; }
+    .btn svg { width: 19px; height: 19px; flex-shrink: 0; }
     .btn-yt { background: var(--yt); }
     .btn-dc { background: var(--dc); }
     .btn-em { background: var(--em); }
     .btn-pf { background: var(--pf); border: 1px solid var(--border); }
-
     .portfolio-grid {
       display: flex;
       gap: 1.5rem;
@@ -188,7 +161,6 @@
       font-weight: 500;
       letter-spacing: 0.02em;
     }
-
     .section-header {
       display: flex;
       align-items: center;
@@ -217,7 +189,6 @@
       text-transform: uppercase;
       color: var(--muted);
     }
-
     .sort-controls {
       display: flex;
       align-items: center;
@@ -238,7 +209,6 @@
     }
     .sort-controls select:focus { outline: none; }
     .sort-controls label { font-size: 0.65rem; color: var(--muted); }
-
     .stats-bar {
       background: var(--card);
       border-radius: 12px;
@@ -253,7 +223,6 @@
     }
     .total-views { font-size: 0.8rem; font-family: 'DM Mono', monospace; }
     .total-views strong { color: #fff; font-size: 1.1rem; }
-
     .music-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -294,69 +263,6 @@
     }
     .music-views, .music-date { display: flex; align-items: center; gap: 0.3rem; }
     .music-channel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    /* ========== ESTILOS PARA DETALHE DO JOGO ========== */
-    .game-detail-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-    .game-detail-cover {
-      flex: 1;
-      min-width: 200px;
-    }
-    .game-detail-cover img {
-      width: 100%;
-      border-radius: 12px;
-    }
-    .game-detail-info {
-      flex: 2;
-      min-width: 260px;
-    }
-    .game-detail-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .game-detail-role {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-    }
-    .game-detail-description {
-      font-size: 0.8rem;
-      line-height: 1.5;
-      background: rgba(255,255,255,0.03);
-      padding: 0.8rem;
-      border-radius: 12px;
-      margin: 0.5rem 0;
-      white-space: pre-wrap;
-    }
-    .game-detail-credits {
-      font-size: 0.85rem;
-      background: rgba(255,255,255,0.02);
-      border-left: 2px solid var(--muted);
-      padding: 0.8rem;
-      border-radius: 12px;
-      margin: 0.5rem 0;
-      white-space: pre-wrap;
-    }
-    .game-detail-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      margin-top: 0.5rem;
-    }
-    .game-tag {
-      background: var(--card);
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.65rem;
-      border: 1px solid var(--border);
-    }
-
-    /* (restante do CSS igual ao anterior) */
     .detail-container {
       display: flex;
       flex-wrap: wrap;
@@ -435,10 +341,7 @@
     .lyrics-box-scroll::-webkit-scrollbar-thumb:hover {
       background: rgba(255,255,255,0.3);
     }
-
-    .lyrics-section {
-      margin-top: 1rem;
-    }
+    .lyrics-section { margin-top: 1rem; }
     .lyrics-header {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
@@ -466,7 +369,6 @@
       color: var(--muted);
       font-style: italic;
     }
-
     .other-videos-title {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
@@ -508,7 +410,76 @@
       color: var(--muted);
       margin-top: 0.2rem;
     }
-
+    /* Game detail styles */
+    .game-detail-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .game-detail-cover {
+      flex: 1;
+      min-width: 200px;
+    }
+    .game-detail-cover img {
+      width: 100%;
+      border-radius: 12px;
+    }
+    .game-detail-info {
+      flex: 2;
+      min-width: 260px;
+    }
+    .game-detail-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .game-detail-role {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .game-detail-description {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      background: rgba(255,255,255,0.03);
+      padding: 0.8rem;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      white-space: pre-wrap;
+    }
+    .game-detail-credits {
+      font-size: 0.85rem;
+      background: rgba(255,255,255,0.02);
+      border-left: 2px solid var(--muted);
+      padding: 0.8rem;
+      border-radius: 12px;
+      margin: 0.5rem 0;
+      white-space: pre-wrap;
+    }
+    .game-detail-credits-image {
+      margin: 0.5rem 0;
+      text-align: center;
+    }
+    .game-detail-credits-image img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .game-detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.5rem;
+    }
+    .game-tag {
+      background: var(--card);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      border: 1px solid var(--border);
+    }
     .games-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -516,21 +487,26 @@
     }
     .game-card {
       display: block;
-      text-decoration: none; color: inherit;
+      text-decoration: none;
+      color: inherit;
       background: var(--card);
-      border-radius: 10px; overflow: hidden;
+      border-radius: 10px;
+      overflow: hidden;
       border: 1px solid var(--border);
       transition: border-color .2s, transform .2s;
       cursor: pointer;
     }
     .game-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
     .game-img {
-      width: 100%; height: 135px;
-      object-fit: cover; display: block;
+      width: 100%;
+      height: 135px;
+      object-fit: cover;
+      display: block;
       background: var(--bg);
     }
     .game-img-fallback {
-      width: 100%; height: 135px;
+      width: 100%;
+      height: 135px;
       background: var(--card);
       display: flex;
       align-items: center;
@@ -544,26 +520,34 @@
     .game-info { padding: .8rem 1rem; }
     .game-role {
       font-family: 'DM Mono', monospace;
-      font-size: .6rem; text-transform: uppercase;
-      letter-spacing: .08em; color: var(--muted); margin-bottom: .2rem;
+      font-size: .6rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+      margin-bottom: .2rem;
     }
     .game-name { font-size: .95rem; font-weight: 600; margin-bottom: .2rem; }
-    .game-dev  { font-size: .75rem; color: var(--muted); margin-bottom: .4rem; }
+    .game-dev { font-size: .75rem; color: var(--muted); margin-bottom: .4rem; }
     .game-note {
       display: inline-block;
-      font-family: 'DM Mono', monospace; font-size: .58rem;
-      padding: .15rem .45rem; border-radius: 4px;
-      background: rgba(255,255,255,.06); color: var(--muted);
-    }
-
-    .state {
-      padding: 3rem 1rem; text-align: center;
       font-family: 'DM Mono', monospace;
-      font-size: .75rem; color: var(--muted);
+      font-size: .58rem;
+      padding: .15rem .45rem;
+      border-radius: 4px;
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+    }
+    .state {
+      padding: 3rem 1rem;
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted);
       grid-column: 1 / -1;
     }
     .spinner {
-      width: 22px; height: 22px;
+      width: 22px;
+      height: 22px;
       border: 2px solid var(--border);
       border-top-color: var(--muted);
       border-radius: 50%;
@@ -571,24 +555,26 @@
       margin: 0 auto .75rem;
     }
     .error-msg {
-      font-family: 'DM Mono', monospace; font-size: .72rem;
-      color: var(--muted); line-height: 1.9;
-      grid-column: 1 / -1; padding: 1.25rem;
-      background: rgba(255,255,255,.03); border-radius: 8px;
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      line-height: 1.9;
+      grid-column: 1 / -1;
+      padding: 1.25rem;
+      background: rgba(255,255,255,.03);
+      border-radius: 8px;
     }
     .error-msg code { background: rgba(255,255,255,.08); padding: .1rem .3rem; border-radius: 3px; }
-
     .footer {
       text-align: center;
       font-family: 'DM Mono', monospace;
-      font-size: .6rem; color: var(--muted);
+      font-size: .6rem;
+      color: var(--muted);
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
     @media (max-width: 760px) {
       .detail-container { flex-direction: column; }
-      .view-wrap:has(#view-video-detail.active) { max-width: 720px; }
+      .view-wrap:has(#view-video-detail.active),
       .view-wrap:has(#view-game-detail.active) { max-width: 720px; }
     }
     @media (max-width: 520px) {
@@ -604,8 +590,7 @@
 <body>
 
 <div class="view-wrap">
-
-  <!-- VIEW HOME (idêntica) -->
+  <!-- VIEW HOME -->
   <div class="view active" id="view-home">
     <div class="card">
       <div class="profile-left">
@@ -660,7 +645,7 @@
     </div>
   </div>
 
-  <!-- VIEW LISTA DE MÚSICAS (igual) -->
+  <!-- VIEW LISTA DE MÚSICAS -->
   <div class="view" id="view-music">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
@@ -690,7 +675,7 @@
     </div>
   </div>
 
-  <!-- VIEW DETALHE DO VÍDEO (igual) -->
+  <!-- VIEW DETALHE DO VÍDEO -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
@@ -703,7 +688,7 @@
     </div>
   </div>
 
-  <!-- VIEW DETALHE DO JOGO (NOVA) -->
+  <!-- VIEW DETALHE DO JOGO -->
   <div class="view" id="view-game-detail">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista" role="button" tabindex="0">
@@ -726,11 +711,10 @@
     </div>
     <div class="card">
       <div class="games-grid" id="games-grid">
-        <div class="state"><div class="spinner"></div>Loading Steam...</div>
+        <div class="state"><div class="spinner"></div>Loading games...</div>
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
@@ -954,112 +938,77 @@
     setActiveView('view-video-detail');
   }
 
-  // ==================== JOGOS ====================
-  let gamesList = []; // array de objetos com appId, name, role, note, dev, e dados locais (desc, genre, etc)
-  let rawGamesConfig = [];
+  // ==================== JOGOS (carregados do Worker) ====================
+  let gamesList = []; // array completo de jogos (com detalhes)
 
   async function loadGames() {
-  const grid = document.getElementById('games-grid');
-  try {
-    const res = await fetch(`${WORKER_URL}/api/games`);
-    const games = await res.json();
-    if (!games.length) {
-      grid.innerHTML = `<div class="error-msg">Nenhum jogo cadastrado ainda.</div>`;
-      return;
-    }
-    grid.innerHTML = games.map(game => `
-      <div class="game-card" onclick="navigateTo('view-game-detail', '${game.appId}')" role="button" tabindex="0">
-        <img class="game-img" src="${game.cover}" alt="${escapeHtml(game.name)}" loading="lazy"
-          onerror="this.onerror=null; this.style.display='none'; this.nextSibling.style.display='flex';">
-        <div class="game-img-fallback" style="display: none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
-          <span>${escapeHtml(game.name)}</span>
-        </div>
-        <div class="game-info">
-          <div class="game-role">${escapeHtml(game.role || 'PT-BR Localization')}</div>
-          <div class="game-name">${escapeHtml(game.name)}</div>
-          ${game.dev ? `<div class="game-dev">${escapeHtml(game.dev)}</div>` : ''}
-          ${game.note ? `<span class="game-note">${escapeHtml(game.note)}</span>` : ''}
-        </div>
-      </div>
-    `).join('');
-  } catch (err) {
-    grid.innerHTML = `<div class="error-msg">Erro ao carregar jogos: ${err.message}</div>`;
-  }
-}
-
-  function renderGamesGrid() {
     const grid = document.getElementById('games-grid');
-    grid.innerHTML = gamesList.map(game => `
-      <div class="game-card" onclick="navigateTo('view-game-detail', '${game.appId}')" role="button" tabindex="0">
-        <img class="game-img" src="${esc(game.cover)}" alt="${esc(game.name)}" loading="lazy"
-          onerror="this.onerror=null; this.style.display='none'; this.nextSibling.style.display='flex';">
-        <div class="game-img-fallback" style="display: none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
-          <span>${esc(game.name)}</span>
-        </div>
-        <div class="game-info">
-          <div class="game-role">${esc(game.role)}</div>
-          <div class="game-name">${esc(game.name)}</div>
-          ${game.dev ? `<div class="game-dev">${esc(game.dev)}</div>` : ''}
-          ${game.note ? `<span class="game-note">${esc(game.note)}</span>` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
-
-  async function loadGameCredits(appId, container) {
     try {
-      const res = await fetch(`${WORKER_URL}/api/game/credits?id=${appId}`);
-      const data = await res.json();
-      if (data.credits && data.credits.trim()) {
-        container.innerHTML = `<div class="lyrics-box-scroll">${esc(data.credits)}</div>`;
-      } else {
-        container.innerHTML = `<div class="lyrics-box-scroll empty">No proof of participation added yet.</div>`;
+      const res = await fetch(`${WORKER_URL}/api/games`);
+      if (!res.ok) throw new Error('Failed to fetch games');
+      const games = await res.json();
+      gamesList = games;
+      if (!games.length) {
+        grid.innerHTML = `<div class="error-msg">No games found.</div>`;
+        return;
       }
+      grid.innerHTML = games.map(game => `
+        <div class="game-card" onclick="navigateTo('view-game-detail', '${game.appId}')" role="button" tabindex="0">
+          <img class="game-img" src="https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg" alt="${esc(game.name)}" loading="lazy"
+            onerror="this.onerror=null; this.style.display='none'; this.nextSibling.style.display='flex';">
+          <div class="game-img-fallback" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
+            <span>${esc(game.name)}</span>
+          </div>
+          <div class="game-info">
+            <div class="game-role">${esc(game.role || 'PT-BR Localization')}</div>
+            <div class="game-name">${esc(game.name)}</div>
+            ${game.dev ? `<div class="game-dev">${esc(game.dev)}</div>` : ''}
+            ${game.note ? `<span class="game-note">${esc(game.note)}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
     } catch (err) {
-      container.innerHTML = `<div class="lyrics-box-scroll empty">Failed to load credits.</div>`;
+      console.error(err);
+      grid.innerHTML = `<div class="error-msg">Error loading games: ${esc(err.message)}</div>`;
     }
   }
 
-  async function loadGameTags(appId, container) {
-    try {
-      const res = await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`);
-      const data = await res.json();
-      if (data.tags && data.tags.length) {
-        container.innerHTML = data.tags.map(t => `<span class="game-tag">${esc(t)}</span>`).join('');
-      } else {
-        container.innerHTML = '<span class="game-tag" style="opacity:0.5;">No tags</span>';
-      }
-    } catch (err) {
-      container.innerHTML = '<span class="game-tag">Error loading tags</span>';
-    }
-  }
-
-  function showGameDetail(appId) {
+  async function showGameDetail(appId) {
     const game = gamesList.find(g => g.appId === appId);
     if (!game) return;
+    // Fetch tags and credits (public endpoints)
+    let tags = [];
+    let credits = '';
+    let creditsImage = '';
+    try {
+      const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`);
+      const tagsData = await tagsRes.json();
+      tags = tagsData.tags || [];
+      const creditsRes = await fetch(`${WORKER_URL}/api/game/credits?id=${appId}`);
+      const creditsData = await creditsRes.json();
+      credits = creditsData.credits || '';
+      creditsImage = creditsData.creditsImage || '';
+    } catch(e) { console.warn(e); }
+
     const detailCard = document.getElementById('game-detail-card');
     detailCard.innerHTML = `
       <div class="game-detail-container">
         <div class="game-detail-cover">
-          <img src="${esc(game.cover)}" alt="${esc(game.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7194%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22/%3E%3C/svg%3E'">
+          <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg" alt="${esc(game.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7194%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22/%3E%3C/svg%3E'">
         </div>
         <div class="game-detail-info">
           <div class="game-detail-title">${esc(game.name)}</div>
-          <div class="game-detail-role">${esc(game.role)}</div>
+          <div class="game-detail-role">${esc(game.role || 'PT-BR Localization')}</div>
           ${game.dev ? `<div class="game-detail-role" style="margin-top:-0.2rem;">Developer: ${esc(game.dev)}</div>` : ''}
           ${game.note ? `<div class="game-note" style="display:inline-block; margin-bottom:0.5rem;">${esc(game.note)}</div>` : ''}
-          <div class="game-detail-description"><strong>📖 Description</strong><br>${esc(game.description) || 'No description provided.'}</div>
-          <div class="game-detail-credits"><strong>🎖️ Proof of participation</strong><br><div id="game-credits-${game.appId}" class="lyrics-container" style="margin-top:0.3rem;">Loading...</div></div>
-          <div class="game-detail-tags" id="game-tags-${game.appId}">Loading tags...</div>
+          <div class="game-detail-description"><strong>📖 Description</strong><br>${esc(game.description || 'No description provided.')}</div>
+          <div class="game-detail-credits"><strong>🎖️ Proof of participation</strong><br><div style="white-space: pre-wrap;">${esc(credits) || 'No credits provided.'}</div></div>
+          ${creditsImage ? `<div class="game-detail-credits-image"><img src="${esc(creditsImage)}" alt="Proof image" loading="lazy" onerror="this.style.display='none'"></div>` : ''}
+          <div class="game-detail-tags">${tags.map(t => `<span class="game-tag">${esc(t)}</span>`).join('')}</div>
         </div>
       </div>
     `;
-    const creditsContainer = detailCard.querySelector(`#game-credits-${game.appId}`);
-    if (creditsContainer) loadGameCredits(game.appId, creditsContainer);
-    const tagsContainer = detailCard.querySelector(`#game-tags-${game.appId}`);
-    if (tagsContainer) loadGameTags(game.appId, tagsContainer);
     setActiveView('view-game-detail');
   }
 
