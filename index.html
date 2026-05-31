@@ -143,6 +143,20 @@
 </head>
 <body>
 
+  <script>
+  (function() {
+    // Verifica se há um parâmetro "path" na URL (vindo do 404.html)
+    const urlParams = new URLSearchParams(window.location.search);
+    const savedPath = urlParams.get('path');
+    if (savedPath) {
+      // Substitui a URL atual pelo caminho original, sem recarregar a página
+      window.history.replaceState(null, '', decodeURIComponent(savedPath));
+      // Opcional: recarrega a página para garantir que o roteador seja reinicializado
+      // location.reload(); // Descomente se o roteador não for acionado automaticamente
+    }
+  })();
+</script>
+
 <div class="view-wrap">
 
   <!-- VIEW HOME -->
