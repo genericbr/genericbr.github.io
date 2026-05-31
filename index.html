@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* Slideshow de imagens (setas) */
+    /* Slideshow com setas */
     .slideshow-container {
       position: relative;
       background: var(--card);
@@ -39,12 +39,8 @@
     .slideshow-arrow:hover {
       background: rgba(0,0,0,0.8);
     }
-    .prev-arrow {
-      left: 8px;
-    }
-    .next-arrow {
-      right: 8px;
-    }
+    .prev-arrow { left: 8px; }
+    .next-arrow { right: 8px; }
     .slideshow-counter {
       text-align: center;
       font-family: 'DM Mono', monospace;
@@ -52,7 +48,6 @@
       color: var(--muted);
       margin-top: 0.3rem;
     }
-    /* Indicador de setas também no hover */
     .screenshots-title {
       font-family: 'DM Mono', monospace;
       font-size: 0.7rem;
@@ -60,19 +55,90 @@
       color: var(--muted);
       margin: 0.5rem 0 0.75rem;
     }
-    /* Demais estilos já existentes (mantidos) */
-    .credits-link { cursor: pointer; color: var(--muted); text-decoration: underline; }
-    .credits-link:hover { color: var(--text); }
-    .sort-controls label { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--text); }
-    .sort-controls select { background: var(--card); border: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 6px; }
-    .sort-controls select option { background: var(--surface); color: var(--text); }
-    .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
-    .modal-content { background: var(--surface); border-radius: 24px; padding: 1.5rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border); }
-    .modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1; }
+    .credits-link {
+      cursor: pointer;
+      color: var(--muted);
+      text-decoration: underline;
+    }
+    .credits-link:hover {
+      color: var(--text);
+    }
+    /* Garantir que a descrição preserve quebras de linha */
+    .detail-description {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    /* Dropdown ordenação escuro */
+    .sort-controls label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .sort-controls select {
+      background: var(--card);
+      border: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+    }
+    .sort-controls select option {
+      background: var(--surface);
+      color: var(--text);
+    }
+    /* Modal centralizado */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 1.5rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
     .modal-close:hover { color: var(--text); }
-    .credits-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-    .credit-chip { background: rgba(255,255,255,0.06); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; }
-    .credit-chip.owner { background: rgba(41,121,255,0.2); color: #fff; border-left: 2px solid var(--em); font-weight: 500; }
+    .credits-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .credit-chip {
+      background: rgba(255,255,255,0.06);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+    }
+    .credit-chip.owner {
+      background: rgba(41,121,255,0.2);
+      color: #fff;
+      border-left: 2px solid var(--em);
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
@@ -157,10 +223,13 @@
     if (!s) return '';
     return new Date(s).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
+  // Remove HTML tags mas preserva quebras de linha (substituindo <br> e </p> por \n)
   function stripHtml(html) {
     if (!html) return '';
+    // Substitui <br> e </p> por quebras de linha antes de remover as tags
+    let text = html.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n\n');
     const div = document.createElement('div');
-    div.innerHTML = html;
+    div.innerHTML = text;
     return div.textContent || div.innerText || '';
   }
   function applyConfig() {
@@ -181,7 +250,7 @@
   }
 
   // ==================================================================
-  // 3. Roteamento (igual anterior)
+  // 3. Roteamento
   // ==================================================================
   function navigateTo(viewId, param = null) {
     if (viewId === 'view-video-detail' && param) {
@@ -239,7 +308,7 @@
   window.addEventListener('popstate', restoreFromPath);
 
   // ==================================================================
-  // 4. Músicas (YouTube) – inalterado
+  // 4. Músicas (YouTube)
   // ==================================================================
   async function loadMusic() {
     const grid = document.getElementById('music-grid');
@@ -357,7 +426,7 @@
   }
 
   // ==================================================================
-  // 5. Jogos (slideshow com setas, descrição limpa)
+  // 5. Jogos (slideshow com setas, descrição com parágrafos, "Proof of Work")
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -394,7 +463,7 @@
     }
   }
 
-  function openCreditsModal(creditsChips, creditsImage, ownerName) {
+  function openProofOfWorkModal(creditsChips, creditsImage, ownerName) {
     let modal = document.querySelector('.modal-overlay');
     if (modal) modal.remove();
     modal = document.createElement('div');
@@ -407,14 +476,14 @@
         </div>
       `).join('')}</div>`;
     } else if (creditsImage) {
-      content = `<div class="credits-image"><img src="${esc(creditsImage)}" alt="Proof of participation"></div>`;
+      content = `<div class="credits-image"><img src="${esc(creditsImage)}" alt="Proof of work"></div>`;
     } else {
-      content = '<em>No credits provided.</em>';
+      content = '<em>No proof of work provided.</em>';
     }
     modal.innerHTML = `
       <div class="modal-content">
         <button class="modal-close">&times;</button>
-        <h3 style="margin-bottom:1rem">🎖️ LOCALIZATION CREDITS</h3>
+        <h3 style="margin-bottom:1rem">🎖️ PROOF OF WORK</h3>
         ${content}
       </div>
     `;
@@ -454,7 +523,7 @@
 
     const gameName = steamData?.name || game.name;
     let description = steamData?.description || game.description || 'No description provided.';
-    description = stripHtml(description);
+    description = stripHtml(description); // Remove HTML mas mantém quebras de linha
     const releaseDate = steamData?.releaseDate || game.releaseDate || '';
     const originalLanguage = game.originalLanguage || 'English';
     const cover = steamData?.headerImage || game.cover || `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg`;
@@ -489,8 +558,8 @@
           </div>
           <div class="detail-description">${esc(description)}</div>
           <div class="lyrics-section">
-            <div class="lyrics-header"><span>🎖️</span> LOCALIZATION CREDITS</div>
-            <div class="credits-link" id="credits-link">Click to view proof of participation</div>
+            <div class="lyrics-header"><span>🎖️</span> PROOF OF WORK</div>
+            <div class="credits-link" id="credits-link">Click to view proof of work</div>
           </div>
         </div>
       </div>
@@ -522,7 +591,7 @@
 
     const creditsLink = detailCard.querySelector('#credits-link');
     if (creditsLink) {
-      creditsLink.onclick = () => openCreditsModal(creditsChips, creditsImage, ownerName);
+      creditsLink.onclick = () => openProofOfWorkModal(creditsChips, creditsImage, ownerName);
     }
 
     setActiveView('view-game-detail');
