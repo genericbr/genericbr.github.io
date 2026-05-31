@@ -41,6 +41,7 @@
       padding: 0.6rem 1rem;
       border-radius: 10px;
       width: 100%;
+      margin-bottom: 0.5rem;
     }
     button {
       background: var(--em);
@@ -53,6 +54,7 @@
       transition: filter 0.15s;
     }
     button:hover { filter: brightness(1.1); }
+    .btn-danger { background: var(--danger); }
     .tag {
       display: inline-flex;
       align-items: center;
@@ -93,7 +95,7 @@
     .tab-content.active { display: block; }
     .music-grid, .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
       gap: 1rem;
     }
     .music-card, .game-card {
@@ -117,7 +119,7 @@
     }
     .tags-area { margin: 0.5rem 0; display: flex; flex-wrap: wrap; align-items: center; }
     .tag-input { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
-    .lyrics-box, .credits-box {
+    .lyrics-box, .credits-box, .credits-image-url {
       margin: 0.5rem 0;
       font-family: monospace;
       font-size: 0.8rem;
@@ -126,6 +128,7 @@
     .save-btn { background: #00a86b; width: 100%; margin-top: 0.5rem; }
     .status { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; text-align: center; }
     .refresh-btn { background: var(--muted); margin-bottom: 1rem; }
+    .add-game-btn { background: #00a86b; margin-bottom: 1rem; }
     .state { text-align: center; padding: 3rem; color: var(--muted); }
     .spinner {
       width: 22px;
@@ -138,6 +141,27 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .footer { text-align: center; font-size: 0.7rem; color: var(--muted); margin-top: 2rem; }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -154,17 +178,18 @@
   <div id="admin-content" style="display:none;">
     <div class="tabs">
       <div class="tab active" data-tab="music">🎵 Músicas (letras + tags)</div>
-      <div class="tab" data-tab="games">🎮 Jogos (créditos + tags)</div>
+      <div class="tab" data-tab="games">🎮 Jogos (gerenciar + tags + créditos)</div>
     </div>
 
     <div id="music-tab" class="tab-content active">
-      <button id="refresh-playlist-btn" class="refresh-btn" style="margin-bottom:1rem;">🔄 Forçar atualização da playlist (cache)</button>
+      <button id="refresh-playlist-btn" class="refresh-btn">🔄 Forçar atualização da playlist (cache)</button>
       <div id="music-list" class="music-grid">
         <div class="state"><div class="spinner"></div>Carregando músicas...</div>
       </div>
     </div>
 
     <div id="games-tab" class="tab-content">
+      <button id="add-game-btn" class="add-game-btn">➕ Adicionar novo jogo</button>
       <div id="games-list" class="games-grid">
         <div class="state"><div class="spinner"></div>Carregando jogos...</div>
       </div>
@@ -257,7 +282,7 @@
     }
   });
 
-  // ---------- CARREGAR MÚSICAS (admin) ----------
+  // ========== MÚSICAS (tags e letras) ==========
   async function loadMusicData() {
     const container = document.getElementById('music-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando músicas...</div>';
@@ -303,86 +328,6 @@
     }
   }
 
-  // ---------- CARREGAR JOGOS (config.js + tags + créditos) ----------
-  async function loadGamesData() {
-    const container = document.getElementById('games-list');
-    container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
-    try {
-      const games = CONFIG.steam?.games || [];
-      if (!games.length) {
-        container.innerHTML = '<div class="state">Nenhum jogo configurado em config.js</div>';
-        return;
-      }
-      container.innerHTML = '';
-      for (const game of games) {
-        const card = document.createElement('div');
-        card.className = 'game-card';
-        card.innerHTML = `
-          <div class="game-info">
-            <div class="game-name">${escapeHtml(game.name)} (${game.appId})</div>
-            <div class="tags-area" id="tags-${game.appId}">Carregando tags...</div>
-            <div class="tag-input">
-              <input type="text" placeholder="Nova tag" id="newtag-${game.appId}" style="flex:1">
-              <button onclick="addTag('${game.appId}', 'game')">+</button>
-            </div>
-            <div><strong>Créditos / Prova de participação</strong></div>
-            <textarea id="credits-${game.appId}" class="credits-box" rows="4">Carregando...</textarea>
-            <button class="save-btn" onclick="saveGameCredits('${game.appId}')">Salvar créditos</button>
-            <div class="status" id="status-${game.appId}"></div>
-          </div>
-        `;
-        container.appendChild(card);
-
-        // Carregar tags e créditos em paralelo
-        const tagsPromise = fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        }).then(r => r.json()).catch(() => ({ tags: [] }));
-        const creditsPromise = fetch(`${WORKER_URL}/api/game/credits?id=${game.appId}`, {
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        }).then(r => r.json()).catch(() => ({ credits: '' }));
-
-        const [tagsData, creditsData] = await Promise.all([tagsPromise, creditsPromise]);
-        const tagsDiv = document.getElementById(`tags-${game.appId}`);
-        if (tagsDiv) {
-          tagsDiv.innerHTML = (tagsData.tags || []).map(t => `
-            <span class="tag">
-              ${escapeHtml(t)}
-              <button onclick="removeTag('${game.appId}', 'game', '${escapeHtml(t)}')" title="Remover tag">✖</button>
-            </span>
-          `).join('');
-        }
-        const creditsTextarea = document.getElementById(`credits-${game.appId}`);
-        if (creditsTextarea) creditsTextarea.value = creditsData.credits || '';
-      }
-    } catch (err) {
-      container.innerHTML = `<div class="state">Erro ao carregar jogos: ${err.message}</div>`;
-    }
-  }
-
-  // ---------- REMOVER TAG (genérico) ----------
-  // Requer que o Worker suporte DELETE /api/music/tags e /api/games/tags
-  // ou, alternativamente, um POST com action=remove. A implementação abaixo usa DELETE.
-  window.removeTag = async (id, type, tag) => {
-    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
-    try {
-      const res = await fetch(`${WORKER_URL}${endpoint}?id=${id}&tag=${encodeURIComponent(tag)}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      if (res.ok) {
-        // Recarregar a aba correspondente
-        if (type === 'music') loadMusicData();
-        else loadGamesData();
-      } else {
-        const error = await res.text();
-        alert(`Erro ao remover tag: ${error}`);
-      }
-    } catch (err) {
-      alert('Erro de rede ao remover tag');
-    }
-  };
-
-  // ---------- ADICIONAR TAG ----------
   window.addTag = async (id, type) => {
     const input = document.getElementById(`newtag-${id}`);
     const newTag = input.value.trim();
@@ -409,7 +354,24 @@
     }
   };
 
-  // ---------- SALVAR LETRA (música) ----------
+  window.removeTag = async (id, type, tag) => {
+    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
+    try {
+      const res = await fetch(`${WORKER_URL}${endpoint}?id=${id}&tag=${encodeURIComponent(tag)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (res.ok) {
+        if (type === 'music') loadMusicData();
+        else loadGamesData();
+      } else {
+        alert('Erro ao remover tag');
+      }
+    } catch (err) {
+      alert('Erro de rede');
+    }
+  };
+
   window.saveLyrics = async (videoId) => {
     const lyrics = document.getElementById(`lyrics-${videoId}`).value;
     const statusDiv = document.getElementById(`status-${videoId}`);
@@ -434,30 +396,191 @@
     }
   };
 
-  // ---------- SALVAR CRÉDITOS (jogo) ----------
-  window.saveGameCredits = async (appId) => {
-    const credits = document.getElementById(`credits-${appId}`).value;
+  // ========== JOGOS (CRUD + tags + créditos com imagem) ==========
+  async function loadGamesData() {
+    const container = document.getElementById('games-list');
+    container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
+    try {
+      const res = await fetch(`${WORKER_URL}/api/games?admin=true`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      const games = await res.json();
+      if (!games.length) {
+        container.innerHTML = '<div class="state">Nenhum jogo cadastrado. Clique em "Adicionar novo jogo".</div>';
+        return;
+      }
+      container.innerHTML = '';
+      for (const game of games) {
+        // Buscar tags e créditos
+        const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        }).then(r => r.json()).catch(() => ({ tags: [] }));
+        const creditsRes = await fetch(`${WORKER_URL}/api/game/credits?id=${game.appId}`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        }).then(r => r.json()).catch(() => ({ credits: '', creditsImage: '' }));
+
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.innerHTML = `
+          <div class="game-info">
+            <div class="game-name">${escapeHtml(game.name)} (${game.appId})</div>
+            <div><strong>Role:</strong> <input type="text" id="role-${game.appId}" value="${escapeHtml(game.role || '')}" style="width:100%;"></div>
+            <div><strong>Developer:</strong> <input type="text" id="dev-${game.appId}" value="${escapeHtml(game.dev || '')}" style="width:100%;"></div>
+            <div><strong>Note:</strong> <input type="text" id="note-${game.appId}" value="${escapeHtml(game.note || '')}" style="width:100%;"></div>
+            <div><strong>Description:</strong> <textarea id="desc-${game.appId}" rows="2">${escapeHtml(game.description || '')}</textarea></div>
+            <div><strong>Genre:</strong> <input type="text" id="genre-${game.appId}" value="${escapeHtml(game.genre || '')}"></div>
+            <div class="tags-area" id="tags-${game.appId}">
+              ${(tagsRes.tags || []).map(t => `
+                <span class="tag">
+                  ${escapeHtml(t)}
+                  <button onclick="removeTag('${game.appId}', 'game', '${escapeHtml(t)}')">✖</button>
+                </span>
+              `).join('')}
+            </div>
+            <div class="tag-input">
+              <input type="text" placeholder="Nova tag" id="newtag-${game.appId}" style="flex:1">
+              <button onclick="addTag('${game.appId}', 'game')">+</button>
+            </div>
+            <div><strong>Créditos (texto):</strong></div>
+            <textarea id="credits-${game.appId}" class="credits-box" rows="3">${escapeHtml(creditsRes.credits || '')}</textarea>
+            <div><strong>Imagem de crédito (URL):</strong></div>
+            <input type="text" id="creditsImage-${game.appId}" class="credits-image-url" value="${escapeHtml(creditsRes.creditsImage || '')}" placeholder="https://exemplo.com/prova.jpg">
+            <button class="save-btn" onclick="saveGameData('${game.appId}')">Salvar alterações</button>
+            <button class="save-btn btn-danger" style="margin-top:0.3rem; background:#e53935;" onclick="deleteGame('${game.appId}')">Excluir jogo</button>
+            <div class="status" id="status-${game.appId}"></div>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    } catch (err) {
+      container.innerHTML = `<div class="state">Erro ao carregar jogos: ${err.message}</div>`;
+    }
+  }
+
+  window.saveGameData = async (appId) => {
     const statusDiv = document.getElementById(`status-${appId}`);
     statusDiv.innerText = 'Salvando...';
+    const gameData = {
+      appId,
+      name: document.getElementById(`new-name-${appId}`)?.value || (await getGameName(appId)),
+      role: document.getElementById(`role-${appId}`).value,
+      dev: document.getElementById(`dev-${appId}`).value,
+      note: document.getElementById(`note-${appId}`).value,
+      description: document.getElementById(`desc-${appId}`).value,
+      genre: document.getElementById(`genre-${appId}`).value
+    };
+    // Obter nome atual (já está no título, mas podemos armazenar)
+    const nameInput = document.createElement('input');
+    // Como o nome não tem campo editável, vamos pegar do elemento .game-name
+    const nameElement = document.querySelector(`#games-list .game-card .game-name`)?.innerText.split(' (')[0];
+    if (nameElement) gameData.name = nameElement;
     try {
-      const res = await fetch(`${WORKER_URL}/api/game/credits`, {
+      const res = await fetch(`${WORKER_URL}/api/games`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`
         },
-        body: JSON.stringify({ id: appId, credits })
+        body: JSON.stringify(gameData)
       });
-      if (res.ok) {
+      if (!res.ok) throw new Error();
+      // Salvar créditos
+      const credits = document.getElementById(`credits-${appId}`).value;
+      const creditsImage = document.getElementById(`creditsImage-${appId}`).value;
+      const creditsRes = await fetch(`${WORKER_URL}/api/game/credits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ id: appId, credits, creditsImage })
+      });
+      if (creditsRes.ok) {
         statusDiv.innerText = '✅ Salvo!';
         setTimeout(() => statusDiv.innerText = '', 2000);
       } else {
-        statusDiv.innerText = '❌ Erro ao salvar';
+        statusDiv.innerText = '❌ Erro ao salvar créditos';
+      }
+    } catch (err) {
+      statusDiv.innerText = '❌ Erro ao salvar jogo';
+    }
+  };
+
+  window.deleteGame = async (appId) => {
+    if (!confirm(`Tem certeza que deseja excluir o jogo ${appId}?`)) return;
+    const statusDiv = document.getElementById(`status-${appId}`);
+    statusDiv.innerText = 'Excluindo...';
+    try {
+      const res = await fetch(`${WORKER_URL}/api/games?appId=${appId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (res.ok) {
+        loadGamesData();
+      } else {
+        statusDiv.innerText = '❌ Erro ao excluir';
       }
     } catch (err) {
       statusDiv.innerText = '❌ Erro de rede';
     }
   };
+
+  // Modal para adicionar novo jogo
+  document.getElementById('add-game-btn')?.addEventListener('click', () => {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3>Adicionar novo jogo</h3>
+        <input type="text" id="new-appid" placeholder="App ID (ex: 4178020)">
+        <input type="text" id="new-name" placeholder="Nome do jogo">
+        <button id="confirm-add-game">Adicionar</button>
+        <button id="cancel-add-game">Cancelar</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('confirm-add-game').onclick = async () => {
+      const appId = document.getElementById('new-appid').value.trim();
+      const name = document.getElementById('new-name').value.trim();
+      if (!appId || !name) return alert('Preencha App ID e Nome');
+      const newGame = {
+        appId,
+        name,
+        role: '',
+        dev: '',
+        note: '',
+        description: '',
+        genre: ''
+      };
+      try {
+        const res = await fetch(`${WORKER_URL}/api/games`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify(newGame)
+        });
+        if (res.ok) {
+          modal.remove();
+          loadGamesData();
+        } else {
+          alert('Erro ao adicionar jogo');
+        }
+      } catch (err) {
+        alert('Erro de rede');
+      }
+    };
+    document.getElementById('cancel-add-game').onclick = () => modal.remove();
+  });
+
+  async function getGameName(appId) {
+    const games = await fetch(`${WORKER_URL}/api/games?admin=true`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    }).then(r => r.json());
+    const game = games.find(g => g.appId === appId);
+    return game ? game.name : appId;
+  }
 
   function escapeHtml(str) {
     if (!str) return '';
