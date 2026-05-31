@@ -8,7 +8,55 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* Correção do dropdown "Sort by:" – garante tema escuro */
+    /* Ajustes específicos para a nova UI de jogos (compatível com music) */
+    .game-cover {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 igual ao player */
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .game-cover img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .screenshot-item {
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.15s;
+      cursor: pointer;
+    }
+    .screenshot-item:hover {
+      transform: scale(1.02);
+      border-color: rgba(255,255,255,0.3);
+    }
+    .screenshot-item img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+    }
+    .credits-link {
+      cursor: pointer;
+      color: var(--muted);
+      transition: color 0.15s;
+    }
+    .credits-link:hover {
+      color: var(--text);
+    }
+    /* Garantir que o dropdown de ordenação continue escuro */
     .sort-controls label {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.7rem;
@@ -28,6 +76,56 @@
     .sort-controls select option {
       background: var(--surface);
       color: var(--text);
+    }
+    /* Modal já definido no style.css, mas garantimos que funcione */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 1.5rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+    .credits-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .credit-chip {
+      background: rgba(255,255,255,0.06);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+    }
+    .credit-chip.owner {
+      background: rgba(41,121,255,0.2);
+      color: #fff;
+      border-left: 2px solid var(--em);
+      font-weight: 500;
     }
   </style>
 </head>
@@ -51,22 +149,10 @@
         </p>
       </div>
       <div class="contact-buttons">
-        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener">
-          Youtube
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
-        </a>
-        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener">
-          Discord
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg>
-        </a>
-        <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">
-          Email
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        </a>
-        <div class="btn btn-pf" onclick="navigateTo('view-portfolio-pasta')" role="button">
-          Portfolio
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
+        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener">Youtube<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg></a>
+        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener">Discord<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg></a>
+        <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+        <div class="btn btn-pf" onclick="navigateTo('view-portfolio-pasta')" role="button">Portfolio<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
       </div>
     </div>
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
@@ -75,21 +161,13 @@
   <!-- ==================== VIEW: PASTA DE SELEÇÃO ==================== -->
   <div class="view" id="view-portfolio-pasta">
     <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
+      <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
       <span class="section-title">Choose your portfolio</span>
     </div>
     <div class="card" style="text-align: center;">
       <div class="portfolio-grid">
-        <div class="portfolio-card" onclick="navigateTo('view-games')">
-          <img src="images/steam-icon.png" alt="Steam">
-          <span>Steam</span>
-        </div>
-        <div class="portfolio-card" onclick="navigateTo('view-music')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          <span>Music</span>
-        </div>
+        <div class="portfolio-card" onclick="navigateTo('view-games')"><img src="images/steam-icon.png" alt="Steam"><span>Steam</span></div>
+        <div class="portfolio-card" onclick="navigateTo('view-music')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></div>
       </div>
     </div>
   </div>
@@ -97,9 +175,7 @@
   <!-- ==================== VIEW: LISTA DE MÚSICAS ==================== -->
   <div class="view" id="view-music">
     <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
+      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
       <span class="section-title">All My Music‑Related Cameos Thus Far</span>
       <div class="sort-controls">
         <label>Sort by:</label>
@@ -123,9 +199,7 @@
   <!-- ==================== VIEW: DETALHE DO VÍDEO ==================== -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
+      <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
       <span class="section-title">Video Details</span>
     </div>
     <div class="card" id="detail-card"><div class="state"><div class="spinner"></div>Loading...</div></div>
@@ -134,9 +208,7 @@
   <!-- ==================== VIEW: DETALHE DO JOGO ==================== -->
   <div class="view" id="view-game-detail">
     <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
+      <div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
       <span class="section-title">Game Details</span>
     </div>
     <div class="card" id="game-detail-card"><div class="state"><div class="spinner"></div>Loading game info...</div></div>
@@ -145,9 +217,7 @@
   <!-- ==================== VIEW: LISTA DE JOGOS ==================== -->
   <div class="view" id="view-games">
     <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
+      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
       <span class="section-title">All My Gaming‑Related Cameos Thus Far</span>
     </div>
     <div class="card">
@@ -158,17 +228,17 @@
 </div> <!-- fim .view-wrap -->
 
 <script>
-  // ------------------------------------------------------------------
+  // ==================================================================
   // 1. Configurações globais
-  // ------------------------------------------------------------------
+  // ==================================================================
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let musicItemsRaw = [];
   let gamesList = [];
   let currentSort = 'date_desc';
 
-  // ------------------------------------------------------------------
+  // ==================================================================
   // 2. Funções auxiliares
-  // ------------------------------------------------------------------
+  // ==================================================================
   function esc(s) {
     const d = document.createElement('div');
     d.textContent = String(s || '');
@@ -198,9 +268,9 @@
     if (L.email) document.getElementById('btn-em').href = 'mailto:' + L.email;
   }
 
-  // ------------------------------------------------------------------
+  // ==================================================================
   // 3. Roteamento (navegação com History API)
-  // ------------------------------------------------------------------
+  // ==================================================================
   function navigateTo(viewId, param = null) {
     if (viewId === 'view-video-detail' && param) {
       history.pushState({ view: viewId, videoId: param }, '', `/video/${param}`);
@@ -256,9 +326,9 @@
   }
   window.addEventListener('popstate', restoreFromPath);
 
-  // ------------------------------------------------------------------
+  // ==================================================================
   // 4. Músicas (YouTube)
-  // ------------------------------------------------------------------
+  // ==================================================================
   async function loadMusic() {
     const grid = document.getElementById('music-grid');
     const statsDiv = document.getElementById('music-stats');
@@ -374,9 +444,9 @@
     setActiveView('view-video-detail');
   }
 
-  // ------------------------------------------------------------------
-  // 5. Jogos (com integração à API da Steam)
-  // ------------------------------------------------------------------
+  // ==================================================================
+  // 5. Jogos (UI idêntica à de música)
+  // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
     try {
@@ -470,7 +540,7 @@
     else if (roleBadge.toLowerCase().includes('localizer')) badgeColor = 'rgba(0,168,107,0.2)';
     else if (roleBadge.toLowerCase().includes('reviewer')) badgeColor = 'rgba(229,57,53,0.2)';
 
-    // Mesclar dados: priorizar Steam, fallback para o que veio do dashboard
+    // Mesclar dados: priorizar Steam, fallback para dados do dashboard
     const gameName = steamData?.name || game.name;
     const description = steamData?.description || game.description || 'No description provided.';
     const releaseDate = steamData?.releaseDate || game.releaseDate || '';
@@ -482,55 +552,59 @@
     const steamUrl = `https://store.steampowered.com/app/${game.appId}`;
 
     const detailCard = document.getElementById('game-detail-card');
+    // Estrutura idêntica à de música: .detail-container > .detail-player + .detail-info
     detailCard.innerHTML = `
-      <div class="game-detail-layout">
-        <div class="game-sidebar">
-          <div class="game-sidebar-card">
-            <div class="game-thumb"><img src="${esc(cover)}" alt="${esc(gameName)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7194%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22/%3E%3C/svg%3E'"></div>
-            <table class="game-meta-table">
-              <tr><td>Developer</td><td>${esc(dev)}</td></tr>
-              <tr><td>Release date</td><td>${esc(releaseDate || '—')}</td></tr>
-              <tr><td>Language</td><td>${esc(originalLanguage)} → PT‑BR</td></tr>
-              <tr><td>Platform</td><td>Steam</td></tr>
-            </table>
-            <a href="${steamUrl}" target="_blank" class="steam-button">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
-              View on Steam
-            </a>
-          </div>
+      <div class="detail-container">
+        <div class="detail-player">
+          <div class="game-cover"><img src="${esc(cover)}" alt="${esc(gameName)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7194%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22/%3E%3C/svg%3E'"></div>
+          ${screenshots.length ? `
+            <div class="other-videos-title">📸 SCREENSHOTS</div>
+            <div class="screenshots-grid" id="screenshots-grid"></div>
+          ` : ''}
         </div>
-        <div class="game-main">
-          <div class="game-title">${esc(gameName)}</div>
+        <div class="detail-info">
+          <div class="detail-title">${esc(gameName)}</div>
           <div>
             <span class="role-badge" style="background:${badgeColor}">${esc(roleBadge)}</span>
             ${tags.map(t => `<span class="game-tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${esc(t.name || t)}</span>`).join('')}
           </div>
-          <div class="section-divider"><span>📖 ABOUT THE GAME</span><hr></div>
-          <div class="game-description">${esc(description)}</div>
-          ${screenshots.length ? `
-            <div class="section-divider"><span>📸 SCREENSHOTS</span><hr></div>
-            <div class="screenshots-grid">
-              ${screenshots.map(s => `<img src="${esc(s.full)}" alt="Screenshot" loading="lazy" onerror="this.style.display='none'">`).join('')}
-            </div>
-          ` : ''}
-          <div class="section-divider">
-            <span class="credits-link">🎖️ LOCALIZATION CREDITS</span>
-            <hr>
+          <div class="detail-stats" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            <span>👾 Developer: ${esc(dev)}</span>
+            <span>📅 ${esc(releaseDate || 'Release date TBA')}</span>
+            <span>🌐 ${esc(originalLanguage)} → PT‑BR</span>
+          </div>
+          <div class="detail-description">${esc(description)}</div>
+          <div class="lyrics-section">
+            <div class="lyrics-header"><span>🎖️</span> LOCALIZATION CREDITS</div>
+            <div class="credits-link" id="credits-link">Click to view proof of participation</div>
           </div>
         </div>
       </div>
     `;
-    const creditsLink = detailCard.querySelector('.credits-link');
+
+    // Preencher grade de screenshots
+    if (screenshots.length) {
+      const screenshotsGrid = detailCard.querySelector('#screenshots-grid');
+      screenshotsGrid.innerHTML = screenshots.map(s => `
+        <div class="screenshot-item">
+          <img src="${esc(s.full)}" alt="Screenshot" loading="lazy" onerror="this.style.display='none'">
+        </div>
+      `).join('');
+    }
+
+    // Evento do link de créditos
+    const creditsLink = detailCard.querySelector('#credits-link');
     if (creditsLink) {
       creditsLink.style.cursor = 'pointer';
       creditsLink.onclick = () => openCreditsModal(creditsChips, creditsImage, ownerName);
     }
+
     setActiveView('view-game-detail');
   }
 
-  // ------------------------------------------------------------------
+  // ==================================================================
   // 6. Inicialização
-  // ------------------------------------------------------------------
+  // ==================================================================
   document.addEventListener('DOMContentLoaded', async () => {
     applyConfig();
     await loadMusic();
