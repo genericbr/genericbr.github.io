@@ -4,81 +4,195 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - GenericBR</title>
-
-  <!-- Arquivo de configuração (dados pessoais, jogos iniciais, etc.) -->
   <script src="config.js"></script>
-
-  <!-- CSS externo (estilos separados para melhor organização) -->
   <link rel="stylesheet" href="dashboard.css">
-
-  <!-- Fontes do Google -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f18;
+      --surface: #161927;
+      --card: #1c1f30;
+      --border: rgba(255,255,255,0.07);
+      --text: #e2e4ef;
+      --muted: #6b7194;
+      --em: #2979ff;
+      --danger: #e53935;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      padding: 2rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+    .login-card { max-width: 400px; margin: 2rem auto; text-align: center; }
+    input, textarea, select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+    button {
+      background: var(--em);
+      border: none;
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    button:hover { filter: brightness(1.1); }
+    .btn-danger { background: var(--danger); }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--card);
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      margin-right: 0.4rem;
+      margin-bottom: 0.4rem;
+      border: 1px solid var(--border);
+    }
+    .tag button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 0;
+    }
+    .tag button:hover { color: var(--danger); }
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      font-weight: 500;
+    }
+    .tab.active { opacity: 1; border-bottom: 2px solid var(--em); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .music-grid, .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1rem;
+    }
+    .music-card, .game-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.15s;
+    }
+    .music-card:hover, .game-card:hover { transform: translateY(-3px); }
+    .music-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+    .music-info, .game-info { padding: 1rem; }
+    .music-title, .game-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .tags-area { margin: 0.5rem 0; display: flex; flex-wrap: wrap; }
+    .tag-input { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
+    .save-btn { background: #00a86b; width: 100%; margin-top: 0.5rem; }
+    .status { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; text-align: center; }
+    .refresh-btn, .add-game-btn { margin-bottom: 1rem; }
+    .add-game-btn { background: #00a86b; }
+    .preset-tags { display: flex; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+    .preset-btn {
+      background: rgba(255,255,255,0.1);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .preset-btn:hover { background: rgba(255,255,255,0.2); }
+    .custom-tag-row { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+    .custom-tag-row input[type="text"] { flex: 2; margin-bottom: 0; }
+    .custom-tag-row input[type="color"] { width: 50px; height: 38px; padding: 0; margin-bottom: 0; }
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .state { text-align: center; padding: 3rem; color: var(--muted); }
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-top-color: var(--muted);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer { text-align: center; font-size: 0.7rem; color: var(--muted); margin-top: 2rem; }
+  </style>
 </head>
 <body>
-
 <div class="container">
   <h1>🎛️ Admin Dashboard</h1>
-
-  <!-- ==================== TELA DE LOGIN ==================== -->
   <div id="login-section" class="card login-card">
     <h2>Login</h2>
     <input type="password" id="admin-password" placeholder="Senha">
     <button id="login-btn">Entrar</button>
-    <div id="login-error" class="status" style="color: #e53935;"></div>
+    <div id="login-error" class="status" style="color:#e53935"></div>
   </div>
-
-  <!-- ==================== CONTEÚDO ADMIN (aparece após login) ==================== -->
-  <div id="admin-content" style="display: none;">
-    <!-- Abas -->
+  <div id="admin-content" style="display:none">
     <div class="tabs">
       <div class="tab active" data-tab="music">🎵 Músicas (letras + tags)</div>
-      <div class="tab" data-tab="games">🎮 Jogos (gerenciar + tags + imagem de crédito + detalhes)</div>
+      <div class="tab" data-tab="games">🎮 Jogos (gerenciar + tags + prova de trabalho)</div>
     </div>
-
-    <!-- Aba: Músicas -->
     <div id="music-tab" class="tab-content active">
       <button id="refresh-playlist-btn" class="refresh-btn">🔄 Forçar atualização da playlist (cache)</button>
-      <div id="music-list" class="music-grid">
-        <div class="state">
-          <div class="spinner"></div>
-          Carregando músicas...
-        </div>
-      </div>
+      <div id="music-list" class="music-grid"><div class="state"><div class="spinner"></div>Carregando músicas...</div></div>
     </div>
-
-    <!-- Aba: Jogos -->
     <div id="games-tab" class="tab-content">
       <button id="add-game-btn" class="add-game-btn">➕ Adicionar novo jogo</button>
-      <div id="games-list" class="games-grid">
-        <div class="state">
-          <div class="spinner"></div>
-          Carregando jogos...
-        </div>
-      </div>
+      <div id="games-list" class="games-grid"><div class="state"><div class="spinner"></div>Carregando jogos...</div></div>
     </div>
   </div>
-
   <div class="footer">GenericBR Admin · Alterações salvas via Cloudflare KV</div>
 </div>
 
 <script>
-  // ------------------------------------------------------------------
-  // 1. Configurações globais
-  // ------------------------------------------------------------------
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let authToken = null;
 
-  // ------------------------------------------------------------------
-  // 2. Funções auxiliares (escape HTML)
-  // ------------------------------------------------------------------
-  function escapeHtml(s) {
-    if (!s) return '';
-    return s.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[m]);
-  }
-
-  // ------------------------------------------------------------------
-  // 3. Login e persistência do token
-  // ------------------------------------------------------------------
+  // ---------- LOGIN ----------
   document.getElementById('login-btn').onclick = async () => {
     const pwd = document.getElementById('admin-password').value;
     try {
@@ -98,7 +212,7 @@
       } else {
         document.getElementById('login-error').innerText = data.error || 'Falha no login';
       }
-    } catch (e) {
+    } catch(e) {
       document.getElementById('login-error').innerText = 'Erro de rede';
     }
   };
@@ -119,13 +233,11 @@
         } else {
           localStorage.removeItem('adminToken');
         }
-      } catch (e) {}
+      } catch(e) {}
     }
   })();
 
-  // ------------------------------------------------------------------
-  // 4. Abas
-  // ------------------------------------------------------------------
+  // ---------- ABAS ----------
   document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -135,9 +247,7 @@
     };
   });
 
-  // ------------------------------------------------------------------
-  // 5. Refresh da playlist (cache do YouTube)
-  // ------------------------------------------------------------------
+  // ---------- REFRESH PLAYLIST ----------
   document.getElementById('refresh-playlist-btn')?.addEventListener('click', async () => {
     const btn = document.getElementById('refresh-playlist-btn');
     const orig = btn.innerText;
@@ -154,7 +264,7 @@
       } else {
         alert('Erro ao limpar cache');
       }
-    } catch (e) {
+    } catch(e) {
       alert('Erro de rede');
     } finally {
       btn.innerText = orig;
@@ -162,9 +272,7 @@
     }
   });
 
-  // ------------------------------------------------------------------
-  // 6. Músicas (listar, adicionar tags, editar letras)
-  // ------------------------------------------------------------------
+  // ========== MÚSICAS (tags com cores, letras) ==========
   async function loadMusicData() {
     const container = document.getElementById('music-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando músicas...</div>';
@@ -185,28 +293,21 @@
           <img class="music-thumb" src="${escapeHtml(v.thumbnail)}" alt="${escapeHtml(v.title)}" loading="lazy">
           <div class="music-info">
             <div class="music-title">${escapeHtml(v.title)}</div>
-            <div class="tags-area" id="tags-${v.id}">
-              ${(v.tags || []).map(t => `
-                <span class="tag" style="background: ${t.color || 'rgba(255,255,255,0.08)'}">
-                  ${escapeHtml(t.name || t)}
-                  <button onclick="removeTag('${v.id}', 'music', '${escapeHtml(t.name || t)}')">✖</button>
-                </span>
-              `).join('')}
-            </div>
+            <div class="tags-area" id="tags-${v.id}">${(v.tags || []).map(t => `<span class="tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${escapeHtml(t.name || t)}<button onclick="removeTag('${v.id}','music','${escapeHtml(t.name || t)}')">✖</button></span>`).join('')}</div>
             <div class="tag-input">
               <input type="text" placeholder="Nova tag" id="newtag-${v.id}">
-              <button onclick="addTag('${v.id}', 'music')">+</button>
+              <button onclick="addTag('${v.id}','music')">+</button>
             </div>
             <div class="preset-tags">
-              <div class="preset-btn" onclick="addPresetTag('${v.id}', 'music', 'Volunteer', 'rgba(245,158,11,0.2)')">Volunteer</div>
-              <div class="preset-btn" onclick="addPresetTag('${v.id}', 'music', 'Localizer', 'rgba(0,168,107,0.2)')">Localizer</div>
-              <div class="preset-btn" onclick="addPresetTag('${v.id}', 'music', 'Reviewer', 'rgba(229,57,53,0.2)')">Reviewer</div>
-              <div class="preset-btn" onclick="showCustomTagInput('${v.id}', 'music')">Custom</div>
+              <div class="preset-btn" onclick="addPresetTag('${v.id}','music','Volunteer','rgba(245,158,11,0.2)')">Volunteer</div>
+              <div class="preset-btn" onclick="addPresetTag('${v.id}','music','Localizer','rgba(0,168,107,0.2)')">Localizer</div>
+              <div class="preset-btn" onclick="addPresetTag('${v.id}','music','Reviewer','rgba(229,57,53,0.2)')">Reviewer</div>
+              <div class="preset-btn" onclick="showCustomTagInput('${v.id}','music')">Custom</div>
             </div>
-            <div id="custom-tag-${v.id}" style="display: none;" class="custom-tag-row">
+            <div id="custom-tag-${v.id}" style="display:none" class="custom-tag-row">
               <input type="text" placeholder="Tag name" id="custom-name-${v.id}">
               <input type="color" id="custom-color-${v.id}" value="#6b7194">
-              <button onclick="addCustomTag('${v.id}', 'music')">Add</button>
+              <button onclick="addCustomTag('${v.id}','music')">Add</button>
             </div>
             <div><strong>Letra / Tradução</strong></div>
             <textarea id="lyrics-${v.id}" class="lyrics-box" rows="4">${escapeHtml(v.lyrics || '')}</textarea>
@@ -216,7 +317,7 @@
         `;
         container.appendChild(card);
       }
-    } catch (e) {
+    } catch(e) {
       container.innerHTML = `<div class="state">Erro: ${e.message}</div>`;
     }
   }
@@ -240,14 +341,12 @@
       } else {
         statusDiv.innerText = '❌ Erro';
       }
-    } catch (e) {
+    } catch(e) {
       statusDiv.innerText = '❌ Rede';
     }
   };
 
-  // ------------------------------------------------------------------
-  // 7. Jogos (listar, editar, excluir, tags, créditos)
-  // ------------------------------------------------------------------
+  // ========== JOGOS (apenas role, note, tags, proof of work) ==========
   async function loadGamesData() {
     const container = document.getElementById('games-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
@@ -262,7 +361,6 @@
       }
       container.innerHTML = '';
       for (const game of games) {
-        // Buscar tags e créditos atuais
         const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
           headers: { 'Authorization': `Bearer ${authToken}` }
         }).then(r => r.json()).catch(() => ({ tags: [] }));
@@ -276,46 +374,36 @@
           <div class="game-info">
             <div class="game-name">${escapeHtml(game.name)} (${game.appId})</div>
             <div><strong>Role:</strong> <input type="text" id="role-${game.appId}" value="${escapeHtml(game.role || '')}"></div>
-            <div><strong>Developer:</strong> <input type="text" id="dev-${game.appId}" value="${escapeHtml(game.dev || '')}"></div>
-            <div><strong>Release date (YYYY-MM-DD):</strong> <input type="text" id="release-${game.appId}" value="${escapeHtml(game.releaseDate || '')}" placeholder="2024-01-15"></div>
-            <div><strong>Original language:</strong> <input type="text" id="lang-${game.appId}" value="${escapeHtml(game.originalLanguage || 'English')}"></div>
             <div><strong>Note (optional):</strong> <input type="text" id="note-${game.appId}" value="${escapeHtml(game.note || '')}"></div>
-            <div><strong>Description:</strong> <textarea id="desc-${game.appId}" rows="2">${escapeHtml(game.description || '')}</textarea></div>
-            <div><strong>Cover image URL:</strong> <input type="text" id="cover-${game.appId}" value="${escapeHtml(game.cover || '')}" placeholder="https://..."></div>
-            <div><strong>Screenshots (URLs, one per line):</strong> <textarea id="screenshots-${game.appId}" rows="2">${(game.screenshots || []).join('\n')}</textarea></div>
-            <div><strong>Credits (name and role, one per line, format: Name|Role):</strong> <textarea id="creditsChips-${game.appId}" rows="3">${(creditsRes.creditsChips || []).map(c => `${c.name}|${c.role || ''}`).join('\n')}</textarea></div>
-            <div><strong>Imagem de crédito (URL, opcional - se for imagem única):</strong> <input type="text" id="creditsImage-${game.appId}" value="${escapeHtml(creditsRes.creditsImage || '')}" placeholder="https://exemplo.com/prova.jpg"></div>
-            <div class="tags-area" id="tags-${game.appId}">
-              ${(tagsRes.tags || []).map(t => `
-                <span class="tag" style="background: ${t.color || 'rgba(255,255,255,0.08)'}">
-                  ${escapeHtml(t.name || t)}
-                  <button onclick="removeTag('${game.appId}', 'game', '${escapeHtml(t.name || t)}')">✖</button>
-                </span>
-              `).join('')}
-            </div>
+            <div class="tags-area" id="tags-${game.appId}">${(tagsRes.tags || []).map(t => `<span class="tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${escapeHtml(t.name || t)}<button onclick="removeTag('${game.appId}','game','${escapeHtml(t.name || t)}')">✖</button></span>`).join('')}</div>
             <div class="tag-input">
               <input type="text" placeholder="Nova tag" id="newtag-${game.appId}">
-              <button onclick="addTag('${game.appId}', 'game')">+</button>
+              <button onclick="addTag('${game.appId}','game')">+</button>
             </div>
             <div class="preset-tags">
-              <div class="preset-btn" onclick="addPresetTag('${game.appId}', 'game', 'Volunteer', 'rgba(245,158,11,0.2)')">Volunteer</div>
-              <div class="preset-btn" onclick="addPresetTag('${game.appId}', 'game', 'Localizer', 'rgba(0,168,107,0.2)')">Localizer</div>
-              <div class="preset-btn" onclick="addPresetTag('${game.appId}', 'game', 'Reviewer', 'rgba(229,57,53,0.2)')">Reviewer</div>
-              <div class="preset-btn" onclick="showCustomTagInput('${game.appId}', 'game')">Custom</div>
+              <div class="preset-btn" onclick="addPresetTag('${game.appId}','game','Volunteer','rgba(245,158,11,0.2)')">Volunteer</div>
+              <div class="preset-btn" onclick="addPresetTag('${game.appId}','game','Localizer','rgba(0,168,107,0.2)')">Localizer</div>
+              <div class="preset-btn" onclick="addPresetTag('${game.appId}','game','Reviewer','rgba(229,57,53,0.2)')">Reviewer</div>
+              <div class="preset-btn" onclick="showCustomTagInput('${game.appId}','game')">Custom</div>
             </div>
-            <div id="custom-tag-${game.appId}" style="display: none;" class="custom-tag-row">
+            <div id="custom-tag-${game.appId}" style="display:none" class="custom-tag-row">
               <input type="text" placeholder="Tag name" id="custom-name-${game.appId}">
               <input type="color" id="custom-color-${game.appId}" value="#6b7194">
-              <button onclick="addCustomTag('${game.appId}', 'game')">Add</button>
+              <button onclick="addCustomTag('${game.appId}','game')">Add</button>
             </div>
+            <div><strong>Prova de trabalho (créditos estruturados):</strong><br>
+            <small>Formato: Nome|Papel (um por linha)</small></div>
+            <textarea id="creditsChips-${game.appId}" rows="3">${(creditsRes.creditsChips || []).map(c => `${c.name}|${c.role || ''}`).join('\n')}</textarea>
+            <div><strong>Ou imagem única (URL):</strong></div>
+            <input type="text" id="creditsImage-${game.appId}" value="${escapeHtml(creditsRes.creditsImage || '')}" placeholder="https://exemplo.com/prova.jpg">
             <button class="save-btn" onclick="saveGameData('${game.appId}')">Salvar alterações</button>
-            <button class="save-btn btn-danger" style="margin-top: 0.3rem;" onclick="deleteGame('${game.appId}')">Excluir jogo</button>
+            <button class="save-btn btn-danger" style="margin-top:0.3rem" onclick="deleteGame('${game.appId}')">Excluir jogo</button>
             <div class="status" id="status-${game.appId}"></div>
           </div>
         `;
         container.appendChild(card);
       }
-    } catch (e) {
+    } catch(e) {
       container.innerHTML = `<div class="state">Erro: ${e.message}</div>`;
     }
   }
@@ -327,13 +415,7 @@
       appId,
       name: document.querySelector(`#games-list .game-card .game-name`)?.innerText.split(' (')[0] || appId,
       role: document.getElementById(`role-${appId}`).value,
-      dev: document.getElementById(`dev-${appId}`).value,
-      releaseDate: document.getElementById(`release-${appId}`).value,
-      originalLanguage: document.getElementById(`lang-${appId}`).value,
       note: document.getElementById(`note-${appId}`).value,
-      description: document.getElementById(`desc-${appId}`).value,
-      cover: document.getElementById(`cover-${appId}`).value,
-      screenshots: document.getElementById(`screenshots-${appId}`).value.split('\n').filter(l => l.trim()),
     };
     try {
       const res = await fetch(`${WORKER_URL}/api/games`, {
@@ -345,7 +427,7 @@
         body: JSON.stringify(gameData)
       });
       if (!res.ok) throw new Error();
-      // Salvar créditos estruturados e imagem de crédito
+      // Salvar créditos
       const creditsChips = document.getElementById(`creditsChips-${appId}`).value.split('\n').filter(l => l.trim()).map(line => {
         const [name, role] = line.split('|');
         return { name: name.trim(), role: role ? role.trim() : '' };
@@ -361,7 +443,7 @@
       });
       statusDiv.innerText = '✅ Salvo!';
       setTimeout(() => statusDiv.innerText = '', 2000);
-    } catch (e) {
+    } catch(e) {
       statusDiv.innerText = '❌ Erro';
     }
   };
@@ -380,7 +462,7 @@
       } else {
         statusDiv.innerText = '❌ Erro';
       }
-    } catch (e) {
+    } catch(e) {
       statusDiv.innerText = '❌ Rede';
     }
   };
@@ -410,10 +492,7 @@
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${authToken}`
           },
-          body: JSON.stringify({
-            appId, name, role: '', dev: '', releaseDate: '', originalLanguage: 'English',
-            note: '', description: '', cover: '', screenshots: [], creditsChips: []
-          })
+          body: JSON.stringify({ appId, name, role: '', note: '' })
         });
         if (res.ok) {
           modal.remove();
@@ -421,25 +500,21 @@
         } else {
           alert('Erro ao adicionar');
         }
-      } catch (e) {
+      } catch(e) {
         alert('Erro de rede');
       }
     };
     document.getElementById('cancel-add-game').onclick = () => modal.remove();
   });
 
-  // ------------------------------------------------------------------
-  // 8. Tags (presets, custom, adicionar, remover)
-  // ------------------------------------------------------------------
+  // ========== TAGS (genérico) ==========
   window.addPresetTag = async (id, type, name, color) => {
     await addTagObject(id, type, { name, color });
   };
-
   window.showCustomTagInput = (id, type) => {
     const div = document.getElementById(`custom-tag-${id}`);
     if (div) div.style.display = div.style.display === 'none' ? 'flex' : 'none';
   };
-
   window.addCustomTag = async (id, type) => {
     const name = document.getElementById(`custom-name-${id}`).value.trim();
     const color = document.getElementById(`custom-color-${id}`).value;
@@ -448,7 +523,6 @@
     document.getElementById(`custom-name-${id}`).value = '';
     document.getElementById(`custom-tag-${id}`).style.display = 'none';
   };
-
   window.addTag = async (id, type) => {
     const input = document.getElementById(`newtag-${id}`);
     const tagName = input.value.trim();
@@ -456,7 +530,6 @@
     await addTagObject(id, type, { name: tagName, color: 'rgba(255,255,255,0.08)' });
     input.value = '';
   };
-
   window.addTagObject = async (id, type, tagObj) => {
     const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
     try {
@@ -474,11 +547,10 @@
       } else {
         alert('Erro ao adicionar tag');
       }
-    } catch (e) {
+    } catch(e) {
       alert('Rede');
     }
   };
-
   window.removeTag = async (id, type, tagName) => {
     const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
     try {
@@ -492,10 +564,15 @@
       } else {
         alert('Erro ao remover tag');
       }
-    } catch (e) {
+    } catch(e) {
       alert('Rede');
     }
   };
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[m]);
+  }
 </script>
 </body>
 </html>
