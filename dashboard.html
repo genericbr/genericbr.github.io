@@ -8,37 +8,136 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#0d0f18; --surface:#161927; --card:#1c1f30; --border:rgba(255,255,255,0.07); --text:#e2e4ef; --muted:#6b7194; --em:#2979ff; }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; padding:2rem; }
-    .container { max-width:1200px; margin:0 auto; }
-    .card { background:var(--surface); border-radius:20px; padding:1.75rem 2rem; margin-bottom:1.5rem; border:1px solid var(--border); }
-    .login-card { max-width:400px; margin:2rem auto; text-align:center; }
-    input, textarea, select { background:var(--card); border:1px solid var(--border); color:var(--text); padding:0.6rem 1rem; border-radius:10px; width:100%; }
-    button { background:var(--em); border:none; color:white; padding:0.6rem 1.2rem; border-radius:10px; font-weight:500; cursor:pointer; transition:filter 0.15s; }
-    button:hover { filter:brightness(1.1); }
-    .tag { display:inline-block; background:var(--card); padding:0.2rem 0.7rem; border-radius:20px; font-size:0.7rem; margin-right:0.4rem; margin-bottom:0.4rem; border:1px solid var(--border); }
-    .tabs { display:flex; gap:1rem; margin-bottom:1.5rem; border-bottom:1px solid var(--border); }
-    .tab { padding:0.75rem 1.5rem; cursor:pointer; opacity:0.7; font-weight:500; }
-    .tab.active { opacity:1; border-bottom:2px solid var(--em); }
-    .tab-content { display:none; }
-    .tab-content.active { display:block; }
-    .music-grid, .games-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1rem; }
-    .music-card, .game-card { background:var(--card); border-radius:16px; overflow:hidden; border:1px solid var(--border); transition:transform 0.15s; }
-    .music-card:hover, .game-card:hover { transform:translateY(-3px); border-color:rgba(255,255,255,0.2); }
-    .music-thumb { width:100%; aspect-ratio:16/9; object-fit:cover; }
-    .music-info, .game-info { padding:1rem; }
-    .music-title, .game-name { font-size:0.9rem; font-weight:600; margin-bottom:0.5rem; }
-    .tags-area { margin:0.5rem 0; display:flex; flex-wrap:wrap; }
-    .tag-input { display:flex; gap:0.5rem; margin:0.5rem 0; }
-    .lyrics-box { margin:0.5rem 0; font-family:monospace; font-size:0.8rem; resize:vertical; }
-    .save-btn { background:#00a86b; width:100%; margin-top:0.5rem; }
-    .status { font-size:0.7rem; color:var(--muted); margin-top:0.3rem; text-align:center; }
-    .refresh-btn { background:var(--muted); margin-bottom:1rem; }
-    .state { text-align:center; padding:3rem; color:var(--muted); }
-    .spinner { width:22px; height:22px; border:2px solid var(--border); border-top-color:var(--muted); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 0.75rem; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .footer { text-align:center; font-size:0.7rem; color:var(--muted); margin-top:2rem; }
+    :root {
+      --bg: #0d0f18;
+      --surface: #161927;
+      --card: #1c1f30;
+      --border: rgba(255,255,255,0.07);
+      --text: #e2e4ef;
+      --muted: #6b7194;
+      --em: #2979ff;
+      --danger: #e53935;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      padding: 2rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+    .login-card { max-width: 400px; margin: 2rem auto; text-align: center; }
+    input, textarea, select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      width: 100%;
+    }
+    button {
+      background: var(--em);
+      border: none;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    button:hover { filter: brightness(1.1); }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--card);
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      margin-right: 0.4rem;
+      margin-bottom: 0.4rem;
+      border: 1px solid var(--border);
+    }
+    .tag button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      line-height: 1;
+    }
+    .tag button:hover { color: var(--danger); }
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      opacity: 0.7;
+      font-weight: 500;
+    }
+    .tab.active { opacity: 1; border-bottom: 2px solid var(--em); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .music-grid, .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+    .music-card, .game-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.15s;
+    }
+    .music-card:hover, .game-card:hover { transform: translateY(-3px); }
+    .music-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+    .music-info, .game-info { padding: 1rem; }
+    .music-title, .game-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .tags-area { margin: 0.5rem 0; display: flex; flex-wrap: wrap; align-items: center; }
+    .tag-input { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
+    .lyrics-box, .credits-box {
+      margin: 0.5rem 0;
+      font-family: monospace;
+      font-size: 0.8rem;
+      resize: vertical;
+    }
+    .save-btn { background: #00a86b; width: 100%; margin-top: 0.5rem; }
+    .status { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; text-align: center; }
+    .refresh-btn { background: var(--muted); margin-bottom: 1rem; }
+    .state { text-align: center; padding: 3rem; color: var(--muted); }
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-top-color: var(--muted);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer { text-align: center; font-size: 0.7rem; color: var(--muted); margin-top: 2rem; }
   </style>
 </head>
 <body>
@@ -55,7 +154,7 @@
   <div id="admin-content" style="display:none;">
     <div class="tabs">
       <div class="tab active" data-tab="music">🎵 Músicas (letras + tags)</div>
-      <div class="tab" data-tab="games">🎮 Jogos (tags)</div>
+      <div class="tab" data-tab="games">🎮 Jogos (créditos + tags)</div>
     </div>
 
     <div id="music-tab" class="tab-content active">
@@ -78,7 +177,7 @@
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let authToken = null;
 
-  // Login
+  // ---------- LOGIN ----------
   document.getElementById('login-btn').onclick = async () => {
     const password = document.getElementById('admin-password').value;
     try {
@@ -103,7 +202,6 @@
     }
   };
 
-  // Verificar token salvo
   (async () => {
     const savedToken = localStorage.getItem('adminToken');
     if (savedToken) {
@@ -124,7 +222,7 @@
     }
   })();
 
-  // Alternar abas
+  // ---------- ABAS ----------
   document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -134,7 +232,7 @@
     };
   });
 
-  // Botão refresh playlist (limpa cache do Worker)
+  // ---------- REFRESH PLAYLIST ----------
   document.getElementById('refresh-playlist-btn')?.addEventListener('click', async () => {
     const btn = document.getElementById('refresh-playlist-btn');
     const originalText = btn.innerText;
@@ -147,7 +245,7 @@
       });
       if (res.ok) {
         alert('Cache da playlist limpo! Recarregando dados...');
-        await loadMusicData(); // recarrega a lista (forçará nova busca no Worker)
+        await loadMusicData();
       } else {
         alert('Erro ao limpar cache');
       }
@@ -159,7 +257,7 @@
     }
   });
 
-  // Carregar músicas (com admin=true)
+  // ---------- CARREGAR MÚSICAS (admin) ----------
   async function loadMusicData() {
     const container = document.getElementById('music-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando músicas...</div>';
@@ -181,7 +279,12 @@
           <div class="music-info">
             <div class="music-title">${escapeHtml(video.title)}</div>
             <div class="tags-area" id="tags-${video.id}">
-              ${(video.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
+              ${(video.tags || []).map(t => `
+                <span class="tag">
+                  ${escapeHtml(t)}
+                  <button onclick="removeTag('${video.id}', 'music', '${escapeHtml(t)}')" title="Remover tag">✖</button>
+                </span>
+              `).join('')}
             </div>
             <div class="tag-input">
               <input type="text" placeholder="Nova tag" id="newtag-${video.id}" style="flex:1">
@@ -200,7 +303,7 @@
     }
   }
 
-  // Carregar jogos do config.js
+  // ---------- CARREGAR JOGOS (config.js + tags + créditos) ----------
   async function loadGamesData() {
     const container = document.getElementById('games-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
@@ -222,28 +325,64 @@
               <input type="text" placeholder="Nova tag" id="newtag-${game.appId}" style="flex:1">
               <button onclick="addTag('${game.appId}', 'game')">+</button>
             </div>
+            <div><strong>Créditos / Prova de participação</strong></div>
+            <textarea id="credits-${game.appId}" class="credits-box" rows="4">Carregando...</textarea>
+            <button class="save-btn" onclick="saveGameCredits('${game.appId}')">Salvar créditos</button>
             <div class="status" id="status-${game.appId}"></div>
           </div>
         `;
         container.appendChild(card);
-        // Buscar tags
-        try {
-          const res = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
-          });
-          const data = await res.json();
-          const tagsDiv = document.getElementById(`tags-${game.appId}`);
-          if (tagsDiv) tagsDiv.innerHTML = (data.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
-        } catch(e) {
-          const tagsDiv = document.getElementById(`tags-${game.appId}`);
-          if (tagsDiv) tagsDiv.innerHTML = '<span class="tag">erro ao carregar</span>';
+
+        // Carregar tags e créditos em paralelo
+        const tagsPromise = fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        }).then(r => r.json()).catch(() => ({ tags: [] }));
+        const creditsPromise = fetch(`${WORKER_URL}/api/game/credits?id=${game.appId}`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        }).then(r => r.json()).catch(() => ({ credits: '' }));
+
+        const [tagsData, creditsData] = await Promise.all([tagsPromise, creditsPromise]);
+        const tagsDiv = document.getElementById(`tags-${game.appId}`);
+        if (tagsDiv) {
+          tagsDiv.innerHTML = (tagsData.tags || []).map(t => `
+            <span class="tag">
+              ${escapeHtml(t)}
+              <button onclick="removeTag('${game.appId}', 'game', '${escapeHtml(t)}')" title="Remover tag">✖</button>
+            </span>
+          `).join('');
         }
+        const creditsTextarea = document.getElementById(`credits-${game.appId}`);
+        if (creditsTextarea) creditsTextarea.value = creditsData.credits || '';
       }
     } catch (err) {
       container.innerHTML = `<div class="state">Erro ao carregar jogos: ${err.message}</div>`;
     }
   }
 
+  // ---------- REMOVER TAG (genérico) ----------
+  // Requer que o Worker suporte DELETE /api/music/tags e /api/games/tags
+  // ou, alternativamente, um POST com action=remove. A implementação abaixo usa DELETE.
+  window.removeTag = async (id, type, tag) => {
+    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
+    try {
+      const res = await fetch(`${WORKER_URL}${endpoint}?id=${id}&tag=${encodeURIComponent(tag)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (res.ok) {
+        // Recarregar a aba correspondente
+        if (type === 'music') loadMusicData();
+        else loadGamesData();
+      } else {
+        const error = await res.text();
+        alert(`Erro ao remover tag: ${error}`);
+      }
+    } catch (err) {
+      alert('Erro de rede ao remover tag');
+    }
+  };
+
+  // ---------- ADICIONAR TAG ----------
   window.addTag = async (id, type) => {
     const input = document.getElementById(`newtag-${id}`);
     const newTag = input.value.trim();
@@ -270,6 +409,7 @@
     }
   };
 
+  // ---------- SALVAR LETRA (música) ----------
   window.saveLyrics = async (videoId) => {
     const lyrics = document.getElementById(`lyrics-${videoId}`).value;
     const statusDiv = document.getElementById(`status-${videoId}`);
@@ -282,6 +422,31 @@
           'Authorization': `Bearer ${authToken}`
         },
         body: JSON.stringify({ id: videoId, lyrics })
+      });
+      if (res.ok) {
+        statusDiv.innerText = '✅ Salvo!';
+        setTimeout(() => statusDiv.innerText = '', 2000);
+      } else {
+        statusDiv.innerText = '❌ Erro ao salvar';
+      }
+    } catch (err) {
+      statusDiv.innerText = '❌ Erro de rede';
+    }
+  };
+
+  // ---------- SALVAR CRÉDITOS (jogo) ----------
+  window.saveGameCredits = async (appId) => {
+    const credits = document.getElementById(`credits-${appId}`).value;
+    const statusDiv = document.getElementById(`status-${appId}`);
+    statusDiv.innerText = 'Salvando...';
+    try {
+      const res = await fetch(`${WORKER_URL}/api/game/credits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ id: appId, credits })
       });
       if (res.ok) {
         statusDiv.innerText = '✅ Salvo!';
