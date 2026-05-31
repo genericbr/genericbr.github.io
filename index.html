@@ -959,55 +959,34 @@
   let rawGamesConfig = [];
 
   async function loadGames() {
-    const grid = document.getElementById('games-grid');
-    rawGamesConfig = CONFIG.steam?.games || [];
-    if (!rawGamesConfig.length) {
-      grid.innerHTML = `<div class="error-msg">No games in config.js</div>`;
+  const grid = document.getElementById('games-grid');
+  try {
+    const res = await fetch(`${WORKER_URL}/api/games`);
+    const games = await res.json();
+    if (!games.length) {
+      grid.innerHTML = `<div class="error-msg">Nenhum jogo cadastrado ainda.</div>`;
       return;
     }
-    // Buscar dados do SteamSpy apenas para nome/desenvolvedor se não tiver no config
-    const needsFetch = rawGamesConfig.filter(g => !g.name);
-    const spyMap = {};
-    if (needsFetch.length) {
-      const results = await Promise.allSettled(
-        needsFetch.map(g => fetch(`https://steamspy.com/api.php?request=appdetails&appid=${g.appId}`).then(r => r.json()))
-      );
-      results.forEach((r, i) => {
-        if (r.status === 'fulfilled' && r.value?.appid) {
-          spyMap[needsFetch[i].appId] = r.value;
-        }
-      });
-    }
-    // Para cada jogo, tentar carregar arquivo local JSON com detalhes
-    const enriched = [];
-    for (const cfg of rawGamesConfig) {
-      const spy = spyMap[cfg.appId] || {};
-      let localData = null;
-      try {
-        const localRes = await fetch(`/games/${cfg.appId}.json`);
-        if (localRes.ok) localData = await localRes.json();
-      } catch(e) { /* ignorar */ }
-      const game = {
-        appId: cfg.appId,
-        name: cfg.name || spy.name || 'Steam Game',
-        dev: cfg.dev || spy.developer || '',
-        role: cfg.role || 'PT-BR Localization',
-        note: cfg.note || '',
-        description: localData?.description || '',
-        genre: localData?.genre || '',
-        cover: `https://cdn.cloudflare.steamstatic.com/steam/apps/${cfg.appId}/header.jpg`,
-        localData: localData
-      };
-      enriched.push(game);
-    }
-    gamesList = enriched;
-    renderGamesGrid();
-    // Se a URL atual for /game/... e os dados já carregaram
-    if (window.location.pathname.startsWith('/game/')) {
-      const appId = window.location.pathname.split('/game/')[1];
-      if (appId) showGameDetail(appId);
-    }
+    grid.innerHTML = games.map(game => `
+      <div class="game-card" onclick="navigateTo('view-game-detail', '${game.appId}')" role="button" tabindex="0">
+        <img class="game-img" src="${game.cover}" alt="${escapeHtml(game.name)}" loading="lazy"
+          onerror="this.onerror=null; this.style.display='none'; this.nextSibling.style.display='flex';">
+        <div class="game-img-fallback" style="display: none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
+          <span>${escapeHtml(game.name)}</span>
+        </div>
+        <div class="game-info">
+          <div class="game-role">${escapeHtml(game.role || 'PT-BR Localization')}</div>
+          <div class="game-name">${escapeHtml(game.name)}</div>
+          ${game.dev ? `<div class="game-dev">${escapeHtml(game.dev)}</div>` : ''}
+          ${game.note ? `<span class="game-note">${escapeHtml(game.note)}</span>` : ''}
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    grid.innerHTML = `<div class="error-msg">Erro ao carregar jogos: ${err.message}</div>`;
   }
+}
 
   function renderGamesGrid() {
     const grid = document.getElementById('games-grid');
