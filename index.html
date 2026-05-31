@@ -8,35 +8,34 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* Ajustes específicos para a nova UI de jogos (compatível com music) */
-    .game-cover {
-      position: relative;
-      padding-bottom: 56.25%; /* 16:9 igual ao player */
-      border-radius: 12px;
-      overflow: hidden;
-      background: var(--bg);
-    }
-    .game-cover img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .screenshots-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    /* Ajustes para o carrossel de screenshots */
+    .screenshots-carousel {
+      display: flex;
+      overflow-x: auto;
       gap: 0.75rem;
-      margin-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      scrollbar-width: thin;
+    }
+    .screenshots-carousel::-webkit-scrollbar {
+      height: 6px;
+    }
+    .screenshots-carousel::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+    }
+    .screenshots-carousel::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
     }
     .screenshot-item {
-      background: var(--card);
+      flex: 0 0 auto;
+      width: 240px;
       border-radius: 8px;
       overflow: hidden;
       border: 1px solid var(--border);
       transition: transform 0.15s;
       cursor: pointer;
+      background: var(--card);
     }
     .screenshot-item:hover {
       transform: scale(1.02);
@@ -48,15 +47,17 @@
       object-fit: cover;
       display: block;
     }
+    /* Link de créditos */
     .credits-link {
       cursor: pointer;
       color: var(--muted);
       transition: color 0.15s;
+      text-decoration: underline;
     }
     .credits-link:hover {
       color: var(--text);
     }
-    /* Garantir que o dropdown de ordenação continue escuro */
+    /* Dropdown ordenação escuro */
     .sort-controls label {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.7rem;
@@ -77,7 +78,7 @@
       background: var(--surface);
       color: var(--text);
     }
-    /* Modal já definido no style.css, mas garantimos que funcione */
+    /* Modal para créditos */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -133,7 +134,7 @@
 
 <div class="view-wrap">
 
-  <!-- ==================== VIEW: HOME ==================== -->
+  <!-- VIEW HOME -->
   <div class="view active" id="view-home">
     <div class="card">
       <div class="profile-left">
@@ -158,74 +159,34 @@
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
 
-  <!-- ==================== VIEW: PASTA DE SELEÇÃO ==================== -->
+  <!-- VIEW PASTA DE SELEÇÃO -->
   <div class="view" id="view-portfolio-pasta">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <span class="section-title">Choose your portfolio</span>
-    </div>
-    <div class="card" style="text-align: center;">
-      <div class="portfolio-grid">
-        <div class="portfolio-card" onclick="navigateTo('view-games')"><img src="images/steam-icon.png" alt="Steam"><span>Steam</span></div>
-        <div class="portfolio-card" onclick="navigateTo('view-music')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></div>
-      </div>
-    </div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-home')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Choose your portfolio</span></div>
+    <div class="card" style="text-align: center;"><div class="portfolio-grid"><div class="portfolio-card" onclick="navigateTo('view-games')"><img src="images/steam-icon.png" alt="Steam"><span>Steam</span></div><div class="portfolio-card" onclick="navigateTo('view-music')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></div></div></div>
   </div>
 
-  <!-- ==================== VIEW: LISTA DE MÚSICAS ==================== -->
+  <!-- VIEW MÚSICAS -->
   <div class="view" id="view-music">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <span class="section-title">All My Music‑Related Cameos Thus Far</span>
-      <div class="sort-controls">
-        <label>Sort by:</label>
-        <select id="sort-music">
-          <option value="original">Original order</option>
-          <option value="views_desc">Most views</option>
-          <option value="views_asc">Least views</option>
-          <option value="date_desc" selected>Newest first</option>
-          <option value="date_asc">Oldest first</option>
-          <option value="title_asc">Title A–Z</option>
-          <option value="title_desc">Title Z–A</option>
-        </select>
-      </div>
-    </div>
-    <div class="card">
-      <div id="music-stats" class="stats-bar" style="display: none;"><div class="total-views">🎬 Total views: <strong id="total-views-count">0</strong></div></div>
-      <div class="music-grid" id="music-grid"><div class="state"><div class="spinner"></div>Loading YouTube...</div></div>
-    </div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">All My Music‑Related Cameos Thus Far</span><div class="sort-controls"><label>Sort by:</label><select id="sort-music"><option value="original">Original order</option><option value="views_desc">Most views</option><option value="views_asc">Least views</option><option value="date_desc" selected>Newest first</option><option value="date_asc">Oldest first</option><option value="title_asc">Title A–Z</option><option value="title_desc">Title Z–A</option></select></div></div>
+    <div class="card"><div id="music-stats" class="stats-bar" style="display: none;"><div class="total-views">🎬 Total views: <strong id="total-views-count">0</strong></div></div><div class="music-grid" id="music-grid"><div class="state"><div class="spinner"></div>Loading YouTube...</div></div></div>
   </div>
 
-  <!-- ==================== VIEW: DETALHE DO VÍDEO ==================== -->
+  <!-- VIEW DETALHE DO VÍDEO -->
   <div class="view" id="view-video-detail">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <span class="section-title">Video Details</span>
-    </div>
-    <div class="card" id="detail-card"><div class="state"><div class="spinner"></div>Loading...</div></div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Video Details</span></div><div class="card" id="detail-card"><div class="state"><div class="spinner"></div>Loading...</div></div>
   </div>
 
-  <!-- ==================== VIEW: DETALHE DO JOGO ==================== -->
+  <!-- VIEW DETALHE DO JOGO -->
   <div class="view" id="view-game-detail">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <span class="section-title">Game Details</span>
-    </div>
-    <div class="card" id="game-detail-card"><div class="state"><div class="spinner"></div>Loading game info...</div></div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Game Details</span></div><div class="card" id="game-detail-card"><div class="state"><div class="spinner"></div>Loading game info...</div></div>
   </div>
 
-  <!-- ==================== VIEW: LISTA DE JOGOS ==================== -->
+  <!-- VIEW LISTA DE JOGOS -->
   <div class="view" id="view-games">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div>
-      <span class="section-title">All My Gaming‑Related Cameos Thus Far</span>
-    </div>
-    <div class="card">
-      <div class="games-grid" id="games-grid"><div class="state"><div class="spinner"></div>Loading games...</div></div>
-    </div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">All My Gaming‑Related Cameos Thus Far</span></div><div class="card"><div class="games-grid" id="games-grid"><div class="state"><div class="spinner"></div>Loading games...</div></div></div>
   </div>
 
-</div> <!-- fim .view-wrap -->
+</div>
 
 <script>
   // ==================================================================
@@ -251,6 +212,12 @@
     if (!s) return '';
     return new Date(s).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   }
+  function stripHtml(html) {
+    if (!html) return '';
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  }
   function applyConfig() {
     const c = CONFIG;
     const name = c.name || 'GenericBR';
@@ -269,7 +236,7 @@
   }
 
   // ==================================================================
-  // 3. Roteamento (navegação com History API)
+  // 3. Roteamento
   // ==================================================================
   function navigateTo(viewId, param = null) {
     if (viewId === 'view-video-detail' && param) {
@@ -445,7 +412,7 @@
   }
 
   // ==================================================================
-  // 5. Jogos (UI idêntica à de música)
+  // 5. Jogos (com carrossel de screenshots e descrição limpa)
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -515,14 +482,14 @@
     const game = gamesList.find(g => g.appId === appId);
     if (!game) return;
 
-    // 1. Buscar dados da Steam (via proxy do worker)
+    // Buscar dados da Steam
     let steamData = null;
     try {
       const steamRes = await fetch(`${WORKER_URL}/api/steam/app?appids=${appId}`);
       if (steamRes.ok) steamData = await steamRes.json();
     } catch(e) { console.warn('Steam API error', e); }
 
-    // 2. Buscar tags e créditos locais
+    // Buscar tags e créditos
     let tags = [], creditsImage = '', creditsChips = [];
     try {
       const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`);
@@ -540,9 +507,9 @@
     else if (roleBadge.toLowerCase().includes('localizer')) badgeColor = 'rgba(0,168,107,0.2)';
     else if (roleBadge.toLowerCase().includes('reviewer')) badgeColor = 'rgba(229,57,53,0.2)';
 
-    // Mesclar dados: priorizar Steam, fallback para dados do dashboard
     const gameName = steamData?.name || game.name;
-    const description = steamData?.description || game.description || 'No description provided.';
+    let description = steamData?.description || game.description || 'No description provided.';
+    description = stripHtml(description); // Remove tags HTML
     const releaseDate = steamData?.releaseDate || game.releaseDate || '';
     const originalLanguage = game.originalLanguage || 'English';
     const cover = steamData?.headerImage || game.cover || `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg`;
@@ -552,15 +519,23 @@
     const steamUrl = `https://store.steampowered.com/app/${game.appId}`;
 
     const detailCard = document.getElementById('game-detail-card');
-    // Estrutura idêntica à de música: .detail-container > .detail-player + .detail-info
+    // Monta carrossel com todas as imagens (capa + screenshots)
+    let allImages = [{ full: cover, type: 'cover' }, ...screenshots];
+    const carouselHtml = `
+      <div class="screenshots-carousel">
+        ${allImages.map(img => `
+          <div class="screenshot-item">
+            <img src="${esc(img.full)}" alt="Game screenshot" loading="lazy" onerror="this.style.display='none'">
+          </div>
+        `).join('')}
+      </div>
+    `;
+
     detailCard.innerHTML = `
       <div class="detail-container">
         <div class="detail-player">
-          <div class="game-cover"><img src="${esc(cover)}" alt="${esc(gameName)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7194%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22/%3E%3C/svg%3E'"></div>
-          ${screenshots.length ? `
-            <div class="other-videos-title">📸 SCREENSHOTS</div>
-            <div class="screenshots-grid" id="screenshots-grid"></div>
-          ` : ''}
+          <div class="other-videos-title">🎮 SCREENSHOTS (scroll horizontally)</div>
+          ${carouselHtml}
         </div>
         <div class="detail-info">
           <div class="detail-title">${esc(gameName)}</div>
@@ -569,7 +544,7 @@
             ${tags.map(t => `<span class="game-tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${esc(t.name || t)}</span>`).join('')}
           </div>
           <div class="detail-stats" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
-            <span>👾 Developer: ${esc(dev)}</span>
+            <span>👾 ${esc(dev)}</span>
             <span>📅 ${esc(releaseDate || 'Release date TBA')}</span>
             <span>🌐 ${esc(originalLanguage)} → PT‑BR</span>
           </div>
@@ -582,20 +557,8 @@
       </div>
     `;
 
-    // Preencher grade de screenshots
-    if (screenshots.length) {
-      const screenshotsGrid = detailCard.querySelector('#screenshots-grid');
-      screenshotsGrid.innerHTML = screenshots.map(s => `
-        <div class="screenshot-item">
-          <img src="${esc(s.full)}" alt="Screenshot" loading="lazy" onerror="this.style.display='none'">
-        </div>
-      `).join('');
-    }
-
-    // Evento do link de créditos
     const creditsLink = detailCard.querySelector('#credits-link');
     if (creditsLink) {
-      creditsLink.style.cursor = 'pointer';
       creditsLink.onclick = () => openCreditsModal(creditsChips, creditsImage, ownerName);
     }
 
