@@ -13,6 +13,55 @@
 
   <!-- Fontes -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Estilos inline específicos para o dropdown de ordenação (substitui o anterior) -->
+  <style>
+    /* ========== ORDENAÇÃO (versão completa e melhorada) ========== */
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--card);
+      padding: 0.3rem 0.6rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .sort-controls label {
+      font-family: 'DM Sans', sans-serif;   /* garante a mesma fonte do site */
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    .sort-controls select {
+      background: var(--card);
+      border: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 400;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      outline: none;
+      transition: background 0.15s;
+    }
+
+    .sort-controls select:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sort-controls select option {
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      padding: 0.3rem;
+    }
+  </style>
 </head>
 <body>
 
@@ -554,9 +603,9 @@
             </div>
             <table class="game-meta-table">
               <tr><td>Developer</td><td>${esc(game.dev || '—')}</td></tr>
-              <tr><td>Release date</td><td>${esc(releaseDate || '—')}</td></tr>
-              <tr><td>Language</td><td>${esc(originalLanguage)} → PT‑BR</td></tr>
-              <tr><td>Platform</td><td>Steam</td></tr>
+              <tr><td>Release date</td><td>${esc(releaseDate || '—')}</td>
+              <tr><th>Language</th><td>${esc(originalLanguage)} → PT‑BR</td>
+              <tr><th>Platform</th><td>Steam</td>
             </table>
             <a href="${steamUrl}" target="_blank" class="steam-button">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
