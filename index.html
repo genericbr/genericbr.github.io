@@ -74,7 +74,16 @@
     .other-video-info{padding:.5rem}
     .other-video-title{font-size:.7rem;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .other-video-views{font-size:.55rem;color:var(--muted);margin-top:.2rem}
-    /* ========== NOVOS ESTILOS PARA DETALHE DO JOGO (mantendo proporções) ========== */
+    /* Estilos do modal para créditos */
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(4px)}
+    .modal-content{background:var(--surface);border-radius:24px;padding:1.5rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;border:1px solid var(--border)}
+    .modal-close{float:right;background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;padding:0;line-height:1}
+    .modal-close:hover{color:var(--text)}
+    .credits-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+    .credit-chip{background:rgba(255,255,255,.06);padding:.3rem .8rem;border-radius:20px;font-size:.75rem}
+    .credit-chip.owner{background:rgba(41,121,255,.2);color:#fff;border-left:2px solid var(--em);font-weight:500}
+    .credits-image img{max-width:100%;max-height:300px;border-radius:8px;margin-top:1rem}
+    /* Layout do jogo */
     .game-detail-layout{display:flex;flex-wrap:wrap;gap:1.5rem}
     .game-sidebar{flex:0 0 240px}
     .game-main{flex:1;min-width:0}
@@ -94,11 +103,8 @@
     .screenshots-grid{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.5rem}
     .screenshots-grid img{height:120px;border-radius:8px;object-fit:cover;border:1px solid var(--border);transition:.15s}
     .screenshots-grid img:hover{transform:scale(1.02);border-color:rgba(255,255,255,.3)}
-    .credits-chips{display:flex;flex-wrap:wrap;gap:.5rem}
-    .credit-chip{background:rgba(255,255,255,.06);padding:.3rem .8rem;border-radius:20px;font-size:.75rem}
-    .credit-chip.owner{background:rgba(41,121,255,.2);color:#fff;border-left:2px solid var(--em);font-weight:500}
+    .credits-button{background:var(--em);border:none;color:#fff;padding:.6rem 1rem;border-radius:10px;font-weight:500;cursor:pointer;margin:.5rem 0}
     .game-tag{background:rgba(255,255,255,.08);padding:.2rem .6rem;border-radius:20px;font-size:.65rem;display:inline-block;margin-right:.3rem;margin-bottom:.3rem}
-    /* FIM DOS NOVOS ESTILOS */
     .games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
     .game-card{background:var(--card);border-radius:10px;overflow:hidden;border:1px solid var(--border);transition:border-color .2s,transform .2s;cursor:pointer}
     .game-card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-3px)}
@@ -176,14 +182,32 @@
   async function loadLyrics(id,container){try{const r=await fetch(`${WORKER_URL}/api/music/lyrics?id=${id}`),d=await r.json();if(d.lyrics&&d.lyrics.trim())container.innerHTML=`<div class="lyrics-box-scroll">${esc(d.lyrics)}</div>`;else container.innerHTML='<div class="lyrics-box-scroll empty">No lyrics available yet.</div>';}catch(e){container.innerHTML='<div class="lyrics-box-scroll empty">Failed to load lyrics.</div>';}}
   function showVideoDetail(id){const v=musicItemsRaw.find(v=>v.id===id);if(!v)return;let desc=v.description?v.description.trim():'No description available.';const other=musicItemsRaw.filter(vv=>vv.channelTitle===v.channelTitle&&vv.id!==v.id);const dc=document.getElementById('detail-card');dc.innerHTML=`<div class="detail-container"><div class="detail-player"><div class="video-embed"><iframe src="https://www.youtube.com/embed/${v.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe></div>${other.length?`<div class="other-videos-title">🎵 More from ${esc(v.channelTitle)}</div><div class="other-videos-grid" id="other-videos-grid"></div>`:''}</div><div class="detail-info"><div class="detail-title">${esc(v.title)}</div><div class="detail-channel">${esc(v.channelTitle)}</div><div class="detail-stats"><span>👁️ ${formatNumber(v.viewCount)} views</span><span>📅 ${formatDate(v.publishedAt)}</span></div><div class="detail-description">${esc(desc)}</div><div class="lyrics-section"><div class="lyrics-header"><span>📝</span> Lyrics / Translation</div><div id="lyrics-container-${v.id}" class="lyrics-container"></div></div></div></div>`;if(other.length){const grid=dc.querySelector('#other-videos-grid');grid.innerHTML=other.map(vv=>`<div class="other-video-card" onclick="navigateTo('view-video-detail','${vv.id}')"><img class="other-video-thumb" src="${esc(vv.thumbnail)}" loading="lazy"><div class="other-video-info"><div class="other-video-title">${esc(vv.title)}</div><div class="other-video-views">👁️ ${formatNumber(vv.viewCount)}</div></div></div>`).join('');}const lc=dc.querySelector(`#lyrics-container-${v.id}`);if(lc)loadLyrics(v.id,lc);setActiveView('view-video-detail');}
   
-  // ==================== JOGOS COM NOVAS FEATURES ====================
+  // ==================== JOGOS COM MODAL PARA CRÉDITOS ====================
   async function loadGames(){const g=document.getElementById('games-grid');try{const r=await fetch(`${WORKER_URL}/api/games`);if(!r.ok)throw new Error();const games=await r.json();gamesList=games;if(!games.length){g.innerHTML='<div class="error-msg">No games found.</div>';return;}
     g.innerHTML=games.map(game=>{const cover=game.cover||`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg`;return`<div class="game-card" onclick="navigateTo('view-game-detail','${game.appId}')"><img class="game-img" src="${esc(cover)}" alt="${esc(game.name)}" loading="lazy" onerror="this.onerror=null;this.style.display='none';this.nextSibling.style.display='flex';"><div class="game-img-fallback" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg><span>${esc(game.name)}</span></div><div class="game-info"><div class="game-role">${esc(game.role||'PT-BR Localization')}</div><div class="game-name">${esc(game.name)}</div>${game.dev?`<div class="game-dev">${esc(game.dev)}</div>`:''}${game.note?`<span class="game-note">${esc(game.note)}</span>`:''}</div></div>`}).join('');}catch(e){g.innerHTML='<div class="error-msg">Error loading games.</div>';}}
   
+  function openCreditsModal(creditsChips, creditsImage, ownerName) {
+    let modal = document.querySelector('.modal-overlay');
+    if(modal) modal.remove();
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    let content = '';
+    if(creditsChips && creditsChips.length) {
+      content = `<div class="credits-chips">${creditsChips.map(c=>`<div class="credit-chip ${c.name===ownerName?'owner':''}">${esc(c.name)} ${c.role?`( ${esc(c.role)} )`:''}</div>`).join('')}</div>`;
+    } else if(creditsImage) {
+      content = `<div class="credits-image"><img src="${esc(creditsImage)}" alt="Proof of participation"></div>`;
+    } else {
+      content = '<em>No credits provided.</em>';
+    }
+    modal.innerHTML = `<div class="modal-content"><button class="modal-close">&times;</button><h3 style="margin-bottom:1rem">🎖️ LOCALIZATION CREDITS</h3>${content}</div>`;
+    document.body.appendChild(modal);
+    modal.querySelector('.modal-close').onclick = () => modal.remove();
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+  }
+
   async function showGameDetail(appId){
     const game=gamesList.find(g=>g.appId===appId);
     if(!game)return;
-    // Buscar dados adicionais: tags, screenshots, créditos estruturados, etc.
     let tags=[], creditsImage='', creditsChips=[], screenshots=[], releaseDate='', originalLanguage='';
     try{
       const tagsRes=await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`); const tagsData=await tagsRes.json(); tags=tagsData.tags||[];
@@ -224,10 +248,14 @@
           <div class="game-description">${esc(game.description||'No description provided.')}</div>
           ${screenshots.length?`<div class="section-divider"><span>📸 SCREENSHOTS</span><hr></div><div class="screenshots-grid">${screenshots.map(img=>`<img src="${esc(img)}" loading="lazy" onerror="this.style.display='none'">`).join('')}</div>`:''}
           <div class="section-divider"><span>🎖️ LOCALIZATION CREDITS</span><hr></div>
-          <div class="credits-chips">${creditsChips.length?creditsChips.map(c=>`<div class="credit-chip ${c.name===ownerName?'owner':''}">${esc(c.name)} ${c.role?`( ${esc(c.role)} )`:''}</div>`).join(''):(creditsImage?`<img src="${esc(creditsImage)}" style="max-width:100%;max-height:200px;border-radius:8px;">`:'<em>No credits provided.</em>')}</div>
+          <button class="credits-button" id="show-credits-btn">View proof of participation</button>
         </div>
       </div>
     `;
+    const creditsBtn = dc.querySelector('#show-credits-btn');
+    if(creditsBtn) {
+      creditsBtn.onclick = () => openCreditsModal(creditsChips, creditsImage, ownerName);
+    }
     setActiveView('view-game-detail');
   }
   document.addEventListener('DOMContentLoaded',async()=>{applyConfig();await loadMusic();await loadGames();restoreFromPath();});
