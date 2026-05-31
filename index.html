@@ -8,126 +8,71 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* Ajustes para o carrossel de screenshots */
-    .screenshots-carousel {
-      display: flex;
-      overflow-x: auto;
-      gap: 0.75rem;
-      padding-bottom: 0.5rem;
-      scrollbar-width: thin;
-    }
-    .screenshots-carousel::-webkit-scrollbar {
-      height: 6px;
-    }
-    .screenshots-carousel::-webkit-scrollbar-track {
-      background: rgba(255,255,255,0.05);
-      border-radius: 3px;
-    }
-    .screenshots-carousel::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.2);
-      border-radius: 3px;
-    }
-    .screenshot-item {
-      flex: 0 0 auto;
-      width: 240px;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      transition: transform 0.15s;
-      cursor: pointer;
+    /* Slideshow de imagens (setas) */
+    .slideshow-container {
+      position: relative;
       background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
     }
-    .screenshot-item:hover {
-      transform: scale(1.02);
-      border-color: rgba(255,255,255,0.3);
-    }
-    .screenshot-item img {
+    .slideshow-image {
       width: 100%;
       aspect-ratio: 16/9;
       object-fit: cover;
       display: block;
     }
-    /* Link de créditos */
-    .credits-link {
-      cursor: pointer;
-      color: var(--muted);
-      transition: color 0.15s;
-      text-decoration: underline;
-    }
-    .credits-link:hover {
-      color: var(--text);
-    }
-    /* Dropdown ordenação escuro */
-    .sort-controls label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--text);
-    }
-    .sort-controls select {
-      background: var(--card);
+    .slideshow-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.6);
       border: none;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      cursor: pointer;
-      padding: 0.2rem 0.4rem;
-      border-radius: 6px;
-    }
-    .sort-controls select option {
-      background: var(--surface);
-      color: var(--text);
-    }
-    /* Modal para créditos */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      backdrop-filter: blur(4px);
-    }
-    .modal-content {
-      background: var(--surface);
-      border-radius: 24px;
-      padding: 1.5rem;
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      border: 1px solid var(--border);
-    }
-    .modal-close {
-      float: right;
-      background: none;
-      border: none;
-      color: var(--muted);
+      color: white;
       font-size: 1.5rem;
       cursor: pointer;
-      padding: 0;
-      line-height: 1;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      transition: background 0.15s;
+      z-index: 10;
     }
+    .slideshow-arrow:hover {
+      background: rgba(0,0,0,0.8);
+    }
+    .prev-arrow {
+      left: 8px;
+    }
+    .next-arrow {
+      right: 8px;
+    }
+    .slideshow-counter {
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+    /* Indicador de setas também no hover */
+    .screenshots-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin: 0.5rem 0 0.75rem;
+    }
+    /* Demais estilos já existentes (mantidos) */
+    .credits-link { cursor: pointer; color: var(--muted); text-decoration: underline; }
+    .credits-link:hover { color: var(--text); }
+    .sort-controls label { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--text); }
+    .sort-controls select { background: var(--card); border: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 6px; }
+    .sort-controls select option { background: var(--surface); color: var(--text); }
+    .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
+    .modal-content { background: var(--surface); border-radius: 24px; padding: 1.5rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border); }
+    .modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1; }
     .modal-close:hover { color: var(--text); }
-    .credits-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-    .credit-chip {
-      background: rgba(255,255,255,0.06);
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-    }
-    .credit-chip.owner {
-      background: rgba(41,121,255,0.2);
-      color: #fff;
-      border-left: 2px solid var(--em);
-      font-weight: 500;
-    }
+    .credits-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .credit-chip { background: rgba(255,255,255,0.06); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; }
+    .credit-chip.owner { background: rgba(41,121,255,0.2); color: #fff; border-left: 2px solid var(--em); font-weight: 500; }
   </style>
 </head>
 <body>
@@ -159,7 +104,7 @@
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
 
-  <!-- VIEW PASTA DE SELEÇÃO -->
+  <!-- VIEW PASTA -->
   <div class="view" id="view-portfolio-pasta">
     <div class="section-header"><div class="back-btn" onclick="navigateTo('view-home')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Choose your portfolio</span></div>
     <div class="card" style="text-align: center;"><div class="portfolio-grid"><div class="portfolio-card" onclick="navigateTo('view-games')"><img src="images/steam-icon.png" alt="Steam"><span>Steam</span></div><div class="portfolio-card" onclick="navigateTo('view-music')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></div></div></div>
@@ -171,17 +116,17 @@
     <div class="card"><div id="music-stats" class="stats-bar" style="display: none;"><div class="total-views">🎬 Total views: <strong id="total-views-count">0</strong></div></div><div class="music-grid" id="music-grid"><div class="state"><div class="spinner"></div>Loading YouTube...</div></div></div>
   </div>
 
-  <!-- VIEW DETALHE DO VÍDEO -->
+  <!-- VIEW DETALHE VÍDEO -->
   <div class="view" id="view-video-detail">
     <div class="section-header"><div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Video Details</span></div><div class="card" id="detail-card"><div class="state"><div class="spinner"></div>Loading...</div></div>
   </div>
 
-  <!-- VIEW DETALHE DO JOGO -->
+  <!-- VIEW DETALHE JOGO -->
   <div class="view" id="view-game-detail">
     <div class="section-header"><div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Game Details</span></div><div class="card" id="game-detail-card"><div class="state"><div class="spinner"></div>Loading game info...</div></div>
   </div>
 
-  <!-- VIEW LISTA DE JOGOS -->
+  <!-- VIEW LISTA JOGOS -->
   <div class="view" id="view-games">
     <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">All My Gaming‑Related Cameos Thus Far</span></div><div class="card"><div class="games-grid" id="games-grid"><div class="state"><div class="spinner"></div>Loading games...</div></div></div>
   </div>
@@ -236,7 +181,7 @@
   }
 
   // ==================================================================
-  // 3. Roteamento
+  // 3. Roteamento (igual anterior)
   // ==================================================================
   function navigateTo(viewId, param = null) {
     if (viewId === 'view-video-detail' && param) {
@@ -294,7 +239,7 @@
   window.addEventListener('popstate', restoreFromPath);
 
   // ==================================================================
-  // 4. Músicas (YouTube)
+  // 4. Músicas (YouTube) – inalterado
   // ==================================================================
   async function loadMusic() {
     const grid = document.getElementById('music-grid');
@@ -412,7 +357,7 @@
   }
 
   // ==================================================================
-  // 5. Jogos (com carrossel de screenshots e descrição limpa)
+  // 5. Jogos (slideshow com setas, descrição limpa)
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -482,14 +427,14 @@
     const game = gamesList.find(g => g.appId === appId);
     if (!game) return;
 
-    // Buscar dados da Steam
+    // Dados da Steam
     let steamData = null;
     try {
       const steamRes = await fetch(`${WORKER_URL}/api/steam/app?appids=${appId}`);
       if (steamRes.ok) steamData = await steamRes.json();
     } catch(e) { console.warn('Steam API error', e); }
 
-    // Buscar tags e créditos
+    // Tags e créditos
     let tags = [], creditsImage = '', creditsChips = [];
     try {
       const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`);
@@ -509,33 +454,27 @@
 
     const gameName = steamData?.name || game.name;
     let description = steamData?.description || game.description || 'No description provided.';
-    description = stripHtml(description); // Remove tags HTML
+    description = stripHtml(description);
     const releaseDate = steamData?.releaseDate || game.releaseDate || '';
     const originalLanguage = game.originalLanguage || 'English';
     const cover = steamData?.headerImage || game.cover || `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg`;
     const screenshots = steamData?.screenshots || [];
     const dev = steamData?.developers?.join(', ') || game.dev || '—';
 
-    const steamUrl = `https://store.steampowered.com/app/${game.appId}`;
+    // Lista de imagens: capa + screenshots
+    const allImages = [{ url: cover, type: 'cover' }, ...screenshots.map(s => ({ url: s.full, type: 'screenshot' }))];
 
     const detailCard = document.getElementById('game-detail-card');
-    // Monta carrossel com todas as imagens (capa + screenshots)
-    let allImages = [{ full: cover, type: 'cover' }, ...screenshots];
-    const carouselHtml = `
-      <div class="screenshots-carousel">
-        ${allImages.map(img => `
-          <div class="screenshot-item">
-            <img src="${esc(img.full)}" alt="Game screenshot" loading="lazy" onerror="this.style.display='none'">
-          </div>
-        `).join('')}
-      </div>
-    `;
-
     detailCard.innerHTML = `
       <div class="detail-container">
         <div class="detail-player">
-          <div class="other-videos-title">🎮 SCREENSHOTS (scroll horizontally)</div>
-          ${carouselHtml}
+          <div class="screenshots-title">🎮 SCREENSHOTS</div>
+          <div class="slideshow-container" id="slideshow-container">
+            <img id="slideshow-img" class="slideshow-image" src="${esc(allImages[0].url)}" alt="Game screenshot">
+            <button class="slideshow-arrow prev-arrow" id="prev-slide">❮</button>
+            <button class="slideshow-arrow next-arrow" id="next-slide">❯</button>
+            <div class="slideshow-counter" id="slideshow-counter">1 / ${allImages.length}</div>
+          </div>
         </div>
         <div class="detail-info">
           <div class="detail-title">${esc(gameName)}</div>
@@ -556,6 +495,30 @@
         </div>
       </div>
     `;
+
+    // Inicializar slideshow
+    let currentIndex = 0;
+    const imgElement = document.getElementById('slideshow-img');
+    const counterSpan = document.getElementById('slideshow-counter');
+    const prevBtn = document.getElementById('prev-slide');
+    const nextBtn = document.getElementById('next-slide');
+
+    function updateSlide() {
+      imgElement.src = allImages[currentIndex].url;
+      counterSpan.innerText = `${currentIndex+1} / ${allImages.length}`;
+    }
+    if (prevBtn) {
+      prevBtn.onclick = () => {
+        currentIndex = (currentIndex - 1 + allImages.length) % allImages.length;
+        updateSlide();
+      };
+    }
+    if (nextBtn) {
+      nextBtn.onclick = () => {
+        currentIndex = (currentIndex + 1) % allImages.length;
+        updateSlide();
+      };
+    }
 
     const creditsLink = detailCard.querySelector('#credits-link');
     if (creditsLink) {
