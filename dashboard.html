@@ -8,241 +8,92 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #0d0f18;
-      --surface: #161927;
-      --card: #1c1f30;
-      --border: rgba(255,255,255,0.07);
-      --text: #e2e4ef;
-      --muted: #6b7194;
-      --em: #2979ff;
-      --danger: #e53935;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      padding: 2rem;
-    }
-    .container { max-width: 1200px; margin: 0 auto; }
-    .card {
-      background: var(--surface);
-      border-radius: 20px;
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--border);
-    }
-    .login-card { max-width: 400px; margin: 2rem auto; text-align: center; }
-    input, textarea, select {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.6rem 1rem;
-      border-radius: 10px;
-      width: 100%;
-      margin-bottom: 0.5rem;
-    }
-    button {
-      background: var(--em);
-      border: none;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 10px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: filter 0.15s;
-    }
-    button:hover { filter: brightness(1.1); }
-    .btn-danger { background: var(--danger); }
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: var(--card);
-      padding: 0.2rem 0.7rem;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      margin-right: 0.4rem;
-      margin-bottom: 0.4rem;
-      border: 1px solid var(--border);
-    }
-    .tag button {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 0.8rem;
-      cursor: pointer;
-      padding: 0;
-      margin: 0;
-      line-height: 1;
-    }
-    .tag button:hover { color: var(--danger); }
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .tab {
-      padding: 0.75rem 1.5rem;
-      cursor: pointer;
-      opacity: 0.7;
-      font-weight: 500;
-    }
-    .tab.active { opacity: 1; border-bottom: 2px solid var(--em); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .music-grid, .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 1rem;
-    }
-    .music-card, .game-card {
-      background: var(--card);
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      transition: transform 0.15s;
-    }
-    .music-card:hover, .game-card:hover { transform: translateY(-3px); }
-    .music-thumb {
-      width: 100%;
-      aspect-ratio: 16/9;
-      object-fit: cover;
-    }
-    .music-info, .game-info { padding: 1rem; }
-    .music-title, .game-name {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .tags-area { margin: 0.5rem 0; display: flex; flex-wrap: wrap; align-items: center; }
-    .tag-input { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
-    .lyrics-box, .credits-box, .credits-image-url {
-      margin: 0.5rem 0;
-      font-family: monospace;
-      font-size: 0.8rem;
-      resize: vertical;
-    }
-    .save-btn { background: #00a86b; width: 100%; margin-top: 0.5rem; }
-    .status { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; text-align: center; }
-    .refresh-btn { background: var(--muted); margin-bottom: 1rem; }
-    .add-game-btn { background: #00a86b; margin-bottom: 1rem; }
-    .state { text-align: center; padding: 3rem; color: var(--muted); }
-    .spinner {
-      width: 22px;
-      height: 22px;
-      border: 2px solid var(--border);
-      border-top-color: var(--muted);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin: 0 auto 0.75rem;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .footer { text-align: center; font-size: 0.7rem; color: var(--muted); margin-top: 2rem; }
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: var(--surface);
-      border-radius: 20px;
-      padding: 2rem;
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
+    :root{--bg:#0d0f18;--surface:#161927;--card:#1c1f30;--border:rgba(255,255,255,0.07);--text:#e2e4ef;--muted:#6b7194;--em:#2979ff;--danger:#e53935}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;padding:2rem}
+    .container{max-width:1200px;margin:0 auto}
+    .card{background:var(--surface);border-radius:20px;padding:1.75rem 2rem;margin-bottom:1.5rem;border:1px solid var(--border)}
+    .login-card{max-width:400px;margin:2rem auto;text-align:center}
+    input,textarea,select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.6rem 1rem;border-radius:10px;width:100%;margin-bottom:0.5rem}
+    button{background:var(--em);border:none;color:#fff;padding:0.6rem 1.2rem;border-radius:10px;font-weight:500;cursor:pointer;transition:filter 0.15s}
+    button:hover{filter:brightness(1.1)}
+    .btn-danger{background:var(--danger)}
+    .tag{display:inline-flex;align-items:center;gap:0.4rem;background:var(--card);padding:0.2rem 0.7rem;border-radius:20px;font-size:0.7rem;margin-right:0.4rem;margin-bottom:0.4rem;border:1px solid var(--border)}
+    .tag button{background:none;border:none;color:var(--muted);font-size:0.8rem;cursor:pointer;padding:0}
+    .tag button:hover{color:var(--danger)}
+    .tabs{display:flex;gap:1rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border)}
+    .tab{padding:0.75rem 1.5rem;cursor:pointer;opacity:0.7;font-weight:500}
+    .tab.active{opacity:1;border-bottom:2px solid var(--em)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .music-grid,.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1rem}
+    .music-card,.game-card{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform 0.15s}
+    .music-card:hover,.game-card:hover{transform:translateY(-3px)}
+    .music-thumb{width:100%;aspect-ratio:16/9;object-fit:cover}
+    .music-info,.game-info{padding:1rem}
+    .music-title,.game-name{font-size:0.9rem;font-weight:600;margin-bottom:0.5rem}
+    .tags-area{margin:0.5rem 0;display:flex;flex-wrap:wrap}
+    .tag-input{display:flex;gap:0.5rem;margin:0.5rem 0}
+    .lyrics-box,.credits-box,.credits-image-url{margin:0.5rem 0;font-family:monospace;font-size:0.8rem;resize:vertical}
+    .save-btn{background:#00a86b;width:100%;margin-top:0.5rem}
+    .status{font-size:0.7rem;color:var(--muted);margin-top:0.3rem;text-align:center}
+    .refresh-btn,.add-game-btn{margin-bottom:1rem}
+    .add-game-btn{background:#00a86b}
+    .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:1000}
+    .modal-content{background:var(--surface);border-radius:20px;padding:2rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto}
+    .state{text-align:center;padding:3rem;color:var(--muted)}.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--muted);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 0.75rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .footer{text-align:center;font-size:0.7rem;color:var(--muted);margin-top:2rem}
   </style>
 </head>
 <body>
 <div class="container">
-  <h1 style="margin-bottom:1rem;">🎛️ Admin Dashboard</h1>
-
+  <h1>🎛️ Admin Dashboard</h1>
   <div id="login-section" class="card login-card">
-    <h2 style="margin-bottom:1rem;">Login</h2>
-    <input type="password" id="admin-password" placeholder="Senha" style="margin-bottom:1rem;">
+    <h2>Login</h2>
+    <input type="password" id="admin-password" placeholder="Senha">
     <button id="login-btn">Entrar</button>
-    <div id="login-error" class="status" style="color:#e53935; margin-top:0.5rem;"></div>
+    <div id="login-error" class="status" style="color:#e53935"></div>
   </div>
-
-  <div id="admin-content" style="display:none;">
-    <div class="tabs">
-      <div class="tab active" data-tab="music">🎵 Músicas (letras + tags)</div>
-      <div class="tab" data-tab="games">🎮 Jogos (gerenciar + tags + créditos)</div>
-    </div>
-
+  <div id="admin-content" style="display:none">
+    <div class="tabs"><div class="tab active" data-tab="music">🎵 Músicas (letras + tags)</div><div class="tab" data-tab="games">🎮 Jogos (gerenciar + tags + imagem de crédito)</div></div>
     <div id="music-tab" class="tab-content active">
       <button id="refresh-playlist-btn" class="refresh-btn">🔄 Forçar atualização da playlist (cache)</button>
-      <div id="music-list" class="music-grid">
-        <div class="state"><div class="spinner"></div>Carregando músicas...</div>
-      </div>
+      <div id="music-list" class="music-grid"><div class="state"><div class="spinner"></div>Carregando músicas...</div></div>
     </div>
-
     <div id="games-tab" class="tab-content">
       <button id="add-game-btn" class="add-game-btn">➕ Adicionar novo jogo</button>
-      <div id="games-list" class="games-grid">
-        <div class="state"><div class="spinner"></div>Carregando jogos...</div>
-      </div>
+      <div id="games-list" class="games-grid"><div class="state"><div class="spinner"></div>Carregando jogos...</div></div>
     </div>
   </div>
   <div class="footer">GenericBR Admin · Alterações salvas via Cloudflare KV</div>
 </div>
-
 <script>
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let authToken = null;
 
   // ---------- LOGIN ----------
   document.getElementById('login-btn').onclick = async () => {
-    const password = document.getElementById('admin-password').value;
+    const pwd = document.getElementById('admin-password').value;
     try {
-      const res = await fetch(`${WORKER_URL}/auth`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
-      });
+      const res = await fetch(`${WORKER_URL}/auth`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({password:pwd}) });
       const data = await res.json();
       if (res.ok && data.token) {
         authToken = data.token;
         localStorage.setItem('adminToken', authToken);
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('admin-content').style.display = 'block';
-        loadMusicData();
-        loadGamesData();
-      } else {
-        document.getElementById('login-error').innerText = data.error || 'Falha no login';
-      }
-    } catch (err) {
-      document.getElementById('login-error').innerText = 'Erro de rede';
-    }
+        loadMusicData(); loadGamesData();
+      } else document.getElementById('login-error').innerText = data.error || 'Falha no login';
+    } catch(e) { document.getElementById('login-error').innerText = 'Erro de rede'; }
   };
-
   (async () => {
-    const savedToken = localStorage.getItem('adminToken');
-    if (savedToken) {
+    const saved = localStorage.getItem('adminToken');
+    if (saved) {
       try {
-        const res = await fetch(`${WORKER_URL}/auth/check`, {
-          headers: { 'Authorization': `Bearer ${savedToken}` }
-        });
-        if (res.ok) {
-          authToken = savedToken;
-          document.getElementById('login-section').style.display = 'none';
-          document.getElementById('admin-content').style.display = 'block';
-          loadMusicData();
-          loadGamesData();
-        } else {
-          localStorage.removeItem('adminToken');
-        }
+        const res = await fetch(`${WORKER_URL}/auth/check`, { headers:{'Authorization':`Bearer ${saved}`} });
+        if (res.ok) { authToken = saved; document.getElementById('login-section').style.display = 'none'; document.getElementById('admin-content').style.display = 'block'; loadMusicData(); loadGamesData(); }
+        else localStorage.removeItem('adminToken');
       } catch(e) {}
     }
   })();
@@ -260,337 +111,152 @@
   // ---------- REFRESH PLAYLIST ----------
   document.getElementById('refresh-playlist-btn')?.addEventListener('click', async () => {
     const btn = document.getElementById('refresh-playlist-btn');
-    const originalText = btn.innerText;
-    btn.innerText = '🔄 Atualizando...';
-    btn.disabled = true;
+    const orig = btn.innerText;
+    btn.innerText = '🔄 Atualizando...'; btn.disabled = true;
     try {
-      const res = await fetch(`${WORKER_URL}/refresh`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      if (res.ok) {
-        alert('Cache da playlist limpo! Recarregando dados...');
-        await loadMusicData();
-      } else {
-        alert('Erro ao limpar cache');
-      }
-    } catch (err) {
-      alert('Erro de rede');
-    } finally {
-      btn.innerText = originalText;
-      btn.disabled = false;
-    }
+      const res = await fetch(`${WORKER_URL}/refresh`, { method:'POST', headers:{'Authorization':`Bearer ${authToken}`} });
+      if (res.ok) { alert('Cache limpo!'); await loadMusicData(); }
+      else alert('Erro ao limpar cache');
+    } catch(e) { alert('Erro de rede'); }
+    finally { btn.innerText = orig; btn.disabled = false; }
   });
 
-  // ========== MÚSICAS (tags e letras) ==========
+  // ========== MÚSICAS ==========
   async function loadMusicData() {
     const container = document.getElementById('music-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando músicas...</div>';
     try {
-      const res = await fetch(`${WORKER_URL}?admin=true`, {
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
+      const res = await fetch(`${WORKER_URL}?admin=true`, { headers:{'Authorization':`Bearer ${authToken}`} });
       const videos = await res.json();
-      if (!videos.length) {
-        container.innerHTML = '<div class="state">Nenhuma música encontrada.</div>';
-        return;
-      }
+      if (!videos.length) { container.innerHTML = '<div class="state">Nenhuma música encontrada.</div>'; return; }
       container.innerHTML = '';
-      for (const video of videos) {
-        const card = document.createElement('div');
-        card.className = 'music-card';
+      for (const v of videos) {
+        const card = document.createElement('div'); card.className = 'music-card';
         card.innerHTML = `
-          <img class="music-thumb" src="${escapeHtml(video.thumbnail)}" alt="${escapeHtml(video.title)}" loading="lazy">
+          <img class="music-thumb" src="${escapeHtml(v.thumbnail)}" alt="${escapeHtml(v.title)}" loading="lazy">
           <div class="music-info">
-            <div class="music-title">${escapeHtml(video.title)}</div>
-            <div class="tags-area" id="tags-${video.id}">
-              ${(video.tags || []).map(t => `
-                <span class="tag">
-                  ${escapeHtml(t)}
-                  <button onclick="removeTag('${video.id}', 'music', '${escapeHtml(t)}')" title="Remover tag">✖</button>
-                </span>
-              `).join('')}
-            </div>
-            <div class="tag-input">
-              <input type="text" placeholder="Nova tag" id="newtag-${video.id}" style="flex:1">
-              <button onclick="addTag('${video.id}', 'music')">+</button>
-            </div>
+            <div class="music-title">${escapeHtml(v.title)}</div>
+            <div class="tags-area" id="tags-${v.id}">${(v.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}<button onclick="removeTag('${v.id}','music','${escapeHtml(t)}')">✖</button></span>`).join('')}</div>
+            <div class="tag-input"><input type="text" placeholder="Nova tag" id="newtag-${v.id}"><button onclick="addTag('${v.id}','music')">+</button></div>
             <div><strong>Letra / Tradução</strong></div>
-            <textarea id="lyrics-${video.id}" class="lyrics-box" rows="4">${escapeHtml(video.lyrics || '')}</textarea>
-            <button class="save-btn" onclick="saveLyrics('${video.id}')">Salvar letra</button>
-            <div class="status" id="status-${video.id}"></div>
-          </div>
-        `;
+            <textarea id="lyrics-${v.id}" class="lyrics-box" rows="4">${escapeHtml(v.lyrics||'')}</textarea>
+            <button class="save-btn" onclick="saveLyrics('${v.id}')">Salvar letra</button>
+            <div class="status" id="status-${v.id}"></div>
+          </div>`;
         container.appendChild(card);
       }
-    } catch (err) {
-      container.innerHTML = `<div class="state">Erro ao carregar músicas: ${err.message}</div>`;
-    }
+    } catch(e) { container.innerHTML = `<div class="state">Erro: ${e.message}</div>`; }
   }
-
-  window.addTag = async (id, type) => {
-    const input = document.getElementById(`newtag-${id}`);
-    const newTag = input.value.trim();
-    if (!newTag) return;
-    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
-    try {
-      const res = await fetch(`${WORKER_URL}${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({ id, tag: newTag })
-      });
-      if (res.ok) {
-        input.value = '';
-        if (type === 'music') loadMusicData();
-        else loadGamesData();
-      } else {
-        alert('Erro ao adicionar tag');
-      }
-    } catch (err) {
-      alert('Erro de rede');
-    }
-  };
-
-  window.removeTag = async (id, type, tag) => {
-    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
-    try {
-      const res = await fetch(`${WORKER_URL}${endpoint}?id=${id}&tag=${encodeURIComponent(tag)}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      if (res.ok) {
-        if (type === 'music') loadMusicData();
-        else loadGamesData();
-      } else {
-        alert('Erro ao remover tag');
-      }
-    } catch (err) {
-      alert('Erro de rede');
-    }
-  };
-
-  window.saveLyrics = async (videoId) => {
-    const lyrics = document.getElementById(`lyrics-${videoId}`).value;
-    const statusDiv = document.getElementById(`status-${videoId}`);
+  window.saveLyrics = async (id) => {
+    const lyrics = document.getElementById(`lyrics-${id}`).value;
+    const statusDiv = document.getElementById(`status-${id}`);
     statusDiv.innerText = 'Salvando...';
     try {
-      const res = await fetch(`${WORKER_URL}/api/music/lyrics`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({ id: videoId, lyrics })
-      });
-      if (res.ok) {
-        statusDiv.innerText = '✅ Salvo!';
-        setTimeout(() => statusDiv.innerText = '', 2000);
-      } else {
-        statusDiv.innerText = '❌ Erro ao salvar';
-      }
-    } catch (err) {
-      statusDiv.innerText = '❌ Erro de rede';
-    }
+      const res = await fetch(`${WORKER_URL}/api/music/lyrics`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`}, body:JSON.stringify({id,lyrics}) });
+      if (res.ok) { statusDiv.innerText = '✅ Salvo!'; setTimeout(()=>statusDiv.innerText='',2000); }
+      else statusDiv.innerText = '❌ Erro';
+    } catch(e) { statusDiv.innerText = '❌ Rede'; }
   };
 
-  // ========== JOGOS (CRUD + tags + créditos com imagem) ==========
+  // ========== JOGOS (CRUD + tags + créditos imagem) ==========
   async function loadGamesData() {
     const container = document.getElementById('games-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
     try {
-      const res = await fetch(`${WORKER_URL}/api/games?admin=true`, {
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
+      const res = await fetch(`${WORKER_URL}/api/games?admin=true`, { headers:{'Authorization':`Bearer ${authToken}`} });
       const games = await res.json();
-      if (!games.length) {
-        container.innerHTML = '<div class="state">Nenhum jogo cadastrado. Clique em "Adicionar novo jogo".</div>';
-        return;
-      }
+      if (!games.length) { container.innerHTML = '<div class="state">Nenhum jogo. Clique em "Adicionar novo jogo".</div>'; return; }
       container.innerHTML = '';
       for (const game of games) {
-        // Buscar tags e créditos
-        const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, {
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        }).then(r => r.json()).catch(() => ({ tags: [] }));
-        const creditsRes = await fetch(`${WORKER_URL}/api/game/credits?id=${game.appId}`, {
-          headers: { 'Authorization': `Bearer ${authToken}` }
-        }).then(r => r.json()).catch(() => ({ credits: '', creditsImage: '' }));
-
-        const card = document.createElement('div');
-        card.className = 'game-card';
+        const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${game.appId}`, { headers:{'Authorization':`Bearer ${authToken}`} }).then(r=>r.json()).catch(()=>({tags:[]}));
+        const creditsRes = await fetch(`${WORKER_URL}/api/game/credits?id=${game.appId}`, { headers:{'Authorization':`Bearer ${authToken}`} }).then(r=>r.json()).catch(()=>({creditsImage:''}));
+        const card = document.createElement('div'); card.className = 'game-card';
         card.innerHTML = `
           <div class="game-info">
             <div class="game-name">${escapeHtml(game.name)} (${game.appId})</div>
-            <div><strong>Role:</strong> <input type="text" id="role-${game.appId}" value="${escapeHtml(game.role || '')}" style="width:100%;"></div>
-            <div><strong>Developer:</strong> <input type="text" id="dev-${game.appId}" value="${escapeHtml(game.dev || '')}" style="width:100%;"></div>
-            <div><strong>Note:</strong> <input type="text" id="note-${game.appId}" value="${escapeHtml(game.note || '')}" style="width:100%;"></div>
-            <div><strong>Description:</strong> <textarea id="desc-${game.appId}" rows="2">${escapeHtml(game.description || '')}</textarea></div>
-            <div><strong>Genre:</strong> <input type="text" id="genre-${game.appId}" value="${escapeHtml(game.genre || '')}"></div>
-            <div class="tags-area" id="tags-${game.appId}">
-              ${(tagsRes.tags || []).map(t => `
-                <span class="tag">
-                  ${escapeHtml(t)}
-                  <button onclick="removeTag('${game.appId}', 'game', '${escapeHtml(t)}')">✖</button>
-                </span>
-              `).join('')}
-            </div>
-            <div class="tag-input">
-              <input type="text" placeholder="Nova tag" id="newtag-${game.appId}" style="flex:1">
-              <button onclick="addTag('${game.appId}', 'game')">+</button>
-            </div>
-            <div><strong>Créditos (texto):</strong></div>
-            <textarea id="credits-${game.appId}" class="credits-box" rows="3">${escapeHtml(creditsRes.credits || '')}</textarea>
+            <div><strong>Role:</strong> <input type="text" id="role-${game.appId}" value="${escapeHtml(game.role||'')}"></div>
+            <div><strong>Developer:</strong> <input type="text" id="dev-${game.appId}" value="${escapeHtml(game.dev||'')}"></div>
+            <div><strong>Note:</strong> <input type="text" id="note-${game.appId}" value="${escapeHtml(game.note||'')}"></div>
+            <div><strong>Description:</strong> <textarea id="desc-${game.appId}" rows="2">${escapeHtml(game.description||'')}</textarea></div>
+            <div><strong>Genre:</strong> <input type="text" id="genre-${game.appId}" value="${escapeHtml(game.genre||'')}"></div>
+            <div><strong>Cover image URL:</strong> <input type="text" id="cover-${game.appId}" value="${escapeHtml(game.cover||'')}" placeholder="https://..."></div>
+            <div class="tags-area" id="tags-${game.appId}">${(tagsRes.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}<button onclick="removeTag('${game.appId}','game','${escapeHtml(t)}')">✖</button></span>`).join('')}</div>
+            <div class="tag-input"><input type="text" placeholder="Nova tag" id="newtag-${game.appId}"><button onclick="addTag('${game.appId}','game')">+</button></div>
             <div><strong>Imagem de crédito (URL):</strong></div>
-            <input type="text" id="creditsImage-${game.appId}" class="credits-image-url" value="${escapeHtml(creditsRes.creditsImage || '')}" placeholder="https://exemplo.com/prova.jpg">
+            <input type="text" id="creditsImage-${game.appId}" value="${escapeHtml(creditsRes.creditsImage||'')}" placeholder="https://exemplo.com/prova.jpg">
             <button class="save-btn" onclick="saveGameData('${game.appId}')">Salvar alterações</button>
-            <button class="save-btn btn-danger" style="margin-top:0.3rem; background:#e53935;" onclick="deleteGame('${game.appId}')">Excluir jogo</button>
+            <button class="save-btn btn-danger" style="margin-top:0.3rem" onclick="deleteGame('${game.appId}')">Excluir jogo</button>
             <div class="status" id="status-${game.appId}"></div>
-          </div>
-        `;
+          </div>`;
         container.appendChild(card);
       }
-    } catch (err) {
-      container.innerHTML = `<div class="state">Erro ao carregar jogos: ${err.message}</div>`;
-    }
+    } catch(e) { container.innerHTML = `<div class="state">Erro: ${e.message}</div>`; }
   }
-
   window.saveGameData = async (appId) => {
     const statusDiv = document.getElementById(`status-${appId}`);
     statusDiv.innerText = 'Salvando...';
     const gameData = {
-      appId,
-      name: document.getElementById(`new-name-${appId}`)?.value || (await getGameName(appId)),
-      role: document.getElementById(`role-${appId}`).value,
-      dev: document.getElementById(`dev-${appId}`).value,
-      note: document.getElementById(`note-${appId}`).value,
-      description: document.getElementById(`desc-${appId}`).value,
-      genre: document.getElementById(`genre-${appId}`).value
+      appId, name: document.querySelector(`#games-list .game-card .game-name`)?.innerText.split(' (')[0] || appId,
+      role: document.getElementById(`role-${appId}`).value, dev: document.getElementById(`dev-${appId}`).value,
+      note: document.getElementById(`note-${appId}`).value, description: document.getElementById(`desc-${appId}`).value,
+      genre: document.getElementById(`genre-${appId}`).value, cover: document.getElementById(`cover-${appId}`).value
     };
-    // Obter nome atual (já está no título, mas podemos armazenar)
-    const nameInput = document.createElement('input');
-    // Como o nome não tem campo editável, vamos pegar do elemento .game-name
-    const nameElement = document.querySelector(`#games-list .game-card .game-name`)?.innerText.split(' (')[0];
-    if (nameElement) gameData.name = nameElement;
     try {
-      const res = await fetch(`${WORKER_URL}/api/games`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify(gameData)
-      });
+      const res = await fetch(`${WORKER_URL}/api/games`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`}, body:JSON.stringify(gameData) });
       if (!res.ok) throw new Error();
-      // Salvar créditos
-      const credits = document.getElementById(`credits-${appId}`).value;
       const creditsImage = document.getElementById(`creditsImage-${appId}`).value;
-      const creditsRes = await fetch(`${WORKER_URL}/api/game/credits`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`
-        },
-        body: JSON.stringify({ id: appId, credits, creditsImage })
-      });
-      if (creditsRes.ok) {
-        statusDiv.innerText = '✅ Salvo!';
-        setTimeout(() => statusDiv.innerText = '', 2000);
-      } else {
-        statusDiv.innerText = '❌ Erro ao salvar créditos';
-      }
-    } catch (err) {
-      statusDiv.innerText = '❌ Erro ao salvar jogo';
-    }
+      await fetch(`${WORKER_URL}/api/game/credits`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`}, body:JSON.stringify({id:appId, creditsImage}) });
+      statusDiv.innerText = '✅ Salvo!'; setTimeout(()=>statusDiv.innerText='',2000);
+    } catch(e) { statusDiv.innerText = '❌ Erro'; }
   };
-
   window.deleteGame = async (appId) => {
-    if (!confirm(`Tem certeza que deseja excluir o jogo ${appId}?`)) return;
+    if (!confirm(`Excluir jogo ${appId}?`)) return;
     const statusDiv = document.getElementById(`status-${appId}`);
     statusDiv.innerText = 'Excluindo...';
     try {
-      const res = await fetch(`${WORKER_URL}/api/games?appId=${appId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      if (res.ok) {
-        loadGamesData();
-      } else {
-        statusDiv.innerText = '❌ Erro ao excluir';
-      }
-    } catch (err) {
-      statusDiv.innerText = '❌ Erro de rede';
-    }
+      const res = await fetch(`${WORKER_URL}/api/games?appId=${appId}`, { method:'DELETE', headers:{'Authorization':`Bearer ${authToken}`} });
+      if (res.ok) loadGamesData();
+      else statusDiv.innerText = '❌ Erro';
+    } catch(e) { statusDiv.innerText = '❌ Rede'; }
   };
-
-  // Modal para adicionar novo jogo
   document.getElementById('add-game-btn')?.addEventListener('click', () => {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <h3>Adicionar novo jogo</h3>
-        <input type="text" id="new-appid" placeholder="App ID (ex: 4178020)">
-        <input type="text" id="new-name" placeholder="Nome do jogo">
-        <button id="confirm-add-game">Adicionar</button>
-        <button id="cancel-add-game">Cancelar</button>
-      </div>
-    `;
+    const modal = document.createElement('div'); modal.className = 'modal';
+    modal.innerHTML = `<div class="modal-content"><h3>Adicionar novo jogo</h3><input type="text" id="new-appid" placeholder="App ID (ex: 4178020)"><input type="text" id="new-name" placeholder="Nome do jogo"><button id="confirm-add-game">Adicionar</button><button id="cancel-add-game">Cancelar</button></div>`;
     document.body.appendChild(modal);
     document.getElementById('confirm-add-game').onclick = async () => {
-      const appId = document.getElementById('new-appid').value.trim();
-      const name = document.getElementById('new-name').value.trim();
+      const appId = document.getElementById('new-appid').value.trim(), name = document.getElementById('new-name').value.trim();
       if (!appId || !name) return alert('Preencha App ID e Nome');
-      const newGame = {
-        appId,
-        name,
-        role: '',
-        dev: '',
-        note: '',
-        description: '',
-        genre: ''
-      };
       try {
-        const res = await fetch(`${WORKER_URL}/api/games`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`
-          },
-          body: JSON.stringify(newGame)
-        });
-        if (res.ok) {
-          modal.remove();
-          loadGamesData();
-        } else {
-          alert('Erro ao adicionar jogo');
-        }
-      } catch (err) {
-        alert('Erro de rede');
-      }
+        const res = await fetch(`${WORKER_URL}/api/games`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`}, body:JSON.stringify({appId,name,role:'',dev:'',note:'',description:'',genre:'',cover:''}) });
+        if (res.ok) { modal.remove(); loadGamesData(); }
+        else alert('Erro ao adicionar');
+      } catch(e) { alert('Erro de rede'); }
     };
     document.getElementById('cancel-add-game').onclick = () => modal.remove();
   });
 
-  async function getGameName(appId) {
-    const games = await fetch(`${WORKER_URL}/api/games?admin=true`, {
-      headers: { 'Authorization': `Bearer ${authToken}` }
-    }).then(r => r.json());
-    const game = games.find(g => g.appId === appId);
-    return game ? game.name : appId;
-  }
+  // ---------- TAGS (genérico) ----------
+  window.addTag = async (id, type) => {
+    const input = document.getElementById(`newtag-${id}`);
+    const tag = input.value.trim();
+    if (!tag) return;
+    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
+    try {
+      const res = await fetch(`${WORKER_URL}${endpoint}`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`}, body:JSON.stringify({id,tag}) });
+      if (res.ok) { input.value = ''; if (type === 'music') loadMusicData(); else loadGamesData(); }
+      else alert('Erro');
+    } catch(e) { alert('Rede'); }
+  };
+  window.removeTag = async (id, type, tag) => {
+    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
+    try {
+      const res = await fetch(`${WORKER_URL}${endpoint}?id=${id}&tag=${encodeURIComponent(tag)}`, { method:'DELETE', headers:{'Authorization':`Bearer ${authToken}`} });
+      if (res.ok) { if (type === 'music') loadMusicData(); else loadGamesData(); }
+      else alert('Erro');
+    } catch(e) { alert('Rede'); }
+  };
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
-  }
+  function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 </script>
 </body>
 </html>
