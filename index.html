@@ -8,10 +8,10 @@
   <!-- Arquivo de configuração (dados pessoais, links, etc.) -->
   <script src="config.js"></script>
 
-  <!-- CSS externo (estilos separados para melhor organização) -->
+  <!-- CSS externo -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- Fontes do Google -->
+  <!-- Fontes -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -21,7 +21,6 @@
   <!-- ==================== VIEW: HOME ==================== -->
   <div class="view active" id="view-home">
     <div class="card">
-      <!-- Lado esquerdo: perfil -->
       <div class="profile-left">
         <div class="profile-top">
           <div class="avatar" id="avatar-wrap">
@@ -36,8 +35,6 @@
           Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.
         </p>
       </div>
-
-      <!-- Lado direito: botões de contato -->
       <div class="contact-buttons">
         <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener">
           Youtube
@@ -71,7 +68,7 @@
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
 
-  <!-- ==================== VIEW: PASTA DE SELEÇÃO (STEAM / MUSIC) ==================== -->
+  <!-- ==================== VIEW: PASTA DE SELEÇÃO ==================== -->
   <div class="view" id="view-portfolio-pasta">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar">
@@ -99,7 +96,7 @@
     </div>
   </div>
 
-  <!-- ==================== VIEW: LISTA DE MÚSICAS (YOUTUBE) ==================== -->
+  <!-- ==================== VIEW: LISTA DE MÚSICAS ==================== -->
   <div class="view" id="view-music">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
@@ -170,7 +167,7 @@
     </div>
   </div>
 
-  <!-- ==================== VIEW: LISTA DE JOGOS (STEAM) ==================== -->
+  <!-- ==================== VIEW: LISTA DE JOGOS ==================== -->
   <div class="view" id="view-games">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
@@ -194,7 +191,7 @@
 
 <script>
   // ------------------------------------------------------------------
-  // 1. Configurações globais e variáveis
+  // 1. Configurações globais
   // ------------------------------------------------------------------
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let musicItemsRaw = [];
@@ -202,7 +199,7 @@
   let currentSort = 'date_desc';
 
   // ------------------------------------------------------------------
-  // 2. Funções auxiliares (escape, formatação, configuração inicial)
+  // 2. Funções auxiliares
   // ------------------------------------------------------------------
   function esc(s) {
     const d = document.createElement('div');
@@ -246,7 +243,7 @@
   }
 
   // ------------------------------------------------------------------
-  // 3. Roteamento (navegação com History API)
+  // 3. Roteamento
   // ------------------------------------------------------------------
   function navigateTo(viewId, param = null) {
     if (viewId === 'view-video-detail' && param) {
@@ -314,7 +311,7 @@
   window.addEventListener('popstate', restoreFromPath);
 
   // ------------------------------------------------------------------
-  // 4. Lógica das músicas (YouTube)
+  // 4. Músicas (YouTube)
   // ------------------------------------------------------------------
   async function loadMusic() {
     const grid = document.getElementById('music-grid');
@@ -358,26 +355,13 @@
     const grid = document.getElementById('music-grid');
     let sorted = [...musicItemsRaw];
     switch (currentSort) {
-      case 'views_desc':
-        sorted.sort((a, b) => b.viewCount - a.viewCount);
-        break;
-      case 'views_asc':
-        sorted.sort((a, b) => a.viewCount - b.viewCount);
-        break;
-      case 'date_desc':
-        sorted.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-        break;
-      case 'date_asc':
-        sorted.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
-        break;
-      case 'title_asc':
-        sorted.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case 'title_desc':
-        sorted.sort((a, b) => b.title.localeCompare(a.title));
-        break;
-      default:
-        sorted = [...musicItemsRaw];
+      case 'views_desc': sorted.sort((a, b) => b.viewCount - a.viewCount); break;
+      case 'views_asc':  sorted.sort((a, b) => a.viewCount - b.viewCount); break;
+      case 'date_desc':  sorted.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)); break;
+      case 'date_asc':   sorted.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
+      case 'title_asc':  sorted.sort((a, b) => a.title.localeCompare(b.title)); break;
+      case 'title_desc': sorted.sort((a, b) => b.title.localeCompare(a.title)); break;
+      default: sorted = [...musicItemsRaw];
     }
     grid.innerHTML = sorted.map(v => `
       <div class="music-card" onclick="navigateTo('view-video-detail', '${v.id}')">
@@ -461,7 +445,7 @@
   }
 
   // ------------------------------------------------------------------
-  // 5. Lógica dos jogos (Steam + dados do Worker + modal de créditos)
+  // 5. Jogos (com link nos créditos)
   // ------------------------------------------------------------------
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -596,14 +580,18 @@
               ${screenshots.map(img => `<img src="${esc(img)}" loading="lazy" onerror="this.style.display='none'">`).join('')}
             </div>
           ` : ''}
-          <div class="section-divider"><span>🎖️ LOCALIZATION CREDITS</span><hr></div>
-          <button class="credits-button" id="show-credits-btn">View proof of participation</button>
+          <div class="section-divider">
+            <span class="credits-link">🎖️ LOCALIZATION CREDITS</span>
+            <hr>
+          </div>
         </div>
       </div>
     `;
-    const creditsBtn = detailCard.querySelector('#show-credits-btn');
-    if (creditsBtn) {
-      creditsBtn.onclick = () => openCreditsModal(creditsChips, creditsImage, ownerName);
+    // Adiciona evento de clique ao título de créditos
+    const creditsLink = detailCard.querySelector('.credits-link');
+    if (creditsLink) {
+      creditsLink.style.cursor = 'pointer';
+      creditsLink.onclick = () => openCreditsModal(creditsChips, creditsImage, ownerName);
     }
     setActiveView('view-game-detail');
   }
@@ -618,6 +606,5 @@
     restoreFromPath();
   });
 </script>
-
 </body>
 </html>
