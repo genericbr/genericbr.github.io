@@ -5,1020 +5,167 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GenericBR - Portfólio de Tradução</title>
   <script src="config.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* CSS completo (mesmo do último envio, sem alterações) */
-    :root {
-      --bg: #0d0f18;
-      --surface: #161927;
-      --card: #1c1f30;
-      --border: rgba(255,255,255,0.07);
-      --text: #e2e4ef;
-      --muted: #6b7194;
-      --yt: #e53935;
-      --dc: #5865f2;
-      --em: #2979ff;
-      --pf: #2a2d40;
-    }
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      overflow-x: hidden;
-    }
-    :focus-visible { outline: 2px solid #6b7194; outline-offset: 2px; border-radius: 4px; }
-    .view-wrap {
-      width: 100%;
-      max-width: 720px;
-      position: relative;
-      transition: max-width 0.2s ease;
-    }
-    .view-wrap:has(#view-video-detail.active),
-    .view-wrap:has(#view-game-detail.active) { max-width: 980px; }
-    .view {
-      width: 100%;
-      display: none;
-      flex-direction: column;
-      gap: 1rem;
-      animation: fadeSlideIn .22s ease both;
-    }
-    .view.active { display: flex; }
-    @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .card {
-      background: var(--surface);
-      border-radius: 20px;
-      padding: 1.75rem 2rem;
-    }
-    #view-home .card {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 1.5rem 2.5rem;
-      align-items: start;
-    }
-    .profile-left { display: flex; flex-direction: column; gap: 1rem; }
-    .profile-top { display: flex; align-items: center; gap: 1rem; }
-    .avatar {
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      background: var(--card);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      overflow: hidden;
-    }
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .profile-meta { display: flex; flex-direction: column; gap: .2rem; }
-    .tagline {
-      font-family: 'DM Mono', monospace;
-      font-size: .66rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .profile-name { font-size: 1.6rem; font-weight: 600; line-height: 1; letter-spacing: -.01em; }
-    .profile-bio { font-size: .875rem; color: var(--muted); line-height: 1.65; }
-    .contact-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: .6rem;
-      min-width: 185px;
-    }
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: .72rem 1rem;
-      border-radius: 10px;
-      font-size: .875rem;
-      font-weight: 500;
-      text-decoration: none;
-      color: #fff;
-      transition: filter .15s, transform .1s;
-      cursor: pointer;
-    }
-    .btn:hover { filter: brightness(1.13); }
-    .btn:active { transform: scale(.97); }
-    .btn svg { width: 19px; height: 19px; flex-shrink: 0; }
-    .btn-yt { background: var(--yt); }
-    .btn-dc { background: var(--dc); }
-    .btn-em { background: var(--em); }
-    .btn-pf { background: var(--pf); border: 1px solid var(--border); }
-    .portfolio-grid {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 0.5rem;
-    }
-    .portfolio-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      width: 140px;
-      height: 140px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      cursor: pointer;
-      transition: border-color 0.2s, transform 0.2s;
-      text-decoration: none;
-      color: var(--text);
-    }
-    .portfolio-card:hover {
-      border-color: rgba(255,255,255,0.25);
-      transform: translateY(-4px);
-    }
-    .portfolio-card svg {
-      width: 48px;
-      height: 48px;
-      stroke: white;
-      stroke-width: 1.5;
-      fill: none;
-    }
-    .portfolio-card img {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-    }
-    .portfolio-card span {
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-    }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-    .back-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 34px; height: 34px;
-      border-radius: 8px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: border-color .15s;
-      color: var(--text);
-    }
-    .back-btn:hover { border-color: rgba(255,255,255,.2); }
-    .section-title {
-      font-family: 'DM Mono', monospace;
-      font-size: .68rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .sort-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--card);
-      padding: 0.3rem 0.6rem;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-    }
-    .sort-controls select {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      cursor: pointer;
-      padding: 0.2rem 0.4rem;
-    }
-    .sort-controls select:focus { outline: none; }
-    .sort-controls label { font-size: 0.65rem; color: var(--muted); }
-    .stats-bar {
-      background: var(--card);
-      border-radius: 12px;
-      padding: 0.6rem 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      border: 1px solid var(--border);
-    }
-    .total-views { font-size: 0.8rem; font-family: 'DM Mono', monospace; }
-    .total-views strong { color: #fff; font-size: 1.1rem; }
-    .music-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    .music-card {
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      background: var(--card);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      transition: border-color .2s, transform .2s;
-      cursor: pointer;
-    }
-    .music-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
-    .music-thumb {
-      width: 100%; aspect-ratio: 16/9;
-      object-fit: cover; display: block;
-      background: var(--bg);
-    }
-    .music-info { padding: .7rem .8rem; }
-    .music-title {
-      font-size: .8rem; font-weight: 500; line-height: 1.4;
-      display: -webkit-box; -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical; overflow: hidden;
-      margin-bottom: 0.25rem;
-    }
-    .music-meta {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.6rem;
-      color: var(--muted);
-      margin-top: 0.4rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-    .music-views, .music-date { display: flex; align-items: center; gap: 0.3rem; }
-    .music-channel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .detail-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-    .detail-player {
-      flex: 2;
-      min-width: 280px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .detail-info {
-      flex: 1.5;
-      min-width: 200px;
-    }
-    .video-embed {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      border-radius: 12px;
-      overflow: hidden;
-      background: #000;
-    }
-    .video-embed iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .detail-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .detail-channel {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-bottom: 0.75rem;
-    }
-    .detail-stats {
-      display: flex;
-      gap: 1rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .detail-description {
-      font-size: 0.8rem;
-      line-height: 1.5;
-      color: var(--text);
-      background: rgba(255,255,255,0.03);
-      padding: 0.8rem;
-      border-radius: 12px;
-      margin-top: 0.5rem;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-    .detail-description::-webkit-scrollbar,
-    .lyrics-box-scroll::-webkit-scrollbar {
-      width: 6px;
-    }
-    .detail-description::-webkit-scrollbar-track,
-    .lyrics-box-scroll::-webkit-scrollbar-track {
-      background: rgba(255,255,255,0.05);
-      border-radius: 3px;
-    }
-    .detail-description::-webkit-scrollbar-thumb,
-    .lyrics-box-scroll::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.2);
-      border-radius: 3px;
-    }
-    .detail-description::-webkit-scrollbar-thumb:hover,
-    .lyrics-box-scroll::-webkit-scrollbar-thumb:hover {
-      background: rgba(255,255,255,0.3);
-    }
-    .lyrics-section { margin-top: 1rem; }
-    .lyrics-header {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .lyrics-box-scroll {
-      background: rgba(255,255,255,0.02);
-      border-left: 2px solid var(--muted);
-      padding: 0.8rem;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: #d0d2e0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-    .lyrics-box-scroll.empty {
-      color: var(--muted);
-      font-style: italic;
-    }
-    .other-videos-title {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin-top: 0.5rem;
-      margin-bottom: 0.75rem;
-    }
-    .other-videos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 0.75rem;
-    }
-    .other-video-card {
-      background: var(--card);
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: transform 0.15s;
-    }
-    .other-video-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
-    .other-video-thumb {
-      width: 100%;
-      aspect-ratio: 16/9;
-      object-fit: cover;
-    }
-    .other-video-info { padding: 0.5rem; }
-    .other-video-title {
-      font-size: 0.7rem;
-      font-weight: 500;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .other-video-views {
-      font-size: 0.55rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
-    }
-    /* Game detail styles */
-    .game-detail-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-    .game-detail-cover {
-      flex: 1;
-      min-width: 200px;
-    }
-    .game-detail-cover img {
-      width: 100%;
-      border-radius: 12px;
-    }
-    .game-detail-info {
-      flex: 2;
-      min-width: 260px;
-    }
-    .game-detail-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .game-detail-role {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-    }
-    .game-detail-description {
-      font-size: 0.8rem;
-      line-height: 1.5;
-      background: rgba(255,255,255,0.03);
-      padding: 0.8rem;
-      border-radius: 12px;
-      margin: 0.5rem 0;
-      white-space: pre-wrap;
-    }
-    .game-detail-credits {
-      font-size: 0.85rem;
-      background: rgba(255,255,255,0.02);
-      border-left: 2px solid var(--muted);
-      padding: 0.8rem;
-      border-radius: 12px;
-      margin: 0.5rem 0;
-      white-space: pre-wrap;
-    }
-    .game-detail-credits-image {
-      margin: 0.5rem 0;
-      text-align: center;
-    }
-    .game-detail-credits-image img {
-      max-width: 100%;
-      max-height: 300px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-    .game-detail-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      margin-top: 0.5rem;
-    }
-    .game-tag {
-      background: var(--card);
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.65rem;
-      border: 1px solid var(--border);
-    }
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: .75rem;
-    }
-    .game-card {
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      background: var(--card);
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      transition: border-color .2s, transform .2s;
-      cursor: pointer;
-    }
-    .game-card:hover { border-color: rgba(255,255,255,.18); transform: translateY(-3px); }
-    .game-img {
-      width: 100%;
-      height: 135px;
-      object-fit: cover;
-      display: block;
-      background: var(--bg);
-    }
-    .game-img-fallback {
-      width: 100%;
-      height: 135px;
-      background: var(--card);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--muted);
-      gap: 0.5rem;
-    }
-    .game-img-fallback svg { width: 24px; height: 24px; opacity: 0.6; }
-    .game-info { padding: .8rem 1rem; }
-    .game-role {
-      font-family: 'DM Mono', monospace;
-      font-size: .6rem;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--muted);
-      margin-bottom: .2rem;
-    }
-    .game-name { font-size: .95rem; font-weight: 600; margin-bottom: .2rem; }
-    .game-dev { font-size: .75rem; color: var(--muted); margin-bottom: .4rem; }
-    .game-note {
-      display: inline-block;
-      font-family: 'DM Mono', monospace;
-      font-size: .58rem;
-      padding: .15rem .45rem;
-      border-radius: 4px;
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-    }
-    .state {
-      padding: 3rem 1rem;
-      text-align: center;
-      font-family: 'DM Mono', monospace;
-      font-size: .75rem;
-      color: var(--muted);
-      grid-column: 1 / -1;
-    }
-    .spinner {
-      width: 22px;
-      height: 22px;
-      border: 2px solid var(--border);
-      border-top-color: var(--muted);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin: 0 auto .75rem;
-    }
-    .error-msg {
-      font-family: 'DM Mono', monospace;
-      font-size: .72rem;
-      color: var(--muted);
-      line-height: 1.9;
-      grid-column: 1 / -1;
-      padding: 1.25rem;
-      background: rgba(255,255,255,.03);
-      border-radius: 8px;
-    }
-    .error-msg code { background: rgba(255,255,255,.08); padding: .1rem .3rem; border-radius: 3px; }
-    .footer {
-      text-align: center;
-      font-family: 'DM Mono', monospace;
-      font-size: .6rem;
-      color: var(--muted);
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @media (max-width: 760px) {
-      .detail-container { flex-direction: column; }
-      .view-wrap:has(#view-video-detail.active),
-      .view-wrap:has(#view-game-detail.active) { max-width: 720px; }
-    }
-    @media (max-width: 520px) {
-      body { padding: 1rem .75rem; align-items: flex-start; padding-top: 1.5rem; }
-      #view-home .card { grid-template-columns: 1fr; }
-      .contact-buttons { display: grid; grid-template-columns: 1fr 1fr; min-width: unset; }
-      .music-grid { grid-template-columns: 1fr; }
-      .portfolio-card { width: 120px; height: 120px; }
-      .portfolio-card img, .portfolio-card svg { width: 40px; height: 40px; }
-    }
+    :root{--bg:#0d0f18;--surface:#161927;--card:#1c1f30;--border:rgba(255,255,255,0.07);--text:#e2e4ef;--muted:#6b7194;--yt:#e53935;--dc:#5865f2;--em:#2979ff;--pf:#2a2d40}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+    :focus-visible{outline:2px solid #6b7194;outline-offset:2px;border-radius:4px}
+    .view-wrap{width:100%;max-width:720px;position:relative;transition:max-width .2s}
+    .view-wrap:has(#view-video-detail.active),.view-wrap:has(#view-game-detail.active){max-width:980px}
+    .view{display:none;flex-direction:column;gap:1rem;animation:fadeSlideIn .22s ease}
+    .view.active{display:flex}
+    @keyframes fadeSlideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .card{background:var(--surface);border-radius:20px;padding:1.75rem 2rem}
+    #view-home .card{display:grid;grid-template-columns:1fr auto;gap:1.5rem 2.5rem}
+    .profile-left{display:flex;flex-direction:column;gap:1rem}
+    .profile-top{display:flex;align-items:center;gap:1rem}
+    .avatar{width:80px;height:80px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--muted);font-family:'DM Mono',monospace;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .profile-meta{display:flex;flex-direction:column;gap:.2rem}
+    .tagline{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .profile-name{font-size:1.6rem;font-weight:600;line-height:1;letter-spacing:-.01em}
+    .profile-bio{font-size:.875rem;color:var(--muted);line-height:1.65}
+    .contact-buttons{display:flex;flex-direction:column;gap:.6rem;min-width:185px}
+    .btn{display:flex;align-items:center;justify-content:space-between;padding:.72rem 1rem;border-radius:10px;font-size:.875rem;font-weight:500;text-decoration:none;color:#fff;transition:filter .15s,transform .1s;cursor:pointer}
+    .btn:hover{filter:brightness(1.13)}.btn:active{transform:scale(.97)}.btn svg{width:19px;height:19px}
+    .btn-yt{background:var(--yt)}.btn-dc{background:var(--dc)}.btn-em{background:var(--em)}.btn-pf{background:var(--pf);border:1px solid var(--border)}
+    .portfolio-grid{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem}
+    .portfolio-card{background:var(--card);border:1px solid var(--border);border-radius:16px;width:140px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;cursor:pointer;transition:border-color .2s,transform .2s;color:var(--text)}
+    .portfolio-card:hover{border-color:rgba(255,255,255,.25);transform:translateY(-4px)}
+    .portfolio-card svg{width:48px;height:48px;stroke:#fff;stroke-width:1.5;fill:none}
+    .portfolio-card img{width:48px;height:48px;object-fit:contain}
+    .portfolio-card span{font-size:.8rem;font-weight:500}
+    .section-header{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;justify-content:space-between}
+    .back-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s;color:var(--text)}
+    .back-btn:hover{border-color:rgba(255,255,255,.2)}
+    .section-title{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .sort-controls{display:flex;align-items:center;gap:.5rem;background:var(--card);padding:.3rem .6rem;border-radius:20px;border:1px solid var(--border)}
+    .sort-controls select{background:0 0;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:.7rem;cursor:pointer;padding:.2rem .4rem}
+    .stats-bar{background:var(--card);border-radius:12px;padding:.6rem 1rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.5rem;border:1px solid var(--border)}
+    .total-views{font-size:.8rem;font-family:'DM Mono',monospace}.total-views strong{color:#fff;font-size:1.1rem}
+    .music-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+    .music-card{background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border);transition:border-color .2s,transform .2s;cursor:pointer}
+    .music-card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-3px)}
+    .music-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--bg)}
+    .music-info{padding:.7rem .8rem}
+    .music-title{font-size:.8rem;font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.25rem}
+    .music-meta{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:.4rem;display:flex;flex-direction:column;gap:.2rem}
+    .detail-container{display:flex;flex-wrap:wrap;gap:1.5rem}
+    .detail-player{flex:2;min-width:280px;display:flex;flex-direction:column;gap:1rem}
+    .detail-info{flex:1.5;min-width:200px}
+    .video-embed{position:relative;padding-bottom:56.25%;border-radius:12px;overflow:hidden;background:#000}
+    .video-embed iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+    .detail-title{font-size:1.2rem;font-weight:600;margin-bottom:.5rem}
+    .detail-channel{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-bottom:.75rem}
+    .detail-stats{display:flex;gap:1rem;font-size:.75rem;color:var(--muted);margin-bottom:1rem;flex-wrap:wrap}
+    .detail-description{font-size:.8rem;line-height:1.5;background:rgba(255,255,255,.03);padding:.8rem;border-radius:12px;margin-top:.5rem;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto}
+    .lyrics-section{margin-top:1rem}
+    .lyrics-header{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--muted);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+    .lyrics-box-scroll{background:rgba(255,255,255,.02);border-left:2px solid var(--muted);padding:.8rem;border-radius:12px;font-size:.85rem;line-height:1.5;color:#d0d2e0;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto}
+    .detail-description::-webkit-scrollbar,.lyrics-box-scroll::-webkit-scrollbar{width:6px}
+    .detail-description::-webkit-scrollbar-track,.lyrics-box-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:3px}
+    .detail-description::-webkit-scrollbar-thumb,.lyrics-box-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:3px}
+    .other-videos-title{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--muted);margin:.5rem 0 .75rem}
+    .other-videos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem}
+    .other-video-card{background:var(--card);border-radius:10px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:transform .15s}
+    .other-video-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.2)}
+    .other-video-thumb{width:100%;aspect-ratio:16/9;object-fit:cover}
+    .other-video-info{padding:.5rem}
+    .other-video-title{font-size:.7rem;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .other-video-views{font-size:.55rem;color:var(--muted);margin-top:.2rem}
+    .game-detail-container{display:flex;flex-wrap:wrap;gap:1.5rem}
+    .game-detail-cover{flex:1;min-width:200px}
+    .game-detail-cover img{width:100%;border-radius:12px}
+    .game-detail-info{flex:2;min-width:260px}
+    .game-detail-title{font-size:1.2rem;font-weight:600;margin-bottom:.5rem}
+    .game-detail-role{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-bottom:.5rem}
+    .game-detail-description{font-size:.8rem;line-height:1.5;background:rgba(255,255,255,.03);padding:.8rem;border-radius:12px;margin:.5rem 0}
+    .game-detail-credits-image{margin:.5rem 0;text-align:center}
+    .game-detail-credits-image img{max-width:100%;max-height:300px;border-radius:8px;border:1px solid var(--border)}
+    .game-detail-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem}
+    .game-tag{background:var(--card);padding:.2rem .6rem;border-radius:20px;font-size:.65rem;border:1px solid var(--border)}
+    .games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+    .game-card{background:var(--card);border-radius:10px;overflow:hidden;border:1px solid var(--border);transition:border-color .2s,transform .2s;cursor:pointer}
+    .game-card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-3px)}
+    .game-img{width:100%;height:135px;object-fit:cover;background:var(--bg)}
+    .game-img-fallback{width:100%;height:135px;background:var(--card);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.75rem;color:var(--muted);gap:.5rem}
+    .game-info{padding:.8rem 1rem}
+    .game-role{font-family:'DM Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.2rem}
+    .game-name{font-size:.95rem;font-weight:600;margin-bottom:.2rem}
+    .game-dev{font-size:.75rem;color:var(--muted);margin-bottom:.4rem}
+    .game-note{display:inline-block;font-family:'DM Mono',monospace;font-size:.58rem;padding:.15rem .45rem;border-radius:4px;background:rgba(255,255,255,.06)}
+    .state{padding:3rem 1rem;text-align:center;font-family:'DM Mono',monospace;font-size:.75rem;color:var(--muted);grid-column:1/-1}
+    .spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--muted);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto .75rem}
+    .error-msg{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);line-height:1.9;grid-column:1/-1;padding:1.25rem;background:rgba(255,255,255,.03);border-radius:8px}
+    .footer{text-align:center;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media (max-width:760px){.detail-container{flex-direction:column}.view-wrap:has(#view-video-detail.active),.view-wrap:has(#view-game-detail.active){max-width:720px}}
+    @media (max-width:520px){body{padding:1rem .75rem;align-items:flex-start;padding-top:1.5rem}#view-home .card{grid-template-columns:1fr}.contact-buttons{display:grid;grid-template-columns:1fr 1fr}.music-grid{grid-template-columns:1fr}.portfolio-card{width:120px;height:120px}.portfolio-card img,.portfolio-card svg{width:40px;height:40px}}
   </style>
 </head>
 <body>
-
 <div class="view-wrap">
-  <!-- VIEW HOME -->
   <div class="view active" id="view-home">
     <div class="card">
       <div class="profile-left">
         <div class="profile-top">
-          <div class="avatar" id="avatar-wrap" aria-label="Avatar">
-            <span id="avatar-initials">G</span>
-          </div>
-          <div class="profile-meta">
-            <div class="tagline" id="tagline">English · Portuguese Translator</div>
-            <div class="profile-name" id="profile-name">GenericBR // Dhimitri Rael</div>
-          </div>
+          <div class="avatar" id="avatar-wrap"><span id="avatar-initials">G</span></div>
+          <div class="profile-meta"><div class="tagline" id="tagline">English · Portuguese Translator</div><div class="profile-name" id="profile-name">GenericBR // Dhimitri Rael</div></div>
         </div>
-        <p class="profile-bio" id="profile-bio">
-          Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.
-        </p>
+        <p class="profile-bio" id="profile-bio">Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.</p>
       </div>
       <div class="contact-buttons">
-        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener" aria-label="YouTube">Youtube<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg></a>
-        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener" aria-label="Discord">Discord<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg></a>
-        <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
-        <div class="btn btn-pf" onclick="navigateTo('view-portfolio-pasta')" role="button" tabindex="0" aria-label="Portfolio">Portfolio
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
+        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener">Youtube<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg></a>
+        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener">Discord<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg></a>
+        <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+        <div class="btn btn-pf" onclick="navigateTo('view-portfolio-pasta')" role="button">Portfolio<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
       </div>
     </div>
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
-
-  <!-- PASTA DE SELEÇÃO -->
   <div class="view" id="view-portfolio-pasta">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar" role="button" tabindex="0">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
-      <span class="section-title">Choose your portfolio</span>
-    </div>
-    <div class="card" style="text-align: center;">
-      <div class="portfolio-grid">
-        <div class="portfolio-card" onclick="navigateTo('view-games')" role="button" tabindex="0">
-          <img src="images/steam-icon.png" alt="Steam" style="width: 48px; height: 48px; object-fit: contain;">
-          <span>Steam</span>
-        </div>
-        <div class="portfolio-card" onclick="navigateTo('view-music')" role="button" tabindex="0">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 18V5l12-2v13" />
-            <circle cx="6" cy="18" r="3" />
-            <circle cx="18" cy="16" r="3" />
-          </svg>
-          <span>Music</span>
-        </div>
-      </div>
-    </div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-home')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Choose your portfolio</span></div>
+    <div class="card" style="text-align:center"><div class="portfolio-grid"><div class="portfolio-card" onclick="navigateTo('view-games')"><img src="images/steam-icon.png" alt="Steam"><span>Steam</span></div><div class="portfolio-card" onclick="navigateTo('view-music')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></div></div></div>
   </div>
-
-  <!-- VIEW LISTA DE MÚSICAS -->
   <div class="view" id="view-music">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
-      <span class="section-title">All My Music-Related Cameos Thus Far</span>
-      <div class="sort-controls">
-        <label>Sort by:</label>
-        <select id="sort-music">
-          <option value="original">Original order</option>
-          <option value="views_desc">Most views</option>
-          <option value="views_asc">Least views</option>
-          <option value="date_desc" selected>Newest first</option>
-          <option value="date_asc">Oldest first</option>
-          <option value="title_asc">Title A–Z</option>
-          <option value="title_desc">Title Z–A</option>
-        </select>
-      </div>
-    </div>
-    <div class="card">
-      <div id="music-stats" class="stats-bar" style="display: none;">
-        <div class="total-views">🎬 Total views: <strong id="total-views-count">0</strong></div>
-      </div>
-      <div class="music-grid" id="music-grid">
-        <div class="state"><div class="spinner"></div>Loading YouTube...</div>
-      </div>
-    </div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">All My Music-Related Cameos Thus Far</span><div class="sort-controls"><label>Sort by:</label><select id="sort-music"><option value="original">Original order</option><option value="views_desc">Most views</option><option value="views_asc">Least views</option><option value="date_desc" selected>Newest first</option><option value="date_asc">Oldest first</option><option value="title_asc">Title A–Z</option><option value="title_desc">Title Z–A</option></select></div></div>
+    <div class="card"><div id="music-stats" class="stats-bar" style="display:none"><div class="total-views">🎬 Total views: <strong id="total-views-count">0</strong></div></div><div class="music-grid" id="music-grid"><div class="state"><div class="spinner"></div>Loading YouTube...</div></div></div>
   </div>
-
-  <!-- VIEW DETALHE DO VÍDEO -->
   <div class="view" id="view-video-detail">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista" role="button" tabindex="0">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
-      <span class="section-title">Video Details</span>
-    </div>
-    <div class="card" id="detail-card">
-      <div class="state"><div class="spinner"></div>Loading...</div>
-    </div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-music')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Video Details</span></div><div class="card" id="detail-card"><div class="state"><div class="spinner"></div>Loading...</div></div>
   </div>
-
-  <!-- VIEW DETALHE DO JOGO -->
   <div class="view" id="view-game-detail">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista" role="button" tabindex="0">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
-      <span class="section-title">Game Details</span>
-    </div>
-    <div class="card" id="game-detail-card">
-      <div class="state"><div class="spinner"></div>Loading game info...</div>
-    </div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-games')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Game Details</span></div><div class="card" id="game-detail-card"><div class="state"><div class="spinner"></div>Loading game info...</div></div>
   </div>
-
-  <!-- VIEW JOGOS STEAM (lista) -->
   <div class="view" id="view-games">
-    <div class="section-header">
-      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar" role="button" tabindex="0">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </div>
-      <span class="section-title">All My Gaming-Related Cameos Thus Far</span>
-    </div>
-    <div class="card">
-      <div class="games-grid" id="games-grid">
-        <div class="state"><div class="spinner"></div>Loading games...</div>
-      </div>
-    </div>
+    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">All My Gaming-Related Cameos Thus Far</span></div><div class="card"><div class="games-grid" id="games-grid"><div class="state"><div class="spinner"></div>Loading games...</div></div></div>
   </div>
 </div>
-
 <script>
-  // ==================== ROTEAMENTO ====================
-  function navigateTo(viewId, param = null) {
-    if (viewId === 'view-video-detail' && param) {
-      const newUrl = `/video/${param}`;
-      history.pushState({ view: viewId, videoId: param }, '', newUrl);
-      showVideoDetail(param);
-    } else if (viewId === 'view-game-detail' && param) {
-      const newUrl = `/game/${param}`;
-      history.pushState({ view: viewId, appId: param }, '', newUrl);
-      showGameDetail(param);
-    } else {
-      let path = '/';
-      if (viewId === 'view-portfolio-pasta') path = '/portfolio';
-      else if (viewId === 'view-music') path = '/music';
-      else if (viewId === 'view-games') path = '/games';
-      else path = '/';
-      history.pushState({ view: viewId }, '', path);
-      setActiveView(viewId);
-    }
-  }
-
-  function setActiveView(viewId) {
-    const videoDetailView = document.getElementById('view-video-detail');
-    if (videoDetailView && videoDetailView.classList.contains('active') && viewId !== 'view-video-detail') {
-      const detailCard = document.getElementById('detail-card');
-      const iframe = detailCard ? detailCard.querySelector('iframe') : null;
-      if (iframe && iframe.src) iframe.src = 'about:blank';
-    }
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    const target = document.getElementById(viewId);
-    if (target) {
-      target.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
-  }
-
-  function restoreFromPath() {
-    const path = window.location.pathname;
-    if (path === '/portfolio') setActiveView('view-portfolio-pasta');
-    else if (path === '/music') setActiveView('view-music');
-    else if (path === '/games') setActiveView('view-games');
-    else if (path.startsWith('/video/')) {
-      const videoId = path.split('/video/')[1];
-      if (videoId && musicItemsRaw.length) showVideoDetail(videoId);
-      else if (videoId) {
-        const wait = setInterval(() => {
-          if (musicItemsRaw.length) { clearInterval(wait); showVideoDetail(videoId); }
-        }, 100);
-      } else setActiveView('view-home');
-    } else if (path.startsWith('/game/')) {
-      const appId = path.split('/game/')[1];
-      if (appId && gamesList.length) showGameDetail(appId);
-      else if (appId) {
-        const wait = setInterval(() => {
-          if (gamesList.length) { clearInterval(wait); showGameDetail(appId); }
-        }, 100);
-      } else setActiveView('view-home');
-    } else setActiveView('view-home');
-  }
-
-  window.addEventListener('popstate', () => restoreFromPath());
-
-  // Helpers
-  function esc(s) {
-    const d = document.createElement('div');
-    d.textContent = String(s || '');
-    return d.innerHTML;
-  }
-  function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-  function formatDate(isoString) {
-    if (!isoString) return '';
-    const d = new Date(isoString);
-    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  }
-  function applyConfig() {
-    const c = CONFIG;
-    const name = c.name || 'GenericBR';
-    const handle = c.handle || '';
-    document.title = name;
-    document.getElementById('tagline').textContent = c.tagline || '';
-    document.getElementById('profile-name').textContent = handle ? `${name} // ${handle}` : name;
-    document.getElementById('profile-bio').textContent = c.bio || '';
-    document.getElementById('footer-year').textContent = new Date().getFullYear();
-    document.getElementById('avatar-initials').textContent = name.charAt(0).toUpperCase();
-    if (c.avatar) {
-      document.getElementById('avatar-wrap').innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`;
-    }
-    const L = c.links || {};
-    if (L.youtube) document.getElementById('btn-yt').href = L.youtube;
-    if (L.discord) document.getElementById('btn-dc').href = L.discord;
-    if (L.email) document.getElementById('btn-em').href = 'mailto:' + L.email;
-  }
-
-  // ==================== MÚSICA ====================
-  let musicItemsRaw = [];
-  let currentSort = 'date_desc';
-  const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
-
-  async function loadMusic() {
-    const grid = document.getElementById('music-grid');
-    const statsDiv = document.getElementById('music-stats');
-    try {
-      grid.innerHTML = `<div class="state"><div class="spinner"></div>Fetching from YouTube...</div>`;
-      const response = await fetch(WORKER_URL);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const videoData = await response.json();
-      if (videoData && videoData.length) {
-        musicItemsRaw = videoData;
-        renderMusicGrid();
-        statsDiv.style.display = 'flex';
-        updateTotalViews();
-        const sortSelect = document.getElementById('sort-music');
-        if (sortSelect) {
-          sortSelect.removeEventListener('change', handleSortChange);
-          sortSelect.addEventListener('change', handleSortChange);
-        }
-        if (window.location.pathname.startsWith('/video/')) {
-          const videoId = window.location.pathname.split('/video/')[1];
-          if (videoId) showVideoDetail(videoId);
-        }
-      } else {
-        grid.innerHTML = `<div class="error-msg">No videos found.</div>`;
-        statsDiv.style.display = 'none';
-      }
-    } catch (err) {
-      console.error(err);
-      grid.innerHTML = `<div class="error-msg">❌ Error: ${esc(err.message)}</div>`;
-      statsDiv.style.display = 'none';
-    }
-  }
-
-  function handleSortChange(e) {
-    currentSort = e.target.value;
-    renderMusicGrid();
-  }
-
-  function renderMusicGrid() {
-    const grid = document.getElementById('music-grid');
-    let sorted = [...musicItemsRaw];
-    switch(currentSort) {
-      case 'views_desc': sorted.sort((a,b) => b.viewCount - a.viewCount); break;
-      case 'views_asc':  sorted.sort((a,b) => a.viewCount - b.viewCount); break;
-      case 'date_desc':  sorted.sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt)); break;
-      case 'date_asc':   sorted.sort((a,b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
-      case 'title_asc':  sorted.sort((a,b) => a.title.localeCompare(b.title)); break;
-      case 'title_desc': sorted.sort((a,b) => b.title.localeCompare(a.title)); break;
-      default: sorted = [...musicItemsRaw];
-    }
-    grid.innerHTML = sorted.map(v => `
-      <div class="music-card" onclick="navigateTo('view-video-detail', '${v.id}')" role="button" tabindex="0">
-        ${v.thumbnail ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail" loading="lazy">` : `<div class="music-thumb">♪</div>`}
-        <div class="music-info">
-          <div class="music-title">${esc(v.title)}</div>
-          <div class="music-meta">
-            <div class="music-views">👁️ ${formatNumber(v.viewCount)} views</div>
-            <div class="music-date">📅 ${formatDate(v.publishedAt)}</div>
-            <div class="music-channel">🎤 ${esc(v.channelTitle)}</div>
-          </div>
-        </div>
-      </div>
-    `).join('');
-    updateTotalViews();
-  }
-
-  function updateTotalViews() {
-    const total = musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0);
-    document.getElementById('total-views-count').innerText = formatNumber(total);
-  }
-
-  async function loadLyrics(videoId, container) {
-    try {
-      const res = await fetch(`${WORKER_URL}/api/music/lyrics?id=${videoId}`);
-      const data = await res.json();
-      if (data.lyrics && data.lyrics.trim()) {
-        container.innerHTML = `<div class="lyrics-box-scroll">${esc(data.lyrics)}</div>`;
-      } else {
-        container.innerHTML = `<div class="lyrics-box-scroll empty">No lyrics available yet.</div>`;
-      }
-    } catch (err) {
-      container.innerHTML = `<div class="lyrics-box-scroll empty">Failed to load lyrics.</div>`;
-    }
-  }
-
-  function showVideoDetail(videoId) {
-    const video = musicItemsRaw.find(v => v.id === videoId);
-    if (!video) return;
-    let descriptionText = video.description ? video.description.trim() : 'No description available.';
-    const otherVideos = musicItemsRaw.filter(v => v.channelTitle === video.channelTitle && v.id !== video.id);
-    const detailCard = document.getElementById('detail-card');
-    detailCard.innerHTML = `
-      <div class="detail-container">
-        <div class="detail-player">
-          <div class="video-embed"><iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe></div>
-          ${otherVideos.length ? `<div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div><div class="other-videos-grid" id="other-videos-grid"></div>` : ''}
-        </div>
-        <div class="detail-info">
-          <div class="detail-title">${esc(video.title)}</div>
-          <div class="detail-channel">${esc(video.channelTitle)}</div>
-          <div class="detail-stats"><span>👁️ ${formatNumber(video.viewCount)} views</span><span>📅 ${formatDate(video.publishedAt)}</span></div>
-          <div class="detail-description">${esc(descriptionText)}</div>
-          <div class="lyrics-section"><div class="lyrics-header"><span>📝</span> Lyrics / Translation</div><div id="lyrics-container-${video.id}" class="lyrics-container"></div></div>
-        </div>
-      </div>
-    `;
-    if (otherVideos.length) {
-      const gridContainer = detailCard.querySelector('#other-videos-grid');
-      gridContainer.innerHTML = otherVideos.map(v => `
-        <div class="other-video-card" onclick="navigateTo('view-video-detail', '${v.id}')">
-          <img class="other-video-thumb" src="${esc(v.thumbnail)}" loading="lazy">
-          <div class="other-video-info"><div class="other-video-title">${esc(v.title)}</div><div class="other-video-views">👁️ ${formatNumber(v.viewCount)}</div></div>
-        </div>
-      `).join('');
-    }
-    const lyricsContainer = detailCard.querySelector(`#lyrics-container-${video.id}`);
-    if (lyricsContainer) loadLyrics(video.id, lyricsContainer);
-    setActiveView('view-video-detail');
-  }
-
-  // ==================== JOGOS (carregados do Worker) ====================
-  let gamesList = []; // array completo de jogos (com detalhes)
-
-  async function loadGames() {
-    const grid = document.getElementById('games-grid');
-    try {
-      const res = await fetch(`${WORKER_URL}/api/games`);
-      if (!res.ok) throw new Error('Failed to fetch games');
-      const games = await res.json();
-      gamesList = games;
-      if (!games.length) {
-        grid.innerHTML = `<div class="error-msg">No games found.</div>`;
-        return;
-      }
-      grid.innerHTML = games.map(game => `
-        <div class="game-card" onclick="navigateTo('view-game-detail', '${game.appId}')" role="button" tabindex="0">
-          <img class="game-img" src="https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg" alt="${esc(game.name)}" loading="lazy"
-            onerror="this.onerror=null; this.style.display='none'; this.nextSibling.style.display='flex';">
-          <div class="game-img-fallback" style="display: none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
-            <span>${esc(game.name)}</span>
-          </div>
-          <div class="game-info">
-            <div class="game-role">${esc(game.role || 'PT-BR Localization')}</div>
-            <div class="game-name">${esc(game.name)}</div>
-            ${game.dev ? `<div class="game-dev">${esc(game.dev)}</div>` : ''}
-            ${game.note ? `<span class="game-note">${esc(game.note)}</span>` : ''}
-          </div>
-        </div>
-      `).join('');
-    } catch (err) {
-      console.error(err);
-      grid.innerHTML = `<div class="error-msg">Error loading games: ${esc(err.message)}</div>`;
-    }
-  }
-
-  async function showGameDetail(appId) {
-    const game = gamesList.find(g => g.appId === appId);
-    if (!game) return;
-    // Fetch tags and credits (public endpoints)
-    let tags = [];
-    let credits = '';
-    let creditsImage = '';
-    try {
-      const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`);
-      const tagsData = await tagsRes.json();
-      tags = tagsData.tags || [];
-      const creditsRes = await fetch(`${WORKER_URL}/api/game/credits?id=${appId}`);
-      const creditsData = await creditsRes.json();
-      credits = creditsData.credits || '';
-      creditsImage = creditsData.creditsImage || '';
-    } catch(e) { console.warn(e); }
-
-    const detailCard = document.getElementById('game-detail-card');
-    detailCard.innerHTML = `
-      <div class="game-detail-container">
-        <div class="game-detail-cover">
-          <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg" alt="${esc(game.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7194%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22/%3E%3C/svg%3E'">
-        </div>
-        <div class="game-detail-info">
-          <div class="game-detail-title">${esc(game.name)}</div>
-          <div class="game-detail-role">${esc(game.role || 'PT-BR Localization')}</div>
-          ${game.dev ? `<div class="game-detail-role" style="margin-top:-0.2rem;">Developer: ${esc(game.dev)}</div>` : ''}
-          ${game.note ? `<div class="game-note" style="display:inline-block; margin-bottom:0.5rem;">${esc(game.note)}</div>` : ''}
-          <div class="game-detail-description"><strong>📖 Description</strong><br>${esc(game.description || 'No description provided.')}</div>
-          <div class="game-detail-credits"><strong>🎖️ Proof of participation</strong><br><div style="white-space: pre-wrap;">${esc(credits) || 'No credits provided.'}</div></div>
-          ${creditsImage ? `<div class="game-detail-credits-image"><img src="${esc(creditsImage)}" alt="Proof image" loading="lazy" onerror="this.style.display='none'"></div>` : ''}
-          <div class="game-detail-tags">${tags.map(t => `<span class="game-tag">${esc(t)}</span>`).join('')}</div>
-        </div>
-      </div>
-    `;
-    setActiveView('view-game-detail');
-  }
-
-  // ==================== INICIALIZAÇÃO ====================
-  document.addEventListener('DOMContentLoaded', async () => {
-    applyConfig();
-    await loadMusic();
-    await loadGames();
-    restoreFromPath();
-  });
+  const WORKER_URL='https://portfolio.genericbr-business.workers.dev';
+  let musicItemsRaw=[],gamesList=[],currentSort='date_desc';
+  function esc(s){const d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
+  function formatNumber(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+  function formatDate(s){if(!s)return'';return new Date(s).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}
+  function applyConfig(){const c=CONFIG,n=c.name||'GenericBR',h=c.handle||'';document.title=n;document.getElementById('tagline').textContent=c.tagline||'';document.getElementById('profile-name').textContent=h?`${n} // ${h}`:n;document.getElementById('profile-bio').textContent=c.bio||'';document.getElementById('footer-year').textContent=new Date().getFullYear();document.getElementById('avatar-initials').textContent=n.charAt(0).toUpperCase();if(c.avatar)document.getElementById('avatar-wrap').innerHTML=`<img src="${esc(c.avatar)}" alt="Avatar of ${esc(n)}">`;const L=c.links||{};if(L.youtube)document.getElementById('btn-yt').href=L.youtube;if(L.discord)document.getElementById('btn-dc').href=L.discord;if(L.email)document.getElementById('btn-em').href='mailto:'+L.email;}
+  function navigateTo(v,p=null){if(v==='view-video-detail'&&p){history.pushState({view:v,videoId:p},'',`/video/${p}`);showVideoDetail(p);}else if(v==='view-game-detail'&&p){history.pushState({view:v,appId:p},'',`/game/${p}`);showGameDetail(p);}else{let path='/';if(v==='view-portfolio-pasta')path='/portfolio';else if(v==='view-music')path='/music';else if(v==='view-games')path='/games';history.pushState({view:v},'',path);setActiveView(v);}}
+  function setActiveView(v){const vdv=document.getElementById('view-video-detail');if(vdv&&vdv.classList.contains('active')&&v!=='view-video-detail'){const iframe=document.getElementById('detail-card')?.querySelector('iframe');if(iframe&&iframe.src)iframe.src='about:blank';}
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));const t=document.getElementById(v);if(t){t.classList.add('active');window.scrollTo({top:0,behavior:'instant'});}}
+  function restoreFromPath(){const p=window.location.pathname;if(p==='/portfolio')setActiveView('view-portfolio-pasta');else if(p==='/music')setActiveView('view-music');else if(p==='/games')setActiveView('view-games');else if(p.startsWith('/video/')){const id=p.split('/video/')[1];if(id&&musicItemsRaw.length)showVideoDetail(id);else if(id){const w=setInterval(()=>{if(musicItemsRaw.length){clearInterval(w);showVideoDetail(id);}},100);}else setActiveView('view-home');}else if(p.startsWith('/game/')){const id=p.split('/game/')[1];if(id&&gamesList.length)showGameDetail(id);else if(id){const w=setInterval(()=>{if(gamesList.length){clearInterval(w);showGameDetail(id);}},100);}else setActiveView('view-home');}else setActiveView('view-home');}
+  window.addEventListener('popstate',restoreFromPath);
+  async function loadMusic(){const g=document.getElementById('music-grid'),s=document.getElementById('music-stats');try{g.innerHTML='<div class="state"><div class="spinner"></div>Fetching from YouTube...</div>';const r=await fetch(WORKER_URL);if(!r.ok)throw new Error(`HTTP ${r.status}`);const d=await r.json();if(d&&d.length){musicItemsRaw=d;renderMusicGrid();s.style.display='flex';updateTotalViews();const ss=document.getElementById('sort-music');if(ss){ss.removeEventListener('change',handleSortChange);ss.addEventListener('change',handleSortChange);}if(window.location.pathname.startsWith('/video/')){const id=window.location.pathname.split('/video/')[1];if(id)showVideoDetail(id);}}else{g.innerHTML='<div class="error-msg">No videos found.</div>';s.style.display='none';}}catch(e){console.error(e);g.innerHTML=`<div class="error-msg">❌ Error: ${esc(e.message)}</div>`;s.style.display='none';}}
+  function handleSortChange(e){currentSort=e.target.value;renderMusicGrid();}
+  function renderMusicGrid(){const g=document.getElementById('music-grid');let s=[...musicItemsRaw];switch(currentSort){case'views_desc':s.sort((a,b)=>b.viewCount-a.viewCount);break;case'views_asc':s.sort((a,b)=>a.viewCount-b.viewCount);break;case'date_desc':s.sort((a,b)=>new Date(b.publishedAt)-new Date(a.publishedAt));break;case'date_asc':s.sort((a,b)=>new Date(a.publishedAt)-new Date(b.publishedAt));break;case'title_asc':s.sort((a,b)=>a.title.localeCompare(b.title));break;case'title_desc':s.sort((a,b)=>b.title.localeCompare(a.title));break;}
+    g.innerHTML=s.map(v=>`<div class="music-card" onclick="navigateTo('view-video-detail','${v.id}')">${v.thumbnail?`<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail" loading="lazy">`:'<div class="music-thumb">♪</div>'}<div class="music-info"><div class="music-title">${esc(v.title)}</div><div class="music-meta"><div class="music-views">👁️ ${formatNumber(v.viewCount)} views</div><div class="music-date">📅 ${formatDate(v.publishedAt)}</div><div class="music-channel">🎤 ${esc(v.channelTitle)}</div></div></div></div>`).join('');updateTotalViews();}
+  function updateTotalViews(){const t=musicItemsRaw.reduce((s,v)=>s+v.viewCount,0);document.getElementById('total-views-count').innerText=formatNumber(t);}
+  async function loadLyrics(id,container){try{const r=await fetch(`${WORKER_URL}/api/music/lyrics?id=${id}`),d=await r.json();if(d.lyrics&&d.lyrics.trim())container.innerHTML=`<div class="lyrics-box-scroll">${esc(d.lyrics)}</div>`;else container.innerHTML='<div class="lyrics-box-scroll empty">No lyrics available yet.</div>';}catch(e){container.innerHTML='<div class="lyrics-box-scroll empty">Failed to load lyrics.</div>';}}
+  function showVideoDetail(id){const v=musicItemsRaw.find(v=>v.id===id);if(!v)return;let desc=v.description?v.description.trim():'No description available.';const other=musicItemsRaw.filter(vv=>vv.channelTitle===v.channelTitle&&vv.id!==v.id);const dc=document.getElementById('detail-card');dc.innerHTML=`<div class="detail-container"><div class="detail-player"><div class="video-embed"><iframe src="https://www.youtube.com/embed/${v.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe></div>${other.length?`<div class="other-videos-title">🎵 More from ${esc(v.channelTitle)}</div><div class="other-videos-grid" id="other-videos-grid"></div>`:''}</div><div class="detail-info"><div class="detail-title">${esc(v.title)}</div><div class="detail-channel">${esc(v.channelTitle)}</div><div class="detail-stats"><span>👁️ ${formatNumber(v.viewCount)} views</span><span>📅 ${formatDate(v.publishedAt)}</span></div><div class="detail-description">${esc(desc)}</div><div class="lyrics-section"><div class="lyrics-header"><span>📝</span> Lyrics / Translation</div><div id="lyrics-container-${v.id}" class="lyrics-container"></div></div></div></div>`;if(other.length){const grid=dc.querySelector('#other-videos-grid');grid.innerHTML=other.map(vv=>`<div class="other-video-card" onclick="navigateTo('view-video-detail','${vv.id}')"><img class="other-video-thumb" src="${esc(vv.thumbnail)}" loading="lazy"><div class="other-video-info"><div class="other-video-title">${esc(vv.title)}</div><div class="other-video-views">👁️ ${formatNumber(vv.viewCount)}</div></div></div>`).join('');}const lc=dc.querySelector(`#lyrics-container-${v.id}`);if(lc)loadLyrics(v.id,lc);setActiveView('view-video-detail');}
+  async function loadGames(){const g=document.getElementById('games-grid');try{const r=await fetch(`${WORKER_URL}/api/games`);if(!r.ok)throw new Error();const games=await r.json();gamesList=games;if(!games.length){g.innerHTML='<div class="error-msg">No games found.</div>';return;}
+    g.innerHTML=games.map(game=>{const cover=game.cover||`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg`;return`<div class="game-card" onclick="navigateTo('view-game-detail','${game.appId}')"><img class="game-img" src="${esc(cover)}" alt="${esc(game.name)}" loading="lazy" onerror="this.onerror=null;this.style.display='none';this.nextSibling.style.display='flex';"><div class="game-img-fallback" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg><span>${esc(game.name)}</span></div><div class="game-info"><div class="game-role">${esc(game.role||'PT-BR Localization')}</div><div class="game-name">${esc(game.name)}</div>${game.dev?`<div class="game-dev">${esc(game.dev)}</div>`:''}${game.note?`<span class="game-note">${esc(game.note)}</span>`:''}</div></div>`}).join('');}catch(e){g.innerHTML='<div class="error-msg">Error loading games.</div>';}}
+  async function showGameDetail(appId){const game=gamesList.find(g=>g.appId===appId);if(!game)return;let tags=[],creditsImage='';try{const tagsRes=await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`),tagsData=await tagsRes.json();tags=tagsData.tags||[];const creditsRes=await fetch(`${WORKER_URL}/api/game/credits?id=${appId}`),creditsData=await creditsRes.json();creditsImage=creditsData.creditsImage||'';}catch(e){console.warn(e);}
+    const cover=game.cover||`https://cdn.cloudflare.steamstatic.com/steam/apps/${game.appId}/header.jpg`;const dc=document.getElementById('game-detail-card');dc.innerHTML=`<div class="game-detail-container"><div class="game-detail-cover"><img src="${esc(cover)}" alt="${esc(game.name)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%236b7194%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22/%3E%3C/svg%3E'"></div><div class="game-detail-info"><div class="game-detail-title">${esc(game.name)}</div><div class="game-detail-role">${esc(game.role||'PT-BR Localization')}</div>${game.dev?`<div class="game-detail-role" style="margin-top:-0.2rem;">Developer: ${esc(game.dev)}</div>`:''}${game.note?`<div class="game-note" style="display:inline-block;margin-bottom:0.5rem;">${esc(game.note)}</div>`:''}<div class="game-detail-description"><strong>📖 Description</strong><br>${esc(game.description||'No description provided.')}</div><div class="game-detail-credits-image"><strong>🎖️ Proof of participation</strong><br>${creditsImage?`<img src="${esc(creditsImage)}" alt="Proof of participation" loading="lazy" onerror="this.style.display='none'">`:'<div class="lyrics-box-scroll empty" style="margin-top:0.3rem;">No proof image provided.</div>'}</div><div class="game-detail-tags">${tags.map(t=>`<span class="game-tag">${esc(t)}</span>`).join('')}</div></div></div>`;setActiveView('view-game-detail');}
+  document.addEventListener('DOMContentLoaded',async()=>{applyConfig();await loadMusic();await loadGames();restoreFromPath();});
 </script>
 </body>
 </html>
