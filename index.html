@@ -65,24 +65,23 @@
     }
     /* Botão Steam (cinza, alinhado à direita) */
     .game-steam-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.08); /* mesma cor de fundo das tags */
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background 0.15s, color 0.15s;
-}
-.game-steam-link:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-}
-    /* Container flex para título e botão */
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .game-steam-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
     .game-title-row {
       display: flex;
       justify-content: space-between;
@@ -96,12 +95,10 @@
       font-weight: 600;
       margin: 0;
     }
-    /* Garantir que a descrição preserve quebras de linha */
     .detail-description {
       white-space: pre-wrap;
       word-break: break-word;
     }
-    /* Dropdown ordenação escuro */
     .sort-controls label {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.7rem;
@@ -173,7 +170,7 @@
       font-weight: 500;
     }
 
-    /* ========== ABOUT ME ========== */
+    /* ========== ABOUT ME (mantido) ========== */
     .btn-about {
       background: var(--card);
       border: 1px solid var(--border);
@@ -209,9 +206,108 @@
     .about-body p:last-child {
       margin-bottom: 0;
     }
-    .about-highlight {
+
+    /* ========== REDESIGN HOME ========== */
+    #view-home .card {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .profile-left {
+      gap: 0.5rem;
+    }
+    .contact-buttons {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+    .btn-yt {
+      grid-column: 1;
+    }
+    .btn-pf {
+      grid-column: 2 / 4; /* ocupa duas colunas, destaque */
+      background: #00a86b;
       color: #fff;
       font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: none;
+    }
+    .btn-pf:hover {
+      filter: brightness(1.15);
+    }
+    .contact-wrapper {
+      position: relative;
+      grid-column: 1;
+      display: flex;
+    }
+    .btn-contact {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 100%;
+      justify-content: center;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.72rem 1rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: filter 0.15s;
+    }
+    .btn-contact:hover {
+      filter: brightness(1.1);
+    }
+    .contact-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 0.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.5rem;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 50;
+      min-width: 160px;
+    }
+    .contact-dropdown.active {
+      display: flex;
+    }
+    .contact-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: background 0.1s;
+    }
+    .contact-dropdown a:hover {
+      background: rgba(255,255,255,0.06);
+    }
+    .btn-about {
+      grid-column: 1;
+      margin-top: 0;
+      justify-content: center;
+    }
+
+    /* Ajustes responsivos */
+    @media (max-width: 520px) {
+      .contact-buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+      .btn-pf {
+        grid-column: 1 / 3;
+      }
     }
   </style>
 </head>
@@ -219,7 +315,7 @@
 
 <div class="view-wrap">
 
-  <!-- VIEW HOME -->
+  <!-- VIEW HOME (REDESIGN) -->
   <div class="view active" id="view-home">
     <div class="card">
       <div class="profile-left">
@@ -235,12 +331,25 @@
         </p>
       </div>
       <div class="contact-buttons">
+        <!-- YouTube separado -->
         <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener">Youtube<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg></a>
-        <a class="btn btn-dc" id="btn-dc" href="#" target="_blank" rel="noopener">Discord<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg></a>
-        <a class="btn btn-em" id="btn-em" href="#" aria-label="Email">Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+
+        <!-- Portfolio com destaque -->
         <div class="btn btn-pf" onclick="navigateTo('view-portfolio-pasta')" role="button">Portfolio<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-        <!-- NEW About button -->
-        <div class="btn btn-about" onclick="navigateTo('view-about')" role="button">About<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+
+        <!-- Contact (Discord + Email unificados) -->
+        <div class="contact-wrapper">
+          <div class="btn btn-contact" id="contact-toggle">
+            Contact<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="contact-dropdown" id="contact-dropdown">
+            <a id="contact-discord" href="#" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg> Discord</a>
+            <a id="contact-email" href="#" aria-label="Email"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</a>
+          </div>
+        </div>
+
+        <!-- About (discreto) -->
+        <div class="btn btn-about" onclick="navigateTo('view-about')" role="button">About</div>
       </div>
     </div>
     <div class="footer">GenericBR · <span id="footer-year"></span></div>
@@ -273,7 +382,7 @@
     <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">All My Gaming‑Related Cameos Thus Far</span></div><div class="card"><div class="games-grid" id="games-grid"><div class="state"><div class="spinner"></div>Loading games...</div></div></div>
   </div>
 
-  <!-- VIEW ABOUT ME (NEW) -->
+  <!-- VIEW ABOUT ME -->
   <div class="view" id="view-about">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar">
@@ -348,7 +457,7 @@
     document.getElementById('avatar-initials').textContent = name.charAt(0).toUpperCase();
     if (c.avatar) document.getElementById('avatar-wrap').innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`;
 
-    // Sync About Me view with config
+    // About Me sync
     const aboutAvatar = document.getElementById('about-avatar');
     const aboutName = document.getElementById('about-name');
     const aboutTagline = document.getElementById('about-tagline');
@@ -362,8 +471,12 @@
 
     const L = c.links || {};
     if (L.youtube) document.getElementById('btn-yt').href = L.youtube;
-    if (L.discord) document.getElementById('btn-dc').href = L.discord;
-    if (L.email) document.getElementById('btn-em').href = 'mailto:' + L.email;
+    if (L.discord) {
+      document.getElementById('contact-discord').href = L.discord;
+    }
+    if (L.email) {
+      document.getElementById('contact-email').href = 'mailto:' + L.email;
+    }
   }
 
   // ==================================================================
@@ -426,6 +539,20 @@
   window.addEventListener('popstate', restoreFromPath);
 
   // ==================================================================
+  // Contact dropdown toggle
+  // ==================================================================
+  document.addEventListener('click', function(e) {
+    const toggle = document.getElementById('contact-toggle');
+    const dropdown = document.getElementById('contact-dropdown');
+    if (!toggle || !dropdown) return;
+    if (toggle.contains(e.target)) {
+      dropdown.classList.toggle('active');
+    } else if (!dropdown.contains(e.target)) {
+      dropdown.classList.remove('active');
+    }
+  });
+
+  // ==================================================================
   // 4. Músicas (YouTube)
   // ==================================================================
   async function loadMusic() {
@@ -441,7 +568,7 @@
         renderMusicGrid();
         statsDiv.style.display = 'flex';
         updateTotalViews();
-        updateAboutStats();   // ← dynamic numbers for About Me
+        updateAboutStats();
         const sortSelect = document.getElementById('sort-music');
         if (sortSelect) {
           sortSelect.removeEventListener('change', handleSortChange);
@@ -625,14 +752,12 @@
     const game = gamesList.find(g => g.appId === appId);
     if (!game) return;
 
-    // Dados da Steam
     let steamData = null;
     try {
       const steamRes = await fetch(`${WORKER_URL}/api/steam/app?appids=${appId}`);
       if (steamRes.ok) steamData = await steamRes.json();
     } catch(e) { console.warn('Steam API error', e); }
 
-    // Tags e créditos
     let tags = [], creditsImage = '', creditsChips = [];
     try {
       const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`);
@@ -700,7 +825,6 @@
       </div>
     `;
 
-    // Inicializar slideshow
     let currentIndex = 0;
     const imgElement = document.getElementById('slideshow-img');
     const counterSpan = document.getElementById('slideshow-counter');
