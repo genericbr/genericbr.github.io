@@ -8,26 +8,44 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* ========== HOME — FULL REWRITE (scoped to #view-home) ========== */
+    /* ========== HOME — scoped to #view-home ========== */
 
-    /* Override the 2-col grid that style.css sets on #view-home .card */
+    /* Override style.css card for home — centered column */
     #view-home .card {
+      position: relative;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
       text-align: center !important;
       gap: 0 !important;
-      padding: 2.25rem 2rem 1.75rem !important;
+      padding: 2.5rem 2rem 2rem !important;
       max-width: 480px;
       margin: 0 auto;
+      overflow: hidden;
     }
 
-    /* Avatar */
+    /* Signature element: green→blue gradient accent line at top of home card */
+    #view-home .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        #00a86b 25%,
+        #2979ff 75%,
+        transparent 100%
+      );
+      border-radius: 20px 20px 0 0;
+    }
+
+    /* ── Avatar ── */
     .home-avatar {
-      width: 80px;
-      height: 80px;
+      width: 84px;
+      height: 84px;
       border-radius: 50%;
-      border: 2px solid var(--border);
+      border: 2px solid rgba(255, 255, 255, 0.1);
       background: var(--card);
       display: flex;
       align-items: center;
@@ -38,44 +56,65 @@
       overflow: hidden;
       margin-bottom: 1.1rem;
       flex-shrink: 0;
+      box-shadow: 0 0 0 4px rgba(0, 168, 107, 0.08);
     }
-    .home-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .home-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Name + handle */
+    /* ── Name + handle ── */
     .home-name {
-      font-size: 1.55rem;
+      font-size: 1.6rem;
       font-weight: 600;
-      letter-spacing: -0.4px;
+      letter-spacing: -0.5px;
       line-height: 1.15;
       color: var(--text);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
     .home-handle {
       font-family: 'DM Mono', monospace;
-      font-size: 0.68rem;
-      letter-spacing: 0.09em;
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
-    /* Language badges */
+    /* ── Language groups ── */
     .home-langs {
       display: flex;
-      gap: 0.4rem;
+      align-items: center;
+      gap: 1.25rem;
       justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
+
+    .lang-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .lang-level {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    .lang-sep {
+      width: 1px;
+      height: 32px;
+      background: var(--border);
+      border-radius: 1px;
+    }
+
     .home-lang {
       font-family: 'DM Mono', monospace;
-      font-size: 0.62rem;
+      font-size: 0.64rem;
       letter-spacing: 0.06em;
-      padding: 0.2rem 0.6rem;
+      padding: 0.22rem 0.65rem;
       border-radius: 20px;
       border: 1px solid var(--border);
       color: var(--muted);
@@ -84,43 +123,49 @@
     .home-lang.native {
       border-color: rgba(0, 168, 107, 0.45);
       color: #00c47e;
-      background: rgba(0, 168, 107, 0.08);
+      background: rgba(0, 168, 107, 0.09);
     }
     .home-lang.fluent {
       border-color: rgba(41, 121, 255, 0.4);
       color: #5d9eff;
-      background: rgba(41, 121, 255, 0.08);
+      background: rgba(41, 121, 255, 0.09);
     }
     .home-lang.learning {
       border-color: rgba(255, 180, 50, 0.4);
       color: #f0a832;
-      background: rgba(255, 180, 50, 0.08);
+      background: rgba(255, 180, 50, 0.09);
     }
 
-    /* Bio */
+    /* ── Bio ── */
     .home-bio {
       font-size: 0.84rem;
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.65;
       max-width: 340px;
-      margin-bottom: 1.4rem;
+      margin-bottom: 1.1rem;
     }
 
-    /* Live stat line */
+    /* ── Live stat line ── */
     .home-stats {
       font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
+      font-size: 0.64rem;
       color: var(--muted);
       margin-bottom: 1.5rem;
       letter-spacing: 0.04em;
       min-height: 1rem;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.3rem 0.85rem;
+      display: inline-block;
     }
+    .home-stats:empty { display: none; }
     .home-stats span {
       color: var(--text);
       font-weight: 500;
     }
 
-    /* Button row */
+    /* ── Button column ── */
     .home-buttons {
       display: flex;
       flex-direction: column;
@@ -135,7 +180,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.45rem;
-      padding: 0.75rem 1.2rem;
+      padding: 0.78rem 1.2rem;
       border-radius: 12px;
       background: #00a86b;
       color: #fff;
@@ -144,10 +189,11 @@
       text-decoration: none;
       cursor: pointer;
       border: none;
-      transition: filter 0.15s;
+      transition: filter 0.15s, transform 0.1s;
       width: 100%;
     }
-    .home-btn-primary:hover { filter: brightness(1.12); }
+    .home-btn-primary:hover  { filter: brightness(1.12); }
+    .home-btn-primary:active { transform: scale(0.98); }
 
     /* Secondary chips row */
     .home-chips {
@@ -170,21 +216,17 @@
       font-weight: 500;
       cursor: pointer;
       text-decoration: none;
-      transition: border-color 0.15s, filter 0.15s;
+      transition: border-color 0.15s, background 0.15s;
       white-space: nowrap;
     }
     .home-chip:hover {
-      border-color: rgba(255,255,255,0.22);
-      filter: brightness(1.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.04);
     }
-    .home-chip svg {
-      flex-shrink: 0;
-    }
+    .home-chip svg { flex-shrink: 0; }
 
     /* Contact dropdown */
-    .home-contact-wrap {
-      position: relative;
-    }
+    .home-contact-wrap { position: relative; }
     .home-contact-dropdown {
       display: none;
       position: absolute;
@@ -192,14 +234,14 @@
       left: 50%;
       transform: translateX(-50%);
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 14px;
       padding: 0.35rem;
       flex-direction: column;
-      gap: 0.15rem;
+      gap: 0.1rem;
       z-index: 50;
       min-width: 165px;
-      box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
+      box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.55);
     }
     .home-contact-dropdown.active { display: flex; }
     .home-contact-dropdown a {
@@ -214,113 +256,33 @@
       font-weight: 500;
       transition: background 0.12s;
     }
-    .home-contact-dropdown a:hover { background: rgba(255,255,255,0.06); }
+    .home-contact-dropdown a:hover { background: rgba(255, 255, 255, 0.06); }
 
     /* Footer */
     .home-footer {
       font-family: 'DM Mono', monospace;
-      font-size: 0.6rem;
-      color: var(--muted);
-      margin-top: 1.5rem;
+      font-size: 0.58rem;
+      color: rgba(107, 113, 148, 0.55);
+      margin-top: 1.75rem;
       letter-spacing: 0.05em;
     }
 
-    /* ========== UNCHANGED: slideshow, detail, about, etc. ========== */
-    .slideshow-container {
-      position: relative;
-      background: var(--card);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 1rem;
-    }
-    .slideshow-image {
-      width: 100%;
-      aspect-ratio: 16/9;
-      object-fit: cover;
-      display: block;
-    }
-    .slideshow-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.6);
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      transition: background 0.15s;
-      z-index: 10;
-    }
-    .slideshow-arrow:hover { background: rgba(0,0,0,0.8); }
-    .prev-arrow { left: 8px; }
-    .next-arrow { right: 8px; }
-    .slideshow-counter {
-      text-align: center;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 0.3rem;
-    }
-    .screenshots-title {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin: 0.5rem 0 0.75rem;
-    }
-    .credits-link { cursor: pointer; color: var(--muted); text-decoration: underline; }
-    .credits-link:hover { color: var(--text); }
-    .game-steam-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: background 0.15s, color 0.15s;
-    }
-    .game-steam-link:hover { background: rgba(255,255,255,0.15); color: #fff; }
-    .game-title-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
-    .detail-title { font-size: 1.2rem; font-weight: 600; margin: 0; }
+    /* ========== GAME DETAIL — slideshow + info ========== */
     .detail-description { white-space: pre-wrap; word-break: break-word; }
+
     .sort-controls label { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--text); }
     .sort-controls select {
       background: var(--card); border: none; color: var(--text);
       font-family: 'DM Sans', sans-serif; font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 6px;
     }
     .sort-controls select option { background: var(--surface); color: var(--text); }
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px);
-    }
-    .modal-content {
-      background: var(--surface); border-radius: 24px; padding: 1.5rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border);
-    }
-    .modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1; }
-    .modal-close:hover { color: var(--text); }
-    .credits-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-    .credit-chip { background: rgba(255,255,255,0.06); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; }
-    .credit-chip.owner { background: rgba(41,121,255,0.2); color: #fff; border-left: 2px solid var(--em); font-weight: 500; }
-    .about-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-    .about-name { font-size: 1.4rem; font-weight: 600; }
-    .about-tagline { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
-    .about-body p { font-size: 0.85rem; line-height: 1.6; color: var(--muted); margin-bottom: 1rem; }
-    .about-body p:last-child { margin-bottom: 0; }
 
     /* ========== RESPONSIVE ========== */
     @media (max-width: 520px) {
-      #view-home .card {
-        padding: 1.75rem 1.25rem 1.5rem !important;
-      }
+      #view-home .card { padding: 2rem 1.25rem 1.75rem !important; }
       .home-chips { gap: 0.4rem; }
       .home-chip { padding: 0.45rem 0.75rem; font-size: 0.76rem; }
+      .home-langs { gap: 0.9rem; }
     }
   </style>
 </head>
@@ -341,19 +303,30 @@
       <div class="home-name" id="home-name">GenericBR</div>
       <div class="home-handle" id="home-handle">Dhimitri Rael</div>
 
-      <!-- Language badges -->
+      <!-- Language groups with level labels -->
       <div class="home-langs">
-        <span class="home-lang native">PT-BR</span>
-        <span class="home-lang fluent">EN</span>
-        <span class="home-lang learning">ES</span>
+        <div class="lang-group">
+          <span class="lang-level">Native</span>
+          <span class="home-lang native">PT-BR</span>
+        </div>
+        <div class="lang-sep"></div>
+        <div class="lang-group">
+          <span class="lang-level">Fluent</span>
+          <span class="home-lang fluent">EN</span>
+        </div>
+        <div class="lang-sep"></div>
+        <div class="lang-group">
+          <span class="lang-level">Learning</span>
+          <span class="home-lang learning">ES</span>
+        </div>
       </div>
 
       <!-- Bio -->
       <p class="home-bio" id="home-bio">
-        Indie game localizer & Vocaloid lyric adapter. Drop me a Discord message for most things — email for large projects.
+        Indie game localizer &amp; Vocaloid lyric adapter. Drop me a Discord message for most things — email for large projects.
       </p>
 
-      <!-- Live stat line (populated by JS after music loads) -->
+      <!-- Live stat line -->
       <div class="home-stats" id="home-stats"></div>
 
       <!-- Buttons -->
@@ -374,7 +347,7 @@
             YouTube
           </a>
 
-          <!-- Contact dropdown (opens upward) -->
+          <!-- Contact dropdown -->
           <div class="home-contact-wrap">
             <div class="home-chip" id="contact-toggle" role="button" tabindex="0" aria-haspopup="true">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -413,18 +386,36 @@
       <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
-      <span class="section-title">Choose your portfolio</span>
+      <span class="section-title">Portfolio</span>
     </div>
-    <div class="card" style="text-align: center;">
-      <div class="portfolio-grid">
-        <div class="portfolio-card" onclick="navigateTo('view-games')">
-          <img src="images/steam-icon.png" alt="Steam">
-          <span>Steam</span>
+    <div class="card">
+      <div class="pasta-list">
+
+        <!-- Steam / Games -->
+        <div class="pasta-item" onclick="navigateTo('view-games')" role="button" tabindex="0">
+          <div class="pasta-item-icon">
+            <img src="images/steam-icon.png" alt="Steam" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none"><rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M8 2v20M16 2v20M2 8h20M2 16h20"/></svg>
+          </div>
+          <div class="pasta-item-body">
+            <div class="pasta-item-title">Steam Games</div>
+            <div class="pasta-item-desc">Game localization portfolio</div>
+          </div>
+          <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
-        <div class="portfolio-card" onclick="navigateTo('view-music')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          <span>Music</span>
+
+        <!-- Music -->
+        <div class="pasta-item" onclick="navigateTo('view-music')" role="button" tabindex="0">
+          <div class="pasta-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div class="pasta-item-body">
+            <div class="pasta-item-title">Music</div>
+            <div class="pasta-item-desc">Vocaloid &amp; indie lyrics translations</div>
+          </div>
+          <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
+
       </div>
     </div>
   </div>
@@ -506,7 +497,7 @@
       <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
-      <span class="section-title">ABOUT ME</span>
+      <span class="section-title">About Me</span>
     </div>
     <div class="card">
       <div class="about-header">
@@ -570,7 +561,7 @@
   function applyConfig() {
     const c = CONFIG;
     const name = c.name || 'GenericBR';
-    document.title = name;
+    document.title = name + ' — PT-BR Localizer';
 
     document.getElementById('home-name').textContent = name;
     document.getElementById('home-handle').textContent = c.handle || '';
@@ -715,10 +706,16 @@
 
   function updateHomeStats() {
     const el = document.getElementById('home-stats');
-    if (!el || !musicItemsRaw.length) return;
-    const count = musicItemsRaw.length;
-    const views = musicItemsRaw.reduce((s, v) => s + v.viewCount, 0);
-    el.innerHTML = `<span>${count}</span> songs · <span>${formatNumber(views)}</span> views`;
+    if (!el) return;
+    const parts = [];
+    if (musicItemsRaw.length) {
+      const views = musicItemsRaw.reduce((s, v) => s + v.viewCount, 0);
+      parts.push(`<span>${musicItemsRaw.length}</span> songs · <span>${formatNumber(views)}</span> views`);
+    }
+    if (gamesList.length) {
+      parts.push(`<span>${gamesList.length}</span> game${gamesList.length !== 1 ? 's' : ''}`);
+    }
+    if (parts.length) el.innerHTML = parts.join(' · ');
   }
 
   function handleSortChange(e) {
@@ -740,7 +737,7 @@
     }
     grid.innerHTML = sorted.map(v => `
       <div class="music-card" onclick="navigateTo('view-video-detail', '${v.id}')">
-        ${v.thumbnail ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail" loading="lazy">` : '<div class="music-thumb">♪</div>'}
+        ${v.thumbnail ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail" loading="lazy">` : '<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.5rem;">♪</div>'}
         <div class="music-info">
           <div class="music-title">${esc(v.title)}</div>
           <div class="music-meta">
@@ -829,7 +826,7 @@
   }
 
   // ==================================================================
-  // 6. Games
+  // 6. Games — cards match music card layout
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -838,6 +835,7 @@
       if (!res.ok) throw new Error();
       const games = await res.json();
       gamesList = games;
+      updateHomeStats(); // refresh with game count
       if (!games.length) {
         grid.innerHTML = '<div class="error-msg">No games found.</div>';
         return;
@@ -853,10 +851,12 @@
               <span>${esc(game.name)}</span>
             </div>
             <div class="game-info">
-              <div class="game-role">${esc(game.role || 'PT-BR Localization')}</div>
               <div class="game-name">${esc(game.name)}</div>
-              ${game.dev ? `<div class="game-dev">${esc(game.dev)}</div>` : ''}
-              ${game.note ? `<span class="game-note">${esc(game.note)}</span>` : ''}
+              <div class="game-meta">
+                <div class="game-role">🎮 ${esc(game.role || 'PT-BR Localization')}</div>
+                ${game.dev ? `<div class="game-dev">👾 ${esc(game.dev)}</div>` : ''}
+                ${game.note ? `<span class="game-note">${esc(game.note)}</span>` : ''}
+              </div>
             </div>
           </div>
         `;
@@ -881,12 +881,12 @@
     } else if (creditsImage) {
       content = `<div class="credits-image"><img src="${esc(creditsImage)}" alt="Proof of work"></div>`;
     } else {
-      content = '<em>No proof of work provided.</em>';
+      content = '<em style="color:var(--muted);font-size:0.8rem;">No proof of work provided.</em>';
     }
     modal.innerHTML = `
       <div class="modal-content">
         <button class="modal-close">&times;</button>
-        <h3 style="margin-bottom:1rem">🎖️ PROOF OF WORK</h3>
+        <h3 style="margin-bottom:1rem;font-size:1rem;">🎖️ Proof of Work</h3>
         ${content}
       </div>
     `;
@@ -938,13 +938,13 @@
     detailCard.innerHTML = `
       <div class="detail-container">
         <div class="detail-player">
-          <div class="screenshots-title">🎮 SCREENSHOTS</div>
+          <div class="screenshots-title">🎮 Screenshots</div>
           <div class="slideshow-container" id="slideshow-container">
             <img id="slideshow-img" class="slideshow-image" src="${esc(allImages[0].url)}" alt="Game screenshot">
             <button class="slideshow-arrow prev-arrow" id="prev-slide">❮</button>
             <button class="slideshow-arrow next-arrow" id="next-slide">❯</button>
-            <div class="slideshow-counter" id="slideshow-counter">1 / ${allImages.length}</div>
           </div>
+          <div class="slideshow-counter" id="slideshow-counter">1 / ${allImages.length}</div>
         </div>
         <div class="detail-info">
           <div class="game-title-row">
@@ -954,18 +954,18 @@
               View on Steam
             </a>
           </div>
-          <div>
+          <div style="margin-bottom:0.75rem;">
             <span class="role-badge" style="background:${badgeColor}">${esc(roleBadge)}</span>
             ${tags.map(t => `<span class="game-tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${esc(t.name || t)}</span>`).join('')}
           </div>
-          <div class="detail-stats" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <div class="detail-stats">
             <span>👾 ${esc(dev)}</span>
             <span>📅 ${esc(releaseDate || 'Release date TBA')}</span>
             <span>🌐 ${esc(originalLanguage)} → PT‑BR</span>
           </div>
           <div class="detail-description">${esc(description)}</div>
           <div class="lyrics-section">
-            <div class="lyrics-header"><span>🎖️</span> PROOF OF WORK</div>
+            <div class="lyrics-header"><span>🎖️</span> Proof of Work</div>
             <div class="credits-link" id="credits-link">Click to view proof of work</div>
           </div>
         </div>
