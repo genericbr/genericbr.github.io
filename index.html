@@ -8,138 +8,224 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* ========== HOME REDESIGN ========== */
+    /* ========== HOME — FULL REWRITE (scoped to #view-home) ========== */
+
+    /* Override the 2-col grid that style.css sets on #view-home .card */
     #view-home .card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 1.25rem;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+      gap: 0 !important;
+      padding: 2.25rem 2rem 1.75rem !important;
+      max-width: 480px;
+      margin: 0 auto;
     }
+
+    /* Avatar */
     .home-avatar {
-      width: 88px;
-      height: 88px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
+      border: 2px solid var(--border);
       background: var(--card);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 600;
       color: var(--muted);
       overflow: hidden;
-      border: 2px solid var(--border);
+      margin-bottom: 1.1rem;
+      flex-shrink: 0;
     }
     .home-avatar img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
+    /* Name + handle */
     .home-name {
-      font-size: 1.6rem;
+      font-size: 1.55rem;
       font-weight: 600;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.4px;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 0.25rem;
     }
-    .home-tagline {
+    .home-handle {
       font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
+      font-size: 0.68rem;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-top: -0.6rem;
+      margin-bottom: 1rem;
     }
-    .home-bio {
-      font-size: 0.85rem;
+
+    /* Language badges */
+    .home-langs {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .home-lang {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
       color: var(--muted);
-      max-width: 380px;
-      line-height: 1.55;
+      background: var(--card);
     }
+    .home-lang.native {
+      border-color: rgba(0, 168, 107, 0.45);
+      color: #00c47e;
+      background: rgba(0, 168, 107, 0.08);
+    }
+    .home-lang.fluent {
+      border-color: rgba(41, 121, 255, 0.4);
+      color: #5d9eff;
+      background: rgba(41, 121, 255, 0.08);
+    }
+    .home-lang.learning {
+      border-color: rgba(255, 180, 50, 0.4);
+      color: #f0a832;
+      background: rgba(255, 180, 50, 0.08);
+    }
+
+    /* Bio */
+    .home-bio {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 340px;
+      margin-bottom: 1.4rem;
+    }
+
+    /* Live stat line */
+    .home-stats {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.04em;
+      min-height: 1rem;
+    }
+    .home-stats span {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Button row */
     .home-buttons {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      flex-direction: column;
       gap: 0.5rem;
       width: 100%;
-      max-width: 420px;
+      max-width: 320px;
     }
-    .home-btn {
-      display: inline-flex;
+
+    /* Primary CTA */
+    .home-btn-primary {
+      display: flex;
       align-items: center;
+      justify-content: center;
       gap: 0.45rem;
-      padding: 0.55rem 1rem;
+      padding: 0.75rem 1.2rem;
       border-radius: 12px;
-      font-size: 0.82rem;
-      font-weight: 500;
+      background: #00a86b;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.88rem;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.15s;
+      border: none;
+      transition: filter 0.15s;
+      width: 100%;
+    }
+    .home-btn-primary:hover { filter: brightness(1.12); }
+
+    /* Secondary chips row */
+    .home-chips {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .home-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--card);
       color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.15s, filter 0.15s;
+      white-space: nowrap;
     }
-    .home-btn:hover {
-      filter: brightness(1.1);
-      border-color: rgba(255,255,255,0.2);
+    .home-chip:hover {
+      border-color: rgba(255,255,255,0.22);
+      filter: brightness(1.08);
     }
-    .home-btn.primary {
-      background: #00a86b;
-      color: #fff;
-      border: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      padding: 0.7rem 1.2rem;
-      width: 100%;
-      justify-content: center;
+    .home-chip svg {
+      flex-shrink: 0;
     }
-    .home-btn.primary:hover {
-      filter: brightness(1.15);
-    }
-    .contact-wrapper {
+
+    /* Contact dropdown */
+    .home-contact-wrap {
       position: relative;
-      display: inline-flex;
     }
-    .contact-dropdown {
+    .home-contact-dropdown {
       display: none;
       position: absolute;
-      top: calc(100% + 0.3rem);
+      bottom: calc(100% + 0.4rem);
       left: 50%;
       transform: translateX(-50%);
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 0.4rem;
+      padding: 0.35rem;
       flex-direction: column;
-      gap: 0.3rem;
+      gap: 0.15rem;
       z-index: 50;
-      min-width: 170px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+      min-width: 165px;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
     }
-    .contact-dropdown.active {
-      display: flex;
-    }
-    .contact-dropdown a {
+    .home-contact-dropdown.active { display: flex; }
+    .home-contact-dropdown a {
       display: flex;
       align-items: center;
       gap: 0.6rem;
       color: var(--text);
       text-decoration: none;
-      padding: 0.55rem 0.8rem;
+      padding: 0.5rem 0.75rem;
       border-radius: 10px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 500;
       transition: background 0.12s;
     }
-    .contact-dropdown a:hover {
-      background: rgba(255,255,255,0.06);
-    }
+    .home-contact-dropdown a:hover { background: rgba(255,255,255,0.06); }
+
+    /* Footer */
     .home-footer {
-      font-size: 0.65rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
       color: var(--muted);
-      margin-top: 0.25rem;
+      margin-top: 1.5rem;
+      letter-spacing: 0.05em;
     }
 
-    /* mantenha os outros estilos originais intactos */
-    /* (slideshow, detail, about, etc.) */
+    /* ========== UNCHANGED: slideshow, detail, about, etc. ========== */
     .slideshow-container {
       position: relative;
       background: var(--card);
@@ -222,92 +308,199 @@
     .credits-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
     .credit-chip { background: rgba(255,255,255,0.06); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; }
     .credit-chip.owner { background: rgba(41,121,255,0.2); color: #fff; border-left: 2px solid var(--em); font-weight: 500; }
-
-    /* About Me (mantido) */
     .about-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
     .about-name { font-size: 1.4rem; font-weight: 600; }
     .about-tagline { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
     .about-body p { font-size: 0.85rem; line-height: 1.6; color: var(--muted); margin-bottom: 1rem; }
     .about-body p:last-child { margin-bottom: 0; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 520px) {
+      #view-home .card {
+        padding: 1.75rem 1.25rem 1.5rem !important;
+      }
+      .home-chips { gap: 0.4rem; }
+      .home-chip { padding: 0.45rem 0.75rem; font-size: 0.76rem; }
+    }
   </style>
 </head>
 <body>
 
 <div class="view-wrap">
 
-  <!-- VIEW HOME (REDESIGN) -->
+  <!-- ========== VIEW HOME ========== -->
   <div class="view active" id="view-home">
     <div class="card">
+
       <!-- Avatar -->
-      <div class="home-avatar" id="home-avatar"><span id="home-avatar-initials">G</span></div>
-      <!-- Name & Tagline -->
-      <div>
-        <div class="home-name" id="home-name">GenericBR</div>
-        <div class="home-tagline" id="home-tagline">English · Portuguese Translator</div>
+      <div class="home-avatar" id="home-avatar">
+        <span id="home-avatar-initials">G</span>
       </div>
+
+      <!-- Name + handle -->
+      <div class="home-name" id="home-name">GenericBR</div>
+      <div class="home-handle" id="home-handle">Dhimitri Rael</div>
+
+      <!-- Language badges -->
+      <div class="home-langs">
+        <span class="home-lang native">PT-BR</span>
+        <span class="home-lang fluent">EN</span>
+        <span class="home-lang learning">ES</span>
+      </div>
+
       <!-- Bio -->
-      <p class="home-bio" id="home-bio">Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.</p>
+      <p class="home-bio" id="home-bio">
+        Indie game localizer & Vocaloid lyric adapter. Drop me a Discord message for most things — email for large projects.
+      </p>
+
+      <!-- Live stat line (populated by JS after music loads) -->
+      <div class="home-stats" id="home-stats"></div>
+
       <!-- Buttons -->
       <div class="home-buttons">
-        <!-- Portfolio (hero) -->
-        <div class="home-btn primary" onclick="navigateTo('view-portfolio-pasta')" role="button">
+
+        <!-- Primary CTA -->
+        <div class="home-btn-primary" onclick="navigateTo('view-portfolio-pasta')" role="button" tabindex="0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           Portfolio
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </div>
-        <!-- YouTube -->
-        <a class="home-btn" id="home-yt" href="#" target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
-          YouTube
-        </a>
-        <!-- Contact dropdown -->
-        <div class="contact-wrapper">
-          <div class="home-btn" id="contact-toggle">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            Contact
+
+        <!-- Secondary chips -->
+        <div class="home-chips">
+
+          <!-- YouTube -->
+          <a class="home-chip" id="home-yt" href="#" target="_blank" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
+            YouTube
+          </a>
+
+          <!-- Contact dropdown (opens upward) -->
+          <div class="home-contact-wrap">
+            <div class="home-chip" id="contact-toggle" role="button" tabindex="0" aria-haspopup="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Contact
+            </div>
+            <div class="home-contact-dropdown" id="contact-dropdown" role="menu">
+              <a id="contact-discord" href="#" target="_blank" rel="noopener" role="menuitem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg>
+                Discord
+              </a>
+              <a id="contact-email" href="#" role="menuitem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Email
+              </a>
+            </div>
           </div>
-          <div class="contact-dropdown" id="contact-dropdown">
-            <a id="contact-discord" href="#" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg> Discord</a>
-            <a id="contact-email" href="#" aria-label="Email"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</a>
+
+          <!-- About -->
+          <div class="home-chip" onclick="navigateTo('view-about')" role="button" tabindex="0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            About
           </div>
-        </div>
-        <!-- About -->
-        <div class="home-btn" onclick="navigateTo('view-about')" role="button">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          About
+
         </div>
       </div>
+
+      <!-- Footer -->
       <div class="home-footer" id="home-footer">GenericBR · <span id="footer-year"></span></div>
+
     </div>
   </div>
 
-  <!-- VIEW PASTA -->
+  <!-- ========== VIEW PASTA ========== -->
   <div class="view" id="view-portfolio-pasta">
-    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-home')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Choose your portfolio</span></div>
-    <div class="card" style="text-align: center;"><div class="portfolio-grid"><div class="portfolio-card" onclick="navigateTo('view-games')"><img src="images/steam-icon.png" alt="Steam"><span>Steam</span></div><div class="portfolio-card" onclick="navigateTo('view-music')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></div></div></div>
+    <div class="section-header">
+      <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">Choose your portfolio</span>
+    </div>
+    <div class="card" style="text-align: center;">
+      <div class="portfolio-grid">
+        <div class="portfolio-card" onclick="navigateTo('view-games')">
+          <img src="images/steam-icon.png" alt="Steam">
+          <span>Steam</span>
+        </div>
+        <div class="portfolio-card" onclick="navigateTo('view-music')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          <span>Music</span>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- VIEW MÚSICAS -->
+  <!-- ========== VIEW MÚSICAS ========== -->
   <div class="view" id="view-music">
-    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">All My Music‑Related Cameos Thus Far</span><div class="sort-controls"><label>Sort by:</label><select id="sort-music"><option value="original">Original order</option><option value="views_desc">Most views</option><option value="views_asc">Least views</option><option value="date_desc" selected>Newest first</option><option value="date_asc">Oldest first</option><option value="title_asc">Title A–Z</option><option value="title_desc">Title Z–A</option></select></div></div>
-    <div class="card"><div id="music-stats" class="stats-bar" style="display: none;"><div class="total-views">🎬 Total views: <strong id="total-views-count">0</strong></div></div><div class="music-grid" id="music-grid"><div class="state"><div class="spinner"></div>Loading YouTube...</div></div></div>
+    <div class="section-header">
+      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">All My Music‑Related Cameos Thus Far</span>
+      <div class="sort-controls">
+        <label>Sort by:</label>
+        <select id="sort-music">
+          <option value="original">Original order</option>
+          <option value="views_desc">Most views</option>
+          <option value="views_asc">Least views</option>
+          <option value="date_desc" selected>Newest first</option>
+          <option value="date_asc">Oldest first</option>
+          <option value="title_asc">Title A–Z</option>
+          <option value="title_desc">Title Z–A</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div id="music-stats" class="stats-bar" style="display: none;">
+        <div class="total-views">🎬 Total views: <strong id="total-views-count">0</strong></div>
+      </div>
+      <div class="music-grid" id="music-grid">
+        <div class="state"><div class="spinner"></div>Loading YouTube...</div>
+      </div>
+    </div>
   </div>
 
-  <!-- VIEW DETALHE VÍDEO -->
+  <!-- ========== VIEW DETALHE VÍDEO ========== -->
   <div class="view" id="view-video-detail">
-    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Video Details</span></div><div class="card" id="detail-card"><div class="state"><div class="spinner"></div>Loading...</div></div>
+    <div class="section-header">
+      <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">Video Details</span>
+    </div>
+    <div class="card" id="detail-card">
+      <div class="state"><div class="spinner"></div>Loading...</div>
+    </div>
   </div>
 
-  <!-- VIEW DETALHE JOGO -->
+  <!-- ========== VIEW DETALHE JOGO ========== -->
   <div class="view" id="view-game-detail">
-    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">Game Details</span></div><div class="card" id="game-detail-card"><div class="state"><div class="spinner"></div>Loading game info...</div></div>
+    <div class="section-header">
+      <div class="back-btn" onclick="navigateTo('view-games')" title="Voltar para lista">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">Game Details</span>
+    </div>
+    <div class="card" id="game-detail-card">
+      <div class="state"><div class="spinner"></div>Loading game info...</div>
+    </div>
   </div>
 
-  <!-- VIEW LISTA JOGOS -->
+  <!-- ========== VIEW LISTA JOGOS ========== -->
   <div class="view" id="view-games">
-    <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></div><span class="section-title">All My Gaming‑Related Cameos Thus Far</span></div><div class="card"><div class="games-grid" id="games-grid"><div class="state"><div class="spinner"></div>Loading games...</div></div></div>
+    <div class="section-header">
+      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">All My Gaming‑Related Cameos Thus Far</span>
+    </div>
+    <div class="card">
+      <div class="games-grid" id="games-grid">
+        <div class="state"><div class="spinner"></div>Loading games...</div>
+      </div>
+    </div>
   </div>
 
-  <!-- VIEW ABOUT ME -->
+  <!-- ========== VIEW ABOUT ME ========== -->
   <div class="view" id="view-about">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar">
@@ -337,11 +530,11 @@
     </div>
   </div>
 
-</div>
+</div><!-- end .view-wrap -->
 
 <script>
   // ==================================================================
-  // 1. Configurações globais
+  // 1. Globals
   // ==================================================================
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let musicItemsRaw = [];
@@ -349,7 +542,7 @@
   let currentSort = 'date_desc';
 
   // ==================================================================
-  // 2. Funções auxiliares
+  // 2. Utilities
   // ==================================================================
   function esc(s) {
     const d = document.createElement('div');
@@ -370,33 +563,35 @@
     div.innerHTML = text;
     return div.textContent || div.innerText || '';
   }
+
+  // ==================================================================
+  // 3. applyConfig — populates home from config.js
+  // ==================================================================
   function applyConfig() {
     const c = CONFIG;
     const name = c.name || 'GenericBR';
-    const handle = c.handle || '';
     document.title = name;
 
-    // Home elements
     document.getElementById('home-name').textContent = name;
-    document.getElementById('home-tagline').textContent = c.tagline || '';
-    document.getElementById('home-bio').textContent = c.bio || '';
+    document.getElementById('home-handle').textContent = c.handle || '';
     document.getElementById('footer-year').textContent = new Date().getFullYear();
+
     const homeAvatar = document.getElementById('home-avatar');
     if (c.avatar) {
-      homeAvatar.innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`;
+      homeAvatar.innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar">`;
     } else {
       homeAvatar.innerHTML = `<span>${name.charAt(0).toUpperCase()}</span>`;
     }
 
     // About Me sync
     const aboutAvatar = document.getElementById('about-avatar');
-    const aboutName = document.getElementById('about-name');
-    const aboutTagline = document.getElementById('about-tagline');
     if (aboutAvatar) {
       aboutAvatar.innerHTML = c.avatar
-        ? `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`
+        ? `<img src="${esc(c.avatar)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`
         : name.charAt(0).toUpperCase();
     }
+    const aboutName = document.getElementById('about-name');
+    const aboutTagline = document.getElementById('about-tagline');
     if (aboutName) aboutName.textContent = name;
     if (aboutTagline) aboutTagline.textContent = c.tagline || '';
 
@@ -407,7 +602,7 @@
   }
 
   // ==================================================================
-  // 3. Roteamento
+  // 4. Routing
   // ==================================================================
   function navigateTo(viewId, param = null) {
     if (viewId === 'view-video-detail' && param) {
@@ -426,6 +621,7 @@
       setActiveView(viewId);
     }
   }
+
   function setActiveView(viewId) {
     const videoDetailView = document.getElementById('view-video-detail');
     if (videoDetailView && videoDetailView.classList.contains('active') && viewId !== 'view-video-detail') {
@@ -439,6 +635,7 @@
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }
+
   function restoreFromPath() {
     const path = window.location.pathname;
     if (path === '/portfolio') setActiveView('view-portfolio-pasta');
@@ -463,9 +660,10 @@
       } else setActiveView('view-home');
     } else setActiveView('view-home');
   }
+
   window.addEventListener('popstate', restoreFromPath);
 
-  // Contact dropdown toggle
+  // Contact dropdown
   document.addEventListener('click', function(e) {
     const toggle = document.getElementById('contact-toggle');
     const dropdown = document.getElementById('contact-dropdown');
@@ -478,7 +676,7 @@
   });
 
   // ==================================================================
-  // 4. Músicas (YouTube)
+  // 5. Music (YouTube)
   // ==================================================================
   async function loadMusic() {
     const grid = document.getElementById('music-grid');
@@ -494,6 +692,7 @@
         statsDiv.style.display = 'flex';
         updateTotalViews();
         updateAboutStats();
+        updateHomeStats();
         const sortSelect = document.getElementById('sort-music');
         if (sortSelect) {
           sortSelect.removeEventListener('change', handleSortChange);
@@ -513,19 +712,29 @@
       statsDiv.style.display = 'none';
     }
   }
+
+  function updateHomeStats() {
+    const el = document.getElementById('home-stats');
+    if (!el || !musicItemsRaw.length) return;
+    const count = musicItemsRaw.length;
+    const views = musicItemsRaw.reduce((s, v) => s + v.viewCount, 0);
+    el.innerHTML = `<span>${count}</span> songs · <span>${formatNumber(views)}</span> views`;
+  }
+
   function handleSortChange(e) {
     currentSort = e.target.value;
     renderMusicGrid();
   }
+
   function renderMusicGrid() {
     const grid = document.getElementById('music-grid');
     let sorted = [...musicItemsRaw];
     switch (currentSort) {
       case 'views_desc': sorted.sort((a, b) => b.viewCount - a.viewCount); break;
-      case 'views_asc': sorted.sort((a, b) => a.viewCount - b.viewCount); break;
-      case 'date_desc': sorted.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)); break;
-      case 'date_asc': sorted.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
-      case 'title_asc': sorted.sort((a, b) => a.title.localeCompare(b.title)); break;
+      case 'views_asc':  sorted.sort((a, b) => a.viewCount - b.viewCount); break;
+      case 'date_desc':  sorted.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)); break;
+      case 'date_asc':   sorted.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
+      case 'title_asc':  sorted.sort((a, b) => a.title.localeCompare(b.title)); break;
       case 'title_desc': sorted.sort((a, b) => b.title.localeCompare(a.title)); break;
       default: sorted = [...musicItemsRaw];
     }
@@ -544,20 +753,21 @@
     `).join('');
     updateTotalViews();
   }
+
   function updateTotalViews() {
     const total = musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0);
     const el = document.getElementById('total-views-count');
     if (el) el.innerText = formatNumber(total);
   }
+
   function updateAboutStats() {
     const songCountEl = document.getElementById('about-song-count');
     const totalViewsEl = document.getElementById('about-total-views');
     if (!songCountEl || !totalViewsEl) return;
     songCountEl.textContent = musicItemsRaw.length;
-    totalViewsEl.textContent = formatNumber(
-      musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0)
-    );
+    totalViewsEl.textContent = formatNumber(musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0));
   }
+
   async function loadLyrics(id, container) {
     try {
       const res = await fetch(`${WORKER_URL}/api/music/lyrics?id=${id}`);
@@ -571,24 +781,33 @@
       container.innerHTML = '<div class="lyrics-box-scroll empty">Failed to load lyrics.</div>';
     }
   }
+
   function showVideoDetail(id) {
     const video = musicItemsRaw.find(v => v.id === id);
     if (!video) return;
-    let desc = video.description ? video.description.trim() : 'No description available.';
+    const desc = video.description ? video.description.trim() : 'No description available.';
     const other = musicItemsRaw.filter(vv => vv.channelTitle === video.channelTitle && vv.id !== video.id);
     const dc = document.getElementById('detail-card');
     dc.innerHTML = `
       <div class="detail-container">
         <div class="detail-player">
-          <div class="video-embed"><iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe></div>
+          <div class="video-embed">
+            <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
+          </div>
           ${other.length ? `<div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div><div class="other-videos-grid" id="other-videos-grid"></div>` : ''}
         </div>
         <div class="detail-info">
           <div class="detail-title">${esc(video.title)}</div>
           <div class="detail-channel">${esc(video.channelTitle)}</div>
-          <div class="detail-stats"><span>👁️ ${formatNumber(video.viewCount)} views</span><span>📅 ${formatDate(video.publishedAt)}</span></div>
+          <div class="detail-stats">
+            <span>👁️ ${formatNumber(video.viewCount)} views</span>
+            <span>📅 ${formatDate(video.publishedAt)}</span>
+          </div>
           <div class="detail-description">${esc(desc)}</div>
-          <div class="lyrics-section"><div class="lyrics-header"><span>📝</span> Lyrics / Translation</div><div id="lyrics-container-${video.id}" class="lyrics-container"></div></div>
+          <div class="lyrics-section">
+            <div class="lyrics-header"><span>📝</span> Lyrics / Translation</div>
+            <div id="lyrics-container-${video.id}" class="lyrics-container"></div>
+          </div>
         </div>
       </div>
     `;
@@ -597,7 +816,10 @@
       grid.innerHTML = other.map(vv => `
         <div class="other-video-card" onclick="navigateTo('view-video-detail', '${vv.id}')">
           <img class="other-video-thumb" src="${esc(vv.thumbnail)}" loading="lazy">
-          <div class="other-video-info"><div class="other-video-title">${esc(vv.title)}</div><div class="other-video-views">👁️ ${formatNumber(vv.viewCount)}</div></div>
+          <div class="other-video-info">
+            <div class="other-video-title">${esc(vv.title)}</div>
+            <div class="other-video-views">👁️ ${formatNumber(vv.viewCount)}</div>
+          </div>
         </div>
       `).join('');
     }
@@ -607,7 +829,7 @@
   }
 
   // ==================================================================
-  // 5. Jogos
+  // 6. Games
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -736,7 +958,7 @@
             <span class="role-badge" style="background:${badgeColor}">${esc(roleBadge)}</span>
             ${tags.map(t => `<span class="game-tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${esc(t.name || t)}</span>`).join('')}
           </div>
-          <div class="detail-stats" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+          <div class="detail-stats" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
             <span>👾 ${esc(dev)}</span>
             <span>📅 ${esc(releaseDate || 'Release date TBA')}</span>
             <span>🌐 ${esc(originalLanguage)} → PT‑BR</span>
@@ -758,7 +980,7 @@
 
     function updateSlide() {
       imgElement.src = allImages[currentIndex].url;
-      counterSpan.innerText = `${currentIndex+1} / ${allImages.length}`;
+      counterSpan.innerText = `${currentIndex + 1} / ${allImages.length}`;
     }
     if (prevBtn) prevBtn.onclick = () => { currentIndex = (currentIndex - 1 + allImages.length) % allImages.length; updateSlide(); };
     if (nextBtn) nextBtn.onclick = () => { currentIndex = (currentIndex + 1) % allImages.length; updateSlide(); };
@@ -770,7 +992,7 @@
   }
 
   // ==================================================================
-  // 6. Inicialização
+  // 7. Init
   // ==================================================================
   document.addEventListener('DOMContentLoaded', async () => {
     applyConfig();
