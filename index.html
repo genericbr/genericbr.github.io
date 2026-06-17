@@ -8,7 +8,138 @@
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* Slideshow com setas */
+    /* ========== HOME REDESIGN ========== */
+    #view-home .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.25rem;
+    }
+    .home-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--muted);
+      overflow: hidden;
+      border: 2px solid var(--border);
+    }
+    .home-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .home-name {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+    .home-tagline {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: -0.6rem;
+    }
+    .home-bio {
+      font-size: 0.85rem;
+      color: var(--muted);
+      max-width: 380px;
+      line-height: 1.55;
+    }
+    .home-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      max-width: 420px;
+    }
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+    }
+    .home-btn:hover {
+      filter: brightness(1.1);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .home-btn.primary {
+      background: #00a86b;
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.7rem 1.2rem;
+      width: 100%;
+      justify-content: center;
+    }
+    .home-btn.primary:hover {
+      filter: brightness(1.15);
+    }
+    .contact-wrapper {
+      position: relative;
+      display: inline-flex;
+    }
+    .contact-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 0.3rem);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.4rem;
+      flex-direction: column;
+      gap: 0.3rem;
+      z-index: 50;
+      min-width: 170px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    }
+    .contact-dropdown.active {
+      display: flex;
+    }
+    .contact-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.55rem 0.8rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: background 0.12s;
+    }
+    .contact-dropdown a:hover {
+      background: rgba(255,255,255,0.06);
+    }
+    .home-footer {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* mantenha os outros estilos originais intactos */
+    /* (slideshow, detail, about, etc.) */
     .slideshow-container {
       position: relative;
       background: var(--card);
@@ -36,9 +167,7 @@
       transition: background 0.15s;
       z-index: 10;
     }
-    .slideshow-arrow:hover {
-      background: rgba(0,0,0,0.8);
-    }
+    .slideshow-arrow:hover { background: rgba(0,0,0,0.8); }
     .prev-arrow { left: 8px; }
     .next-arrow { right: 8px; }
     .slideshow-counter {
@@ -55,20 +184,13 @@
       color: var(--muted);
       margin: 0.5rem 0 0.75rem;
     }
-    .credits-link {
-      cursor: pointer;
-      color: var(--muted);
-      text-decoration: underline;
-    }
-    .credits-link:hover {
-      color: var(--text);
-    }
-    /* Botão Steam (cinza, alinhado à direita) */
+    .credits-link { cursor: pointer; color: var(--muted); text-decoration: underline; }
+    .credits-link:hover { color: var(--text); }
     .game-steam-link {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.08);
       border: 1px solid var(--border);
       color: var(--text);
       padding: 0.2rem 0.6rem;
@@ -78,237 +200,35 @@
       text-decoration: none;
       transition: background 0.15s, color 0.15s;
     }
-    .game-steam-link:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-    }
-    .game-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .detail-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin: 0;
-    }
-    .detail-description {
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .sort-controls label {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--text);
-    }
+    .game-steam-link:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    .game-title-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .detail-title { font-size: 1.2rem; font-weight: 600; margin: 0; }
+    .detail-description { white-space: pre-wrap; word-break: break-word; }
+    .sort-controls label { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--text); }
     .sort-controls select {
-      background: var(--card);
-      border: none;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      cursor: pointer;
-      padding: 0.2rem 0.4rem;
-      border-radius: 6px;
+      background: var(--card); border: none; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 6px;
     }
-    .sort-controls select option {
-      background: var(--surface);
-      color: var(--text);
-    }
-    /* Modal centralizado */
+    .sort-controls select option { background: var(--surface); color: var(--text); }
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      backdrop-filter: blur(4px);
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px);
     }
     .modal-content {
-      background: var(--surface);
-      border-radius: 24px;
-      padding: 1.5rem;
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      border: 1px solid var(--border);
+      background: var(--surface); border-radius: 24px; padding: 1.5rem; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; border: 1px solid var(--border);
     }
-    .modal-close {
-      float: right;
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 1.5rem;
-      cursor: pointer;
-      padding: 0;
-      line-height: 1;
-    }
+    .modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1; }
     .modal-close:hover { color: var(--text); }
-    .credits-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-    .credit-chip {
-      background: rgba(255,255,255,0.06);
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-    }
-    .credit-chip.owner {
-      background: rgba(41,121,255,0.2);
-      color: #fff;
-      border-left: 2px solid var(--em);
-      font-weight: 500;
-    }
+    .credits-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+    .credit-chip { background: rgba(255,255,255,0.06); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; }
+    .credit-chip.owner { background: rgba(41,121,255,0.2); color: #fff; border-left: 2px solid var(--em); font-weight: 500; }
 
-    /* ========== ABOUT ME (mantido) ========== */
-    .btn-about {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-    .btn-about:hover {
-      background: var(--surface);
-      filter: brightness(1.1);
-    }
-    .about-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-    .about-name {
-      font-size: 1.4rem;
-      font-weight: 600;
-    }
-    .about-tagline {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-    .about-body p {
-      font-size: 0.85rem;
-      line-height: 1.6;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-    .about-body p:last-child {
-      margin-bottom: 0;
-    }
-
-    /* ========== REDESIGN HOME ========== */
-    #view-home .card {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-    .profile-left {
-      gap: 0.5rem;
-    }
-    .contact-buttons {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 0.5rem;
-      align-items: stretch;
-    }
-    .btn-yt {
-      grid-column: 1;
-    }
-    .btn-pf {
-      grid-column: 2 / 4; /* ocupa duas colunas, destaque */
-      background: #00a86b;
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.9rem;
-      padding: 0.75rem 1rem;
-      border-radius: 12px;
-      border: none;
-    }
-    .btn-pf:hover {
-      filter: brightness(1.15);
-    }
-    .contact-wrapper {
-      position: relative;
-      grid-column: 1;
-      display: flex;
-    }
-    .btn-contact {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      width: 100%;
-      justify-content: center;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.72rem 1rem;
-      border-radius: 10px;
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: filter 0.15s;
-    }
-    .btn-contact:hover {
-      filter: brightness(1.1);
-    }
-    .contact-dropdown {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      margin-top: 0.25rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.5rem;
-      flex-direction: column;
-      gap: 0.4rem;
-      z-index: 50;
-      min-width: 160px;
-    }
-    .contact-dropdown.active {
-      display: flex;
-    }
-    .contact-dropdown a {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text);
-      text-decoration: none;
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      transition: background 0.1s;
-    }
-    .contact-dropdown a:hover {
-      background: rgba(255,255,255,0.06);
-    }
-    .btn-about {
-      grid-column: 1;
-      margin-top: 0;
-      justify-content: center;
-    }
-
-    /* Ajustes responsivos */
-    @media (max-width: 520px) {
-      .contact-buttons {
-        grid-template-columns: 1fr 1fr;
-      }
-      .btn-pf {
-        grid-column: 1 / 3;
-      }
-    }
+    /* About Me (mantido) */
+    .about-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .about-name { font-size: 1.4rem; font-weight: 600; }
+    .about-tagline { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+    .about-body p { font-size: 0.85rem; line-height: 1.6; color: var(--muted); margin-bottom: 1rem; }
+    .about-body p:last-child { margin-bottom: 0; }
   </style>
 </head>
 <body>
@@ -318,41 +238,46 @@
   <!-- VIEW HOME (REDESIGN) -->
   <div class="view active" id="view-home">
     <div class="card">
-      <div class="profile-left">
-        <div class="profile-top">
-          <div class="avatar" id="avatar-wrap"><span id="avatar-initials">G</span></div>
-          <div class="profile-meta">
-            <div class="tagline" id="tagline">English · Portuguese Translator</div>
-            <div class="profile-name" id="profile-name">GenericBR // Dhimitri Rael</div>
-          </div>
-        </div>
-        <p class="profile-bio" id="profile-bio">
-          Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.
-        </p>
+      <!-- Avatar -->
+      <div class="home-avatar" id="home-avatar"><span id="home-avatar-initials">G</span></div>
+      <!-- Name & Tagline -->
+      <div>
+        <div class="home-name" id="home-name">GenericBR</div>
+        <div class="home-tagline" id="home-tagline">English · Portuguese Translator</div>
       </div>
-      <div class="contact-buttons">
-        <!-- YouTube separado -->
-        <a class="btn btn-yt" id="btn-yt" href="#" target="_blank" rel="noopener">Youtube<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg></a>
-
-        <!-- Portfolio com destaque -->
-        <div class="btn btn-pf" onclick="navigateTo('view-portfolio-pasta')" role="button">Portfolio<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-
-        <!-- Contact (Discord + Email unificados) -->
+      <!-- Bio -->
+      <p class="home-bio" id="home-bio">Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.</p>
+      <!-- Buttons -->
+      <div class="home-buttons">
+        <!-- Portfolio (hero) -->
+        <div class="home-btn primary" onclick="navigateTo('view-portfolio-pasta')" role="button">
+          Portfolio
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <!-- YouTube -->
+        <a class="home-btn" id="home-yt" href="#" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
+          YouTube
+        </a>
+        <!-- Contact dropdown -->
         <div class="contact-wrapper">
-          <div class="btn btn-contact" id="contact-toggle">
-            Contact<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div class="home-btn" id="contact-toggle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Contact
           </div>
           <div class="contact-dropdown" id="contact-dropdown">
             <a id="contact-discord" href="#" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/></svg> Discord</a>
             <a id="contact-email" href="#" aria-label="Email"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email</a>
           </div>
         </div>
-
-        <!-- About (discreto) -->
-        <div class="btn btn-about" onclick="navigateTo('view-about')" role="button">About</div>
+        <!-- About -->
+        <div class="home-btn" onclick="navigateTo('view-about')" role="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          About
+        </div>
       </div>
+      <div class="home-footer" id="home-footer">GenericBR · <span id="footer-year"></span></div>
     </div>
-    <div class="footer">GenericBR · <span id="footer-year"></span></div>
   </div>
 
   <!-- VIEW PASTA -->
@@ -450,12 +375,18 @@
     const name = c.name || 'GenericBR';
     const handle = c.handle || '';
     document.title = name;
-    document.getElementById('tagline').textContent = c.tagline || '';
-    document.getElementById('profile-name').textContent = handle ? `${name} // ${handle}` : name;
-    document.getElementById('profile-bio').textContent = c.bio || '';
+
+    // Home elements
+    document.getElementById('home-name').textContent = name;
+    document.getElementById('home-tagline').textContent = c.tagline || '';
+    document.getElementById('home-bio').textContent = c.bio || '';
     document.getElementById('footer-year').textContent = new Date().getFullYear();
-    document.getElementById('avatar-initials').textContent = name.charAt(0).toUpperCase();
-    if (c.avatar) document.getElementById('avatar-wrap').innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`;
+    const homeAvatar = document.getElementById('home-avatar');
+    if (c.avatar) {
+      homeAvatar.innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`;
+    } else {
+      homeAvatar.innerHTML = `<span>${name.charAt(0).toUpperCase()}</span>`;
+    }
 
     // About Me sync
     const aboutAvatar = document.getElementById('about-avatar');
@@ -470,13 +401,9 @@
     if (aboutTagline) aboutTagline.textContent = c.tagline || '';
 
     const L = c.links || {};
-    if (L.youtube) document.getElementById('btn-yt').href = L.youtube;
-    if (L.discord) {
-      document.getElementById('contact-discord').href = L.discord;
-    }
-    if (L.email) {
-      document.getElementById('contact-email').href = 'mailto:' + L.email;
-    }
+    if (L.youtube) document.getElementById('home-yt').href = L.youtube;
+    if (L.discord) document.getElementById('contact-discord').href = L.discord;
+    if (L.email) document.getElementById('contact-email').href = 'mailto:' + L.email;
   }
 
   // ==================================================================
@@ -538,9 +465,7 @@
   }
   window.addEventListener('popstate', restoreFromPath);
 
-  // ==================================================================
   // Contact dropdown toggle
-  // ==================================================================
   document.addEventListener('click', function(e) {
     const toggle = document.getElementById('contact-toggle');
     const dropdown = document.getElementById('contact-dropdown');
@@ -682,7 +607,7 @@
   }
 
   // ==================================================================
-  // 5. Jogos (slideshow com setas, botão Steam à direita)
+  // 5. Jogos
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
