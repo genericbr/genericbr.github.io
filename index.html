@@ -65,23 +65,23 @@
     }
     /* Botão Steam (cinza, alinhado à direita) */
     .game-steam-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: rgba(255, 255, 255, 0.08); /* mesma cor de fundo das tags */
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: background 0.15s, color 0.15s;
-    }
-    .game-steam-link:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-    }
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.08); /* mesma cor de fundo das tags */
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.game-steam-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
     /* Container flex para título e botão */
     .game-title-row {
       display: flex;
@@ -173,7 +173,7 @@
       font-weight: 500;
     }
 
-    /* ========== NEW: About Me styles ========== */
+    /* ========== ABOUT ME ========== */
     .btn-about {
       background: var(--card);
       border: 1px solid var(--border);
@@ -208,6 +208,10 @@
     }
     .about-body p:last-child {
       margin-bottom: 0;
+    }
+    .about-highlight {
+      color: #fff;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -268,7 +272,7 @@
     <div class="section-header"><div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar"></div><span class="section-title">All My Gaming‑Related Cameos Thus Far</span></div><div class="card"><div class="games-grid" id="games-grid"><div class="state"><div class="spinner"></div>Loading games...</div></div></div>
   </div>
 
-  <!-- VIEW ABOUT ME (NEW) -->
+  <!-- VIEW ABOUT ME -->
   <div class="view" id="view-about">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-home')" title="Voltar"></div>
@@ -283,10 +287,15 @@
         </div>
       </div>
       <div class="about-body">
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-        <p>Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit.</p>
-        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
-        <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+        <p>
+          Hi, I'm Dhimitri (GenericBR), a PT‑BR translator and adapter based in Rio Grande do Norte, Brazil. I localize indie games and Vocaloid/indie music lyrics — always aiming for natural, emotionally faithful Portuguese.
+        </p>
+        <p>
+          Currently I have <strong id="about-song-count">0</strong> songs translated, totaling over <strong id="about-total-views">0</strong> views. For music, I work line‑by‑line from the original language, making sure the lyrics hit the same way in Portuguese; for games, I focus on the game's theme and character voice so the experience feels authentic, not translated.
+        </p>
+        <p>
+          I aspire to learn Spanish to expand my translation reach.
+        </p>
       </div>
     </div>
   </div>
@@ -336,18 +345,17 @@
     document.getElementById('avatar-initials').textContent = name.charAt(0).toUpperCase();
     if (c.avatar) document.getElementById('avatar-wrap').innerHTML = `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`;
 
-    // Populate About Me view with config data
-    if (document.getElementById('about-avatar')) {
-      document.getElementById('about-avatar').innerHTML = c.avatar
+    // Sincronizar About Me com config
+    const aboutAvatar = document.getElementById('about-avatar');
+    const aboutName = document.getElementById('about-name');
+    const aboutTagline = document.getElementById('about-tagline');
+    if (aboutAvatar) {
+      aboutAvatar.innerHTML = c.avatar
         ? `<img src="${esc(c.avatar)}" alt="Avatar of ${esc(name)}">`
         : name.charAt(0).toUpperCase();
     }
-    if (document.getElementById('about-name')) {
-      document.getElementById('about-name').textContent = name;
-    }
-    if (document.getElementById('about-tagline')) {
-      document.getElementById('about-tagline').textContent = c.tagline || '';
-    }
+    if (aboutName) aboutName.textContent = name;
+    if (aboutTagline) aboutTagline.textContent = c.tagline || '';
 
     const L = c.links || {};
     if (L.youtube) document.getElementById('btn-yt').href = L.youtube;
@@ -430,6 +438,7 @@
         renderMusicGrid();
         statsDiv.style.display = 'flex';
         updateTotalViews();
+        updateAboutStats();   // ← Atualiza os números no About
         const sortSelect = document.getElementById('sort-music');
         if (sortSelect) {
           sortSelect.removeEventListener('change', handleSortChange);
@@ -482,7 +491,17 @@
   }
   function updateTotalViews() {
     const total = musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0);
-    document.getElementById('total-views-count').innerText = formatNumber(total);
+    const el = document.getElementById('total-views-count');
+    if (el) el.innerText = formatNumber(total);
+  }
+  function updateAboutStats() {
+    const songCountEl = document.getElementById('about-song-count');
+    const totalViewsEl = document.getElementById('about-total-views');
+    if (!songCountEl || !totalViewsEl) return;
+    songCountEl.textContent = musicItemsRaw.length;
+    totalViewsEl.textContent = formatNumber(
+      musicItemsRaw.reduce((sum, v) => sum + v.viewCount, 0)
+    );
   }
   async function loadLyrics(id, container) {
     try {
