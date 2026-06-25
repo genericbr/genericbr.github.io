@@ -31,7 +31,6 @@
     }
     .container { max-width: 1280px; margin: 0 auto; }
 
-    /* Header */
     h1 {
       font-size: 1.8rem;
       font-weight: 600;
@@ -39,7 +38,6 @@
       color: var(--text);
     }
 
-    /* Cards */
     .card {
       background: var(--surface);
       border-radius: 20px;
@@ -50,7 +48,6 @@
     }
     .login-card { max-width: 420px; margin: 2rem auto; text-align: center; }
 
-    /* Inputs & buttons */
     input, textarea, select {
       background: var(--card);
       border: 1px solid var(--border);
@@ -66,6 +63,7 @@
       outline: none;
       border-color: var(--em);
     }
+
     button {
       background: var(--em);
       border: none;
@@ -91,7 +89,6 @@
     }
     .btn-outline:hover { background: rgba(255,255,255,0.05); }
 
-    /* Tags */
     .tag {
       display: inline-flex;
       align-items: center;
@@ -113,7 +110,6 @@
     }
     .tag button:hover { color: var(--danger); }
 
-    /* Tabs */
     .tabs {
       display: flex;
       gap: 1rem;
@@ -137,7 +133,6 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Grids */
     .music-grid, .games-grid, .audiovisuals-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
@@ -197,7 +192,6 @@
     .custom-tag-row input[type="text"] { flex: 2; margin-bottom: 0; }
     .custom-tag-row input[type="color"] { width: 50px; height: 38px; padding: 0; margin-bottom: 0; }
 
-    /* Modal */
     .modal {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -222,7 +216,6 @@
     .modal-content input, .modal-content textarea { margin-bottom: 0.8rem; }
     .modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; }
 
-    /* State */
     .state { text-align: center; padding: 3rem; color: var(--muted); }
     .spinner {
       width: 22px;
@@ -243,14 +236,13 @@
       opacity: 0.7;
     }
 
-    /* Action bar */
     .action-bar { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>🎛️ Admin Dashboard</h1>
-  
+
   <!-- Login -->
   <div id="login-section" class="card login-card">
     <h2 style="margin-bottom:1.5rem; font-weight:600;">Acesso restrito</h2>
@@ -264,13 +256,13 @@
     <div class="tabs">
       <div class="tab active" data-tab="music">🎵 Músicas</div>
       <div class="tab" data-tab="games">🎮 Jogos</div>
-      <div class="tab" data-tab="audiovisuals">🎬 Audiovisuais</div>
+      <div class="tab" data-tab="audiovisuals">🎬 Animações Indies</div>
     </div>
 
-    <!-- Músicas -->
+    <!-- Músicas (agora com CRUD customizado) -->
     <div id="music-tab" class="tab-content active">
       <div class="action-bar">
-        <button id="refresh-playlist-btn" class="btn-outline">🔄 Forçar atualização (limpar cache)</button>
+        <button id="add-music-btn" class="btn-success">➕ Adicionar vídeo de música</button>
       </div>
       <div id="music-list" class="music-grid">
         <div class="state"><div class="spinner"></div>Carregando músicas...</div>
@@ -287,13 +279,13 @@
       </div>
     </div>
 
-    <!-- Audiovisuais -->
+    <!-- Animações Indies -->
     <div id="audiovisuals-tab" class="tab-content">
       <div class="action-bar">
-        <button id="add-audiovisual-btn" class="btn-success">➕ Novo projeto audiovisual</button>
+        <button id="add-audiovisual-btn" class="btn-success">➕ Novo projeto</button>
       </div>
       <div id="audiovisuals-list" class="audiovisuals-grid">
-        <div class="state"><div class="spinner"></div>Carregando projetos...</div>
+        <div class="state"><div class="spinner"></div>Carregando animações...</div>
       </div>
     </div>
 
@@ -332,7 +324,6 @@
     }
   };
 
-  // Auto-login
   (async () => {
     const saved = localStorage.getItem('adminToken');
     if (saved) {
@@ -364,72 +355,66 @@
     };
   });
 
-  // ---------- REFRESH PLAYLIST ----------
-  document.getElementById('refresh-playlist-btn')?.addEventListener('click', async () => {
-    const btn = document.getElementById('refresh-playlist-btn');
-    const orig = btn.innerHTML;
-    btn.innerHTML = '⏳ Atualizando...';
-    btn.disabled = true;
-    try {
-      const res = await fetch(`${WORKER_URL}/refresh`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      if (res.ok) {
-        alert('✅ Cache limpo! A playlist será recarregada.');
-        await loadMusicData();
-      } else {
-        alert('Erro ao limpar cache');
-      }
-    } catch(e) {
-      alert('Erro de rede');
-    } finally {
-      btn.innerHTML = orig;
-      btn.disabled = false;
-    }
-  });
-
-  // ========== MÚSICAS (tags com cores, letras) ==========
+  // ========== MÚSICAS (CRUD customizado + tags + letras) ==========
   async function loadMusicData() {
     const container = document.getElementById('music-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando músicas...</div>';
     try {
-      const res = await fetch(`${WORKER_URL}?admin=true`, {
+      // Busca lista de músicas customizadas do KV (worker precisa ter /api/music/items?admin=true)
+      const res = await fetch(`${WORKER_URL}/api/music/items?admin=true`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
-      const videos = await res.json();
-      if (!videos.length) {
-        container.innerHTML = '<div class="state">Nenhuma música encontrada.</div>';
+      const items = await res.json();
+      if (!items.length) {
+        container.innerHTML = '<div class="state">Nenhuma música. Clique em "Adicionar vídeo de música".</div>';
         return;
       }
       container.innerHTML = '';
-      for (const v of videos) {
+      for (const item of items) {
+        // Carrega tags e letras (já existentes)
+        const tagsRes = await fetch(`${WORKER_URL}/api/music/tags?id=${item.id}`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        }).then(r => r.json()).catch(() => ({ tags: [] }));
+        const lyricsRes = await fetch(`${WORKER_URL}/api/music/lyrics?id=${item.id}`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        }).then(r => r.json()).catch(() => ({ lyrics: '' }));
+
         const card = document.createElement('div');
         card.className = 'music-card';
         card.innerHTML = `
-          <img class="music-thumb" src="${escapeHtml(v.thumbnail)}" alt="${escapeHtml(v.title)}" loading="lazy">
+          <img class="music-thumb" src="${escapeHtml(item.thumbnail || '')}" alt="${escapeHtml(item.title)}" loading="lazy"
+               onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%236b7194%22><path d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z%22/></svg>';">
           <div class="music-info">
-            <div class="music-title">${escapeHtml(v.title)}</div>
-            <div class="tags-area" id="tags-${v.id}">${(v.tags || []).map(t => `<span class="tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${escapeHtml(t.name || t)}<button onclick="removeTag('${v.id}','music','${escapeHtml(t.name || t)}')">✖</button></span>`).join('')}</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
+              <div><strong>Título:</strong> <input type="text" id="title-music-${item.id}" value="${escapeHtml(item.title || '')}"></div>
+              <div><strong>ID do YouTube:</strong> <input type="text" id="videoId-music-${item.id}" value="${escapeHtml(item.videoId || '')}" placeholder="Ex: dQw4w9WgXcQ"></div>
+              <div><strong>Canal:</strong> <input type="text" id="channel-music-${item.id}" value="${escapeHtml(item.channelTitle || '')}"></div>
+              <div><strong>Views:</strong> <input type="number" id="views-music-${item.id}" value="${item.viewCount || 0}"></div>
+              <div><strong>Data de publicação:</strong> <input type="date" id="date-music-${item.id}" value="${item.publishedAt ? item.publishedAt.slice(0,10) : ''}"></div>
+              <div><strong>Thumbnail URL:</strong> <input type="text" id="thumbnail-music-${item.id}" value="${escapeHtml(item.thumbnail || '')}"></div>
+            </div>
+            <div><strong>Descrição:</strong> <textarea id="description-music-${item.id}" rows="2">${escapeHtml(item.description || '')}</textarea></div>
+            <div class="tags-area" id="tags-music-${item.id}">${(tagsRes.tags || []).map(t => `<span class="tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${escapeHtml(t.name || t)}<button onclick="removeTag('${item.id}','music','${escapeHtml(t.name || t)}')">✖</button></span>`).join('')}</div>
             <div class="tag-input">
-              <input type="text" placeholder="Nova tag" id="newtag-${v.id}">
-              <button onclick="addTag('${v.id}','music')">+</button>
+              <input type="text" placeholder="Nova tag" id="newtag-music-${item.id}">
+              <button onclick="addTag('${item.id}','music')">+</button>
             </div>
             <div class="preset-tags">
-              <div class="preset-btn" onclick="addPresetTag('${v.id}','music','Volunteer','rgba(245,158,11,0.2)')">Volunteer</div>
-              <div class="preset-btn" onclick="addPresetTag('${v.id}','music','Localizer','rgba(0,168,107,0.2)')">Localizer</div>
-              <div class="preset-btn" onclick="addPresetTag('${v.id}','music','Reviewer','rgba(229,57,53,0.2)')">Reviewer</div>
-              <div class="preset-btn" onclick="showCustomTagInput('${v.id}','music')">Custom</div>
+              <div class="preset-btn" onclick="addPresetTag('${item.id}','music','Volunteer','rgba(245,158,11,0.2)')">Volunteer</div>
+              <div class="preset-btn" onclick="addPresetTag('${item.id}','music','Localizer','rgba(0,168,107,0.2)')">Localizer</div>
+              <div class="preset-btn" onclick="addPresetTag('${item.id}','music','Reviewer','rgba(229,57,53,0.2)')">Reviewer</div>
+              <div class="preset-btn" onclick="showCustomTagInput('${item.id}','music')">Custom</div>
             </div>
-            <div id="custom-tag-${v.id}" style="display:none" class="custom-tag-row">
-              <input type="text" placeholder="Nome da tag" id="custom-name-${v.id}">
-              <input type="color" id="custom-color-${v.id}" value="#6b7194">
-              <button onclick="addCustomTag('${v.id}','music')">Add</button>
+            <div id="custom-tag-music-${item.id}" style="display:none" class="custom-tag-row">
+              <input type="text" placeholder="Nome da tag" id="custom-name-music-${item.id}">
+              <input type="color" id="custom-color-music-${item.id}" value="#6b7194">
+              <button onclick="addCustomTag('${item.id}','music')">Add</button>
             </div>
-            <div style="margin-top:0.8rem;"><strong>Letra / Tradução</strong></div>
-            <textarea id="lyrics-${v.id}" rows="4" style="font-family:'DM Mono', monospace;">${escapeHtml(v.lyrics || '')}</textarea>
-            <button class="save-btn btn-success" onclick="saveLyrics('${v.id}')">Salvar letra</button>
-            <div class="status" id="status-${v.id}"></div>
+            <div><strong>Letra / Tradução</strong></div>
+            <textarea id="lyrics-music-${item.id}" rows="4" style="font-family:'DM Mono', monospace;">${escapeHtml(lyricsRes.lyrics || '')}</textarea>
+            <button class="save-btn btn-success" onclick="saveMusicItem('${item.id}')">Salvar música</button>
+            <button class="save-btn btn-danger" style="margin-top:0.3rem" onclick="deleteMusicItem('${item.id}')">Excluir</button>
+            <div class="status" id="status-music-${item.id}"></div>
           </div>
         `;
         container.appendChild(card);
@@ -439,31 +424,106 @@
     }
   }
 
-  window.saveLyrics = async (id) => {
-    const lyrics = document.getElementById(`lyrics-${id}`).value;
-    const statusDiv = document.getElementById(`status-${id}`);
+  window.saveMusicItem = async (id) => {
+    const statusDiv = document.getElementById(`status-music-${id}`);
     statusDiv.innerText = 'Salvando...';
+    const item = {
+      id,
+      title: document.getElementById(`title-music-${id}`).value,
+      videoId: document.getElementById(`videoId-music-${id}`).value,
+      channelTitle: document.getElementById(`channel-music-${id}`).value,
+      viewCount: parseInt(document.getElementById(`views-music-${id}`).value) || 0,
+      publishedAt: document.getElementById(`date-music-${id}`).value,
+      thumbnail: document.getElementById(`thumbnail-music-${id}`).value,
+      description: document.getElementById(`description-music-${id}`).value,
+    };
     try {
-      const res = await fetch(`${WORKER_URL}/api/music/lyrics`, {
+      const res = await fetch(`${WORKER_URL}/api/music/items`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${authToken}`
         },
-        body: JSON.stringify({ id, lyrics })
+        body: JSON.stringify(item)
       });
-      if (res.ok) {
-        statusDiv.innerText = '✅ Salvo!';
-        setTimeout(() => statusDiv.innerText = '', 2000);
-      } else {
-        statusDiv.innerText = '❌ Erro ao salvar';
-      }
+      if (!res.ok) throw new Error();
+      // Salvar letra separadamente (já existente)
+      await fetch(`${WORKER_URL}/api/music/lyrics`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ id, lyrics: document.getElementById(`lyrics-music-${id}`).value })
+      });
+      statusDiv.innerText = '✅ Salvo!';
+      setTimeout(() => statusDiv.innerText = '', 2000);
     } catch(e) {
-      statusDiv.innerText = '❌ Erro de rede';
+      statusDiv.innerText = '❌ Erro';
     }
   };
 
-  // ========== JOGOS ==========
+  window.deleteMusicItem = async (id) => {
+    if (!confirm(`Excluir música ${id}?`)) return;
+    try {
+      await fetch(`${WORKER_URL}/api/music/items?id=${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      loadMusicData();
+    } catch(e) {
+      alert('Erro ao excluir');
+    }
+  };
+
+  // Modal para adicionar música
+  document.getElementById('add-music-btn')?.addEventListener('click', () => {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3>Adicionar vídeo de música</h3>
+        <input type="text" id="new-music-videoid" placeholder="ID do YouTube (ex: dQw4w9WgXcQ)">
+        <input type="text" id="new-music-title" placeholder="Título (opcional, será preenchido automaticamente)">
+        <div class="modal-buttons">
+          <button id="cancel-add-music" class="btn-outline">Cancelar</button>
+          <button id="confirm-add-music">Adicionar</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('confirm-add-music').onclick = async () => {
+      const videoId = document.getElementById('new-music-videoid').value.trim();
+      const title = document.getElementById('new-music-title').value.trim();
+      if (!videoId) return alert('ID do vídeo obrigatório');
+      try {
+        // Opção: buscar metadados da API do YouTube se necessário, mas aqui vamos criar com dados mínimos
+        const res = await fetch(`${WORKER_URL}/api/music/items`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({
+            videoId,
+            title: title || `Video ${videoId}`,
+            // Os outros campos podem ser preenchidos depois
+          })
+        });
+        if (res.ok) {
+          modal.remove();
+          loadMusicData();
+        } else {
+          alert('Erro ao adicionar');
+        }
+      } catch(e) {
+        alert('Erro de rede');
+      }
+    };
+    document.getElementById('cancel-add-music').onclick = () => modal.remove();
+  });
+
+  // ========== JOGOS (igual ao dashboard anterior) ==========
   async function loadGamesData() {
     const container = document.getElementById('games-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
@@ -566,24 +626,15 @@
 
   window.deleteGame = async (appId) => {
     if (!confirm(`Excluir jogo ${appId}?`)) return;
-    const statusDiv = document.getElementById(`status-${appId}`);
-    statusDiv.innerText = 'Excluindo...';
     try {
-      const res = await fetch(`${WORKER_URL}/api/games?appId=${appId}`, {
+      await fetch(`${WORKER_URL}/api/games?appId=${appId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
-      if (res.ok) {
-        loadGamesData();
-      } else {
-        statusDiv.innerText = '❌ Erro';
-      }
-    } catch(e) {
-      statusDiv.innerText = '❌ Rede';
-    }
+      loadGamesData();
+    } catch(e) { alert('Erro'); }
   };
 
-  // Modal para adicionar novo jogo
   document.getElementById('add-game-btn')?.addEventListener('click', () => {
     const modal = document.createElement('div');
     modal.className = 'modal';
@@ -604,7 +655,7 @@
       const name = document.getElementById('new-name').value.trim();
       if (!appId || !name) return alert('Preencha App ID e Nome');
       try {
-        const res = await fetch(`${WORKER_URL}/api/games`, {
+        await fetch(`${WORKER_URL}/api/games`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -612,30 +663,24 @@
           },
           body: JSON.stringify({ appId, name, role: '', note: '' })
         });
-        if (res.ok) {
-          modal.remove();
-          loadGamesData();
-        } else {
-          alert('Erro ao adicionar');
-        }
-      } catch(e) {
-        alert('Erro de rede');
-      }
+        modal.remove();
+        loadGamesData();
+      } catch(e) { alert('Erro'); }
     };
     document.getElementById('cancel-add-game').onclick = () => modal.remove();
   });
 
-  // ========== AUDIOVISUAIS (NOVA ABA) ==========
+  // ========== ANIMAÇÕES INDIES (audiovisuais) ==========
   async function loadAudiovisualsData() {
     const container = document.getElementById('audiovisuals-list');
-    container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando projetos...</div>';
+    container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando animações...</div>';
     try {
       const res = await fetch(`${WORKER_URL}/api/audiovisuals?admin=true`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
       const items = await res.json();
       if (!items.length) {
-        container.innerHTML = '<div class="state">Nenhum projeto. Clique em "Novo projeto".</div>';
+        container.innerHTML = '<div class="state">Nenhum projeto.</div>';
         return;
       }
       container.innerHTML = '';
@@ -740,30 +785,21 @@
 
   window.deleteAudiovisual = async (id) => {
     if (!confirm(`Excluir projeto ${id}?`)) return;
-    const statusDiv = document.getElementById(`status-av-${id}`);
-    statusDiv.innerText = 'Excluindo...';
     try {
-      const res = await fetch(`${WORKER_URL}/api/audiovisuals?id=${id}`, {
+      await fetch(`${WORKER_URL}/api/audiovisuals?id=${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
-      if (res.ok) {
-        loadAudiovisualsData();
-      } else {
-        statusDiv.innerText = '❌ Erro';
-      }
-    } catch(e) {
-      statusDiv.innerText = '❌ Rede';
-    }
+      loadAudiovisualsData();
+    } catch(e) { alert('Erro'); }
   };
 
-  // Modal para adicionar novo projeto audiovisual
   document.getElementById('add-audiovisual-btn')?.addEventListener('click', () => {
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.innerHTML = `
       <div class="modal-content">
-        <h3>Novo projeto audiovisual</h3>
+        <h3>Novo projeto de animação</h3>
         <input type="text" id="new-av-title" placeholder="Título do projeto">
         <input type="text" id="new-av-url" placeholder="URL do vídeo (YouTube/Vimeo/etc)">
         <div class="modal-buttons">
@@ -778,7 +814,7 @@
       const url = document.getElementById('new-av-url').value.trim();
       if (!title) return alert('Título obrigatório');
       try {
-        const res = await fetch(`${WORKER_URL}/api/audiovisuals`, {
+        await fetch(`${WORKER_URL}/api/audiovisuals`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -786,15 +822,9 @@
           },
           body: JSON.stringify({ title, url, type: '', provider: 'youtube' })
         });
-        if (res.ok) {
-          modal.remove();
-          loadAudiovisualsData();
-        } else {
-          alert('Erro ao criar');
-        }
-      } catch(e) {
-        alert('Erro de rede');
-      }
+        modal.remove();
+        loadAudiovisualsData();
+      } catch(e) { alert('Erro'); }
     };
     document.getElementById('cancel-add-av').onclick = () => modal.remove();
   });
@@ -804,19 +834,21 @@
     await addTagObject(id, type, { name, color });
   };
   window.showCustomTagInput = (id, type) => {
-    const div = document.getElementById(`custom-tag-${id}`);
+    const div = document.getElementById(`custom-tag-${type === 'music' ? 'music-' + id : id}`);
     if (div) div.style.display = div.style.display === 'none' ? 'flex' : 'none';
   };
   window.addCustomTag = async (id, type) => {
-    const name = document.getElementById(`custom-name-${id}`).value.trim();
-    const color = document.getElementById(`custom-color-${id}`).value;
+    const customId = type === 'music' ? `music-${id}` : id;
+    const name = document.getElementById(`custom-name-${customId}`).value.trim();
+    const color = document.getElementById(`custom-color-${customId}`).value;
     if (!name) return;
     await addTagObject(id, type, { name, color });
-    document.getElementById(`custom-name-${id}`).value = '';
-    document.getElementById(`custom-tag-${id}`).style.display = 'none';
+    document.getElementById(`custom-name-${customId}`).value = '';
+    document.getElementById(`custom-tag-${customId}`).style.display = 'none';
   };
   window.addTag = async (id, type) => {
-    const input = document.getElementById(`newtag-${id}`) || document.getElementById(`newtag-av-${id}`);
+    const prefix = type === 'music' ? 'music-' : '';
+    const input = document.getElementById(`newtag-${prefix}${id}`) || document.getElementById(`newtag-av-${id}`);
     const tagName = input.value.trim();
     if (!tagName) return;
     await addTagObject(id, type, { name: tagName, color: 'rgba(255,255,255,0.08)' });
@@ -829,7 +861,7 @@
     else if (type === 'audiovisual') endpoint = '/api/audiovisuals/tags';
     else return;
     try {
-      const res = await fetch(`${WORKER_URL}${endpoint}`, {
+      await fetch(`${WORKER_URL}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -837,16 +869,10 @@
         },
         body: JSON.stringify({ id, tag: tagObj })
       });
-      if (res.ok) {
-        if (type === 'music') loadMusicData();
-        else if (type === 'game') loadGamesData();
-        else if (type === 'audiovisual') loadAudiovisualsData();
-      } else {
-        alert('Erro ao adicionar tag');
-      }
-    } catch(e) {
-      alert('Rede');
-    }
+      if (type === 'music') loadMusicData();
+      else if (type === 'game') loadGamesData();
+      else loadAudiovisualsData();
+    } catch(e) { alert('Erro'); }
   };
   window.removeTag = async (id, type, tagName) => {
     let endpoint;
@@ -855,20 +881,14 @@
     else if (type === 'audiovisual') endpoint = '/api/audiovisuals/tags';
     else return;
     try {
-      const res = await fetch(`${WORKER_URL}${endpoint}?id=${id}&tag=${encodeURIComponent(tagName)}`, {
+      await fetch(`${WORKER_URL}${endpoint}?id=${id}&tag=${encodeURIComponent(tagName)}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
-      if (res.ok) {
-        if (type === 'music') loadMusicData();
-        else if (type === 'game') loadGamesData();
-        else if (type === 'audiovisual') loadAudiovisualsData();
-      } else {
-        alert('Erro ao remover tag');
-      }
-    } catch(e) {
-      alert('Rede');
-    }
+      if (type === 'music') loadMusicData();
+      else if (type === 'game') loadGamesData();
+      else loadAudiovisualsData();
+    } catch(e) { alert('Erro'); }
   };
 
   function escapeHtml(s) {
