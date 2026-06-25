@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="dashboard.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* ====== Aparência consistente com o site principal ====== */
     :root {
       --bg: #0d0f18;
       --surface: #161927;
@@ -16,7 +17,9 @@
       --text: #e2e4ef;
       --muted: #6b7194;
       --em: #2979ff;
+      --success: #00a86b;
       --danger: #e53935;
+      --warning: #f5a623;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -24,16 +27,30 @@
       color: var(--text);
       font-family: 'DM Sans', sans-serif;
       padding: 2rem;
+      line-height: 1.5;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
+    .container { max-width: 1280px; margin: 0 auto; }
+
+    /* Header */
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    /* Cards */
     .card {
       background: var(--surface);
       border-radius: 20px;
       padding: 1.75rem 2rem;
       margin-bottom: 1.5rem;
       border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    .login-card { max-width: 400px; margin: 2rem auto; text-align: center; }
+    .login-card { max-width: 420px; margin: 2rem auto; text-align: center; }
+
+    /* Inputs & buttons */
     input, textarea, select {
       background: var(--card);
       border: 1px solid var(--border);
@@ -41,7 +58,13 @@
       padding: 0.6rem 1rem;
       border-radius: 10px;
       width: 100%;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--em);
     }
     button {
       background: var(--em);
@@ -49,12 +72,26 @@
       color: #fff;
       padding: 0.6rem 1.2rem;
       border-radius: 10px;
-      font-weight: 500;
+      font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
-      transition: filter 0.15s;
+      transition: filter 0.15s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
     }
     button:hover { filter: brightness(1.1); }
+    button:active { transform: scale(0.98); }
+    .btn-success { background: var(--success); }
     .btn-danger { background: var(--danger); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); }
+
+    /* Tags */
     .tag {
       display: inline-flex;
       align-items: center;
@@ -63,8 +100,7 @@
       padding: 0.2rem 0.7rem;
       border-radius: 20px;
       font-size: 0.7rem;
-      margin-right: 0.4rem;
-      margin-bottom: 0.4rem;
+      margin: 0.2rem;
       border: 1px solid var(--border);
     }
     .tag button {
@@ -76,6 +112,8 @@
       padding: 0;
     }
     .tag button:hover { color: var(--danger); }
+
+    /* Tabs */
     .tabs {
       display: flex;
       gap: 1rem;
@@ -87,49 +125,79 @@
       cursor: pointer;
       opacity: 0.7;
       font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: opacity 0.2s, border-color 0.2s;
     }
-    .tab.active { opacity: 1; border-bottom: 2px solid var(--em); }
+    .tab.active {
+      opacity: 1;
+      border-bottom: 2px solid var(--em);
+      color: var(--text);
+    }
+    .tab:hover { opacity: 1; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    .music-grid, .games-grid {
+
+    /* Grids */
+    .music-grid, .games-grid, .audiovisuals-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
       gap: 1rem;
     }
-    .music-card, .game-card {
+    .music-card, .game-card, .audiovisual-card {
       background: var(--card);
       border-radius: 16px;
       overflow: hidden;
       border: 1px solid var(--border);
-      transition: transform 0.15s;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
-    .music-card:hover, .game-card:hover { transform: translateY(-3px); }
-    .music-thumb {
+    .music-card:hover, .game-card:hover, .audiovisual-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .music-thumb, .audiovisual-thumb {
       width: 100%;
       aspect-ratio: 16/9;
       object-fit: cover;
+      background: var(--bg);
     }
-    .music-info, .game-info { padding: 1rem; }
-    .music-title, .game-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .music-info, .game-info, .audiovisual-info { padding: 1rem; }
+    .music-title, .game-name, .audiovisual-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
     .tags-area { margin: 0.5rem 0; display: flex; flex-wrap: wrap; }
     .tag-input { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
-    .save-btn { background: #00a86b; width: 100%; margin-top: 0.5rem; }
-    .status { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; text-align: center; }
-    .refresh-btn, .add-game-btn { margin-bottom: 1rem; }
-    .add-game-btn { background: #00a86b; }
+    .save-btn { width: 100%; margin-top: 0.5rem; }
+    .status {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      text-align: center;
+    }
+
     .preset-tags { display: flex; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
     .preset-btn {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.08);
       padding: 0.3rem 0.8rem;
       border-radius: 20px;
       font-size: 0.7rem;
       cursor: pointer;
       transition: background 0.15s;
+      user-select: none;
     }
-    .preset-btn:hover { background: rgba(255,255,255,0.2); }
-    .custom-tag-row { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+    .preset-btn:hover { background: rgba(255,255,255,0.15); }
+
+    .custom-tag-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
     .custom-tag-row input[type="text"] { flex: 2; margin-bottom: 0; }
     .custom-tag-row input[type="color"] { width: 50px; height: 38px; padding: 0; margin-bottom: 0; }
+
+    /* Modal */
     .modal {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -138,16 +206,23 @@
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      backdrop-filter: blur(4px);
     }
     .modal-content {
       background: var(--surface);
       border-radius: 20px;
       padding: 2rem;
-      max-width: 500px;
+      max-width: 560px;
       width: 90%;
-      max-height: 80vh;
+      max-height: 85vh;
       overflow-y: auto;
+      border: 1px solid var(--border);
     }
+    .modal-content h3 { margin-bottom: 1rem; font-weight: 600; }
+    .modal-content input, .modal-content textarea { margin-bottom: 0.8rem; }
+    .modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem; }
+
+    /* State */
     .state { text-align: center; padding: 3rem; color: var(--muted); }
     .spinner {
       width: 22px;
@@ -159,33 +234,71 @@
       margin: 0 auto 0.75rem;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .footer { text-align: center; font-size: 0.7rem; color: var(--muted); margin-top: 2rem; }
+
+    .footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 2rem;
+      opacity: 0.7;
+    }
+
+    /* Action bar */
+    .action-bar { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>🎛️ Admin Dashboard</h1>
+  
+  <!-- Login -->
   <div id="login-section" class="card login-card">
-    <h2>Login</h2>
-    <input type="password" id="admin-password" placeholder="Senha">
-    <button id="login-btn">Entrar</button>
-    <div id="login-error" class="status" style="color:#e53935"></div>
+    <h2 style="margin-bottom:1.5rem; font-weight:600;">Acesso restrito</h2>
+    <input type="password" id="admin-password" placeholder="Senha do admin">
+    <button id="login-btn" style="width:100%;">Entrar</button>
+    <div id="login-error" style="color:var(--danger); margin-top:0.5rem;"></div>
   </div>
+
+  <!-- Conteúdo autenticado -->
   <div id="admin-content" style="display:none">
     <div class="tabs">
-      <div class="tab active" data-tab="music">🎵 Músicas (letras + tags)</div>
-      <div class="tab" data-tab="games">🎮 Jogos (gerenciar + tags + prova de trabalho)</div>
+      <div class="tab active" data-tab="music">🎵 Músicas</div>
+      <div class="tab" data-tab="games">🎮 Jogos</div>
+      <div class="tab" data-tab="audiovisuals">🎬 Audiovisuais</div>
     </div>
+
+    <!-- Músicas -->
     <div id="music-tab" class="tab-content active">
-      <button id="refresh-playlist-btn" class="refresh-btn">🔄 Forçar atualização da playlist (cache)</button>
-      <div id="music-list" class="music-grid"><div class="state"><div class="spinner"></div>Carregando músicas...</div></div>
+      <div class="action-bar">
+        <button id="refresh-playlist-btn" class="btn-outline">🔄 Forçar atualização (limpar cache)</button>
+      </div>
+      <div id="music-list" class="music-grid">
+        <div class="state"><div class="spinner"></div>Carregando músicas...</div>
+      </div>
     </div>
+
+    <!-- Jogos -->
     <div id="games-tab" class="tab-content">
-      <button id="add-game-btn" class="add-game-btn">➕ Adicionar novo jogo</button>
-      <div id="games-list" class="games-grid"><div class="state"><div class="spinner"></div>Carregando jogos...</div></div>
+      <div class="action-bar">
+        <button id="add-game-btn" class="btn-success">➕ Adicionar novo jogo</button>
+      </div>
+      <div id="games-list" class="games-grid">
+        <div class="state"><div class="spinner"></div>Carregando jogos...</div>
+      </div>
     </div>
+
+    <!-- Audiovisuais -->
+    <div id="audiovisuals-tab" class="tab-content">
+      <div class="action-bar">
+        <button id="add-audiovisual-btn" class="btn-success">➕ Novo projeto audiovisual</button>
+      </div>
+      <div id="audiovisuals-list" class="audiovisuals-grid">
+        <div class="state"><div class="spinner"></div>Carregando projetos...</div>
+      </div>
+    </div>
+
   </div>
-  <div class="footer">GenericBR Admin · Alterações salvas via Cloudflare KV</div>
+  <div class="footer">GenericBR Admin · Cloudflare KV</div>
 </div>
 
 <script>
@@ -195,6 +308,7 @@
   // ---------- LOGIN ----------
   document.getElementById('login-btn').onclick = async () => {
     const pwd = document.getElementById('admin-password').value;
+    const errorEl = document.getElementById('login-error');
     try {
       const res = await fetch(`${WORKER_URL}/auth`, {
         method: 'POST',
@@ -209,14 +323,16 @@
         document.getElementById('admin-content').style.display = 'block';
         loadMusicData();
         loadGamesData();
+        loadAudiovisualsData();
       } else {
-        document.getElementById('login-error').innerText = data.error || 'Falha no login';
+        errorEl.innerText = data.error || 'Senha incorreta';
       }
     } catch(e) {
-      document.getElementById('login-error').innerText = 'Erro de rede';
+      errorEl.innerText = 'Erro de rede';
     }
   };
 
+  // Auto-login
   (async () => {
     const saved = localStorage.getItem('adminToken');
     if (saved) {
@@ -230,6 +346,7 @@
           document.getElementById('admin-content').style.display = 'block';
           loadMusicData();
           loadGamesData();
+          loadAudiovisualsData();
         } else {
           localStorage.removeItem('adminToken');
         }
@@ -250,8 +367,8 @@
   // ---------- REFRESH PLAYLIST ----------
   document.getElementById('refresh-playlist-btn')?.addEventListener('click', async () => {
     const btn = document.getElementById('refresh-playlist-btn');
-    const orig = btn.innerText;
-    btn.innerText = '🔄 Atualizando...';
+    const orig = btn.innerHTML;
+    btn.innerHTML = '⏳ Atualizando...';
     btn.disabled = true;
     try {
       const res = await fetch(`${WORKER_URL}/refresh`, {
@@ -259,7 +376,7 @@
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
       if (res.ok) {
-        alert('Cache limpo!');
+        alert('✅ Cache limpo! A playlist será recarregada.');
         await loadMusicData();
       } else {
         alert('Erro ao limpar cache');
@@ -267,7 +384,7 @@
     } catch(e) {
       alert('Erro de rede');
     } finally {
-      btn.innerText = orig;
+      btn.innerHTML = orig;
       btn.disabled = false;
     }
   });
@@ -305,13 +422,13 @@
               <div class="preset-btn" onclick="showCustomTagInput('${v.id}','music')">Custom</div>
             </div>
             <div id="custom-tag-${v.id}" style="display:none" class="custom-tag-row">
-              <input type="text" placeholder="Tag name" id="custom-name-${v.id}">
+              <input type="text" placeholder="Nome da tag" id="custom-name-${v.id}">
               <input type="color" id="custom-color-${v.id}" value="#6b7194">
               <button onclick="addCustomTag('${v.id}','music')">Add</button>
             </div>
-            <div><strong>Letra / Tradução</strong></div>
-            <textarea id="lyrics-${v.id}" class="lyrics-box" rows="4">${escapeHtml(v.lyrics || '')}</textarea>
-            <button class="save-btn" onclick="saveLyrics('${v.id}')">Salvar letra</button>
+            <div style="margin-top:0.8rem;"><strong>Letra / Tradução</strong></div>
+            <textarea id="lyrics-${v.id}" rows="4" style="font-family:'DM Mono', monospace;">${escapeHtml(v.lyrics || '')}</textarea>
+            <button class="save-btn btn-success" onclick="saveLyrics('${v.id}')">Salvar letra</button>
             <div class="status" id="status-${v.id}"></div>
           </div>
         `;
@@ -339,14 +456,14 @@
         statusDiv.innerText = '✅ Salvo!';
         setTimeout(() => statusDiv.innerText = '', 2000);
       } else {
-        statusDiv.innerText = '❌ Erro';
+        statusDiv.innerText = '❌ Erro ao salvar';
       }
     } catch(e) {
-      statusDiv.innerText = '❌ Rede';
+      statusDiv.innerText = '❌ Erro de rede';
     }
   };
 
-  // ========== JOGOS (apenas role, note, tags, proof of work) ==========
+  // ========== JOGOS ==========
   async function loadGamesData() {
     const container = document.getElementById('games-list');
     container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando jogos...</div>';
@@ -372,9 +489,9 @@
         card.className = 'game-card';
         card.innerHTML = `
           <div class="game-info">
-            <div class="game-name">${escapeHtml(game.name)} (${game.appId})</div>
-            <div><strong>Role:</strong> <input type="text" id="role-${game.appId}" value="${escapeHtml(game.role || '')}"></div>
-            <div><strong>Note (optional):</strong> <input type="text" id="note-${game.appId}" value="${escapeHtml(game.note || '')}"></div>
+            <div class="game-name">${escapeHtml(game.name)} <span style="font-size:0.7rem;opacity:0.7;">(${game.appId})</span></div>
+            <div><strong>Papel (role):</strong> <input type="text" id="role-${game.appId}" value="${escapeHtml(game.role || '')}"></div>
+            <div><strong>Nota (note):</strong> <input type="text" id="note-${game.appId}" value="${escapeHtml(game.note || '')}"></div>
             <div class="tags-area" id="tags-${game.appId}">${(tagsRes.tags || []).map(t => `<span class="tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${escapeHtml(t.name || t)}<button onclick="removeTag('${game.appId}','game','${escapeHtml(t.name || t)}')">✖</button></span>`).join('')}</div>
             <div class="tag-input">
               <input type="text" placeholder="Nova tag" id="newtag-${game.appId}">
@@ -387,16 +504,16 @@
               <div class="preset-btn" onclick="showCustomTagInput('${game.appId}','game')">Custom</div>
             </div>
             <div id="custom-tag-${game.appId}" style="display:none" class="custom-tag-row">
-              <input type="text" placeholder="Tag name" id="custom-name-${game.appId}">
+              <input type="text" placeholder="Nome da tag" id="custom-name-${game.appId}">
               <input type="color" id="custom-color-${game.appId}" value="#6b7194">
               <button onclick="addCustomTag('${game.appId}','game')">Add</button>
             </div>
-            <div><strong>Prova de trabalho (créditos estruturados):</strong><br>
+            <div style="margin-top:0.8rem;"><strong>Prova de trabalho (créditos):</strong><br>
             <small>Formato: Nome|Papel (um por linha)</small></div>
-            <textarea id="creditsChips-${game.appId}" rows="3">${(creditsRes.creditsChips || []).map(c => `${c.name}|${c.role || ''}`).join('\n')}</textarea>
+            <textarea id="creditsChips-${game.appId}" rows="3" style="font-family:'DM Mono', monospace;">${(creditsRes.creditsChips || []).map(c => `${c.name}|${c.role || ''}`).join('\n')}</textarea>
             <div><strong>Ou imagem única (URL):</strong></div>
             <input type="text" id="creditsImage-${game.appId}" value="${escapeHtml(creditsRes.creditsImage || '')}" placeholder="https://exemplo.com/prova.jpg">
-            <button class="save-btn" onclick="saveGameData('${game.appId}')">Salvar alterações</button>
+            <button class="save-btn btn-success" onclick="saveGameData('${game.appId}')">Salvar alterações</button>
             <button class="save-btn btn-danger" style="margin-top:0.3rem" onclick="deleteGame('${game.appId}')">Excluir jogo</button>
             <div class="status" id="status-${game.appId}"></div>
           </div>
@@ -427,7 +544,6 @@
         body: JSON.stringify(gameData)
       });
       if (!res.ok) throw new Error();
-      // Salvar créditos
       const creditsChips = document.getElementById(`creditsChips-${appId}`).value.split('\n').filter(l => l.trim()).map(line => {
         const [name, role] = line.split('|');
         return { name: name.trim(), role: role ? role.trim() : '' };
@@ -444,7 +560,7 @@
       statusDiv.innerText = '✅ Salvo!';
       setTimeout(() => statusDiv.innerText = '', 2000);
     } catch(e) {
-      statusDiv.innerText = '❌ Erro';
+      statusDiv.innerText = '❌ Erro ao salvar';
     }
   };
 
@@ -476,8 +592,10 @@
         <h3>Adicionar novo jogo</h3>
         <input type="text" id="new-appid" placeholder="App ID (ex: 4178020)">
         <input type="text" id="new-name" placeholder="Nome do jogo">
-        <button id="confirm-add-game">Adicionar</button>
-        <button id="cancel-add-game">Cancelar</button>
+        <div class="modal-buttons">
+          <button id="cancel-add-game" class="btn-outline">Cancelar</button>
+          <button id="confirm-add-game">Adicionar</button>
+        </div>
       </div>
     `;
     document.body.appendChild(modal);
@@ -507,6 +625,180 @@
     document.getElementById('cancel-add-game').onclick = () => modal.remove();
   });
 
+  // ========== AUDIOVISUAIS (NOVA ABA) ==========
+  async function loadAudiovisualsData() {
+    const container = document.getElementById('audiovisuals-list');
+    container.innerHTML = '<div class="state"><div class="spinner"></div>Carregando projetos...</div>';
+    try {
+      const res = await fetch(`${WORKER_URL}/api/audiovisuals?admin=true`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      const items = await res.json();
+      if (!items.length) {
+        container.innerHTML = '<div class="state">Nenhum projeto. Clique em "Novo projeto".</div>';
+        return;
+      }
+      container.innerHTML = '';
+      for (const item of items) {
+        const tags = item.tags || [];
+        const card = document.createElement('div');
+        card.className = 'audiovisual-card';
+        card.innerHTML = `
+          ${item.thumbnail ? `<img class="audiovisual-thumb" src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}">` : '<div class="audiovisual-thumb" style="background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🎬</div>'}
+          <div class="audiovisual-info">
+            <div class="audiovisual-title">${escapeHtml(item.title)} <span style="opacity:0.6;">(${item.id})</span></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
+              <div><strong>Tipo:</strong> <input type="text" id="type-${item.id}" value="${escapeHtml(item.type || '')}"></div>
+              <div><strong>Provider:</strong> 
+                <select id="provider-${item.id}">
+                  <option value="youtube" ${item.provider === 'youtube' ? 'selected' : ''}>YouTube</option>
+                  <option value="vimeo" ${item.provider === 'vimeo' ? 'selected' : ''}>Vimeo</option>
+                  <option value="other" ${item.provider === 'other' ? 'selected' : ''}>Outro</option>
+                </select>
+              </div>
+              <div><strong>URL:</strong> <input type="text" id="url-${item.id}" value="${escapeHtml(item.url || '')}"></div>
+              <div><strong>Thumbnail:</strong> <input type="text" id="thumbnail-${item.id}" value="${escapeHtml(item.thumbnail || '')}"></div>
+              <div><strong>Papel:</strong> <input type="text" id="role-av-${item.id}" value="${escapeHtml(item.role || '')}"></div>
+              <div><strong>Cliente:</strong> <input type="text" id="client-${item.id}" value="${escapeHtml(item.client || '')}"></div>
+              <div><strong>Ano:</strong> <input type="text" id="year-${item.id}" value="${escapeHtml(item.year || '')}"></div>
+              <div><strong>Duração:</strong> <input type="text" id="duration-${item.id}" value="${escapeHtml(item.duration || '')}"></div>
+            </div>
+            <div><strong>Descrição:</strong> <textarea id="description-${item.id}" rows="2">${escapeHtml(item.description || '')}</textarea></div>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin:0.5rem 0;">
+              <label><strong>Publicado:</strong></label>
+              <input type="checkbox" id="published-${item.id}" ${item.published !== false ? 'checked' : ''}>
+              <label><strong>Destaque:</strong></label>
+              <input type="checkbox" id="featured-${item.id}" ${item.featured ? 'checked' : ''}>
+              <label><strong>Ordem:</strong></label>
+              <input type="number" id="order-${item.id}" value="${item.order ?? 0}" style="width:70px; margin-bottom:0;">
+            </div>
+            <div class="tags-area" id="tags-av-${item.id}">${tags.map(t => `<span class="tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${escapeHtml(t.name || t)}<button onclick="removeTag('${item.id}','audiovisual','${escapeHtml(t.name || t)}')">✖</button></span>`).join('')}</div>
+            <div class="tag-input">
+              <input type="text" placeholder="Nova tag" id="newtag-av-${item.id}">
+              <button onclick="addTag('${item.id}','audiovisual')">+</button>
+            </div>
+            <div class="preset-tags">
+              <div class="preset-btn" onclick="addPresetTag('${item.id}','audiovisual','Volunteer','rgba(245,158,11,0.2)')">Volunteer</div>
+              <div class="preset-btn" onclick="addPresetTag('${item.id}','audiovisual','Localizer','rgba(0,168,107,0.2)')">Localizer</div>
+              <div class="preset-btn" onclick="addPresetTag('${item.id}','audiovisual','Reviewer','rgba(229,57,53,0.2)')">Reviewer</div>
+              <div class="preset-btn" onclick="showCustomTagInput('${item.id}','audiovisual')">Custom</div>
+            </div>
+            <div id="custom-tag-${item.id}" style="display:none" class="custom-tag-row">
+              <input type="text" placeholder="Nome da tag" id="custom-name-${item.id}">
+              <input type="color" id="custom-color-${item.id}" value="#6b7194">
+              <button onclick="addCustomTag('${item.id}','audiovisual')">Add</button>
+            </div>
+            <div style="margin-top:1rem; display:flex; gap:0.5rem;">
+              <button class="save-btn btn-success" onclick="saveAudiovisual('${item.id}')">Salvar</button>
+              <button class="save-btn btn-danger" onclick="deleteAudiovisual('${item.id}')">Excluir</button>
+            </div>
+            <div class="status" id="status-av-${item.id}"></div>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    } catch(e) {
+      container.innerHTML = `<div class="state">Erro: ${e.message}</div>`;
+    }
+  }
+
+  window.saveAudiovisual = async (id) => {
+    const statusDiv = document.getElementById(`status-av-${id}`);
+    statusDiv.innerText = 'Salvando...';
+    const item = {
+      id,
+      title: document.querySelector(`#audiovisuals-list .audiovisual-title`).innerText.split(' (')[0],
+      type: document.getElementById(`type-${id}`).value,
+      provider: document.getElementById(`provider-${id}`).value,
+      url: document.getElementById(`url-${id}`).value,
+      thumbnail: document.getElementById(`thumbnail-${id}`).value,
+      description: document.getElementById(`description-${id}`).value,
+      role: document.getElementById(`role-av-${id}`).value,
+      client: document.getElementById(`client-${id}`).value,
+      year: document.getElementById(`year-${id}`).value,
+      duration: document.getElementById(`duration-${id}`).value,
+      published: document.getElementById(`published-${id}`).checked,
+      featured: document.getElementById(`featured-${id}`).checked,
+      order: parseInt(document.getElementById(`order-${id}`).value) || 0,
+    };
+    try {
+      const res = await fetch(`${WORKER_URL}/api/audiovisuals`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify(item)
+      });
+      if (!res.ok) throw new Error();
+      statusDiv.innerText = '✅ Salvo!';
+      setTimeout(() => statusDiv.innerText = '', 2000);
+    } catch(e) {
+      statusDiv.innerText = '❌ Erro';
+    }
+  };
+
+  window.deleteAudiovisual = async (id) => {
+    if (!confirm(`Excluir projeto ${id}?`)) return;
+    const statusDiv = document.getElementById(`status-av-${id}`);
+    statusDiv.innerText = 'Excluindo...';
+    try {
+      const res = await fetch(`${WORKER_URL}/api/audiovisuals?id=${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (res.ok) {
+        loadAudiovisualsData();
+      } else {
+        statusDiv.innerText = '❌ Erro';
+      }
+    } catch(e) {
+      statusDiv.innerText = '❌ Rede';
+    }
+  };
+
+  // Modal para adicionar novo projeto audiovisual
+  document.getElementById('add-audiovisual-btn')?.addEventListener('click', () => {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <h3>Novo projeto audiovisual</h3>
+        <input type="text" id="new-av-title" placeholder="Título do projeto">
+        <input type="text" id="new-av-url" placeholder="URL do vídeo (YouTube/Vimeo/etc)">
+        <div class="modal-buttons">
+          <button id="cancel-add-av" class="btn-outline">Cancelar</button>
+          <button id="confirm-add-av">Criar</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('confirm-add-av').onclick = async () => {
+      const title = document.getElementById('new-av-title').value.trim();
+      const url = document.getElementById('new-av-url').value.trim();
+      if (!title) return alert('Título obrigatório');
+      try {
+        const res = await fetch(`${WORKER_URL}/api/audiovisuals`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ title, url, type: '', provider: 'youtube' })
+        });
+        if (res.ok) {
+          modal.remove();
+          loadAudiovisualsData();
+        } else {
+          alert('Erro ao criar');
+        }
+      } catch(e) {
+        alert('Erro de rede');
+      }
+    };
+    document.getElementById('cancel-add-av').onclick = () => modal.remove();
+  });
+
   // ========== TAGS (genérico) ==========
   window.addPresetTag = async (id, type, name, color) => {
     await addTagObject(id, type, { name, color });
@@ -524,14 +816,18 @@
     document.getElementById(`custom-tag-${id}`).style.display = 'none';
   };
   window.addTag = async (id, type) => {
-    const input = document.getElementById(`newtag-${id}`);
+    const input = document.getElementById(`newtag-${id}`) || document.getElementById(`newtag-av-${id}`);
     const tagName = input.value.trim();
     if (!tagName) return;
     await addTagObject(id, type, { name: tagName, color: 'rgba(255,255,255,0.08)' });
     input.value = '';
   };
   window.addTagObject = async (id, type, tagObj) => {
-    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
+    let endpoint;
+    if (type === 'music') endpoint = '/api/music/tags';
+    else if (type === 'game') endpoint = '/api/games/tags';
+    else if (type === 'audiovisual') endpoint = '/api/audiovisuals/tags';
+    else return;
     try {
       const res = await fetch(`${WORKER_URL}${endpoint}`, {
         method: 'POST',
@@ -543,7 +839,8 @@
       });
       if (res.ok) {
         if (type === 'music') loadMusicData();
-        else loadGamesData();
+        else if (type === 'game') loadGamesData();
+        else if (type === 'audiovisual') loadAudiovisualsData();
       } else {
         alert('Erro ao adicionar tag');
       }
@@ -552,7 +849,11 @@
     }
   };
   window.removeTag = async (id, type, tagName) => {
-    const endpoint = type === 'music' ? '/api/music/tags' : '/api/games/tags';
+    let endpoint;
+    if (type === 'music') endpoint = '/api/music/tags';
+    else if (type === 'game') endpoint = '/api/games/tags';
+    else if (type === 'audiovisual') endpoint = '/api/audiovisuals/tags';
+    else return;
     try {
       const res = await fetch(`${WORKER_URL}${endpoint}?id=${id}&tag=${encodeURIComponent(tagName)}`, {
         method: 'DELETE',
@@ -560,7 +861,8 @@
       });
       if (res.ok) {
         if (type === 'music') loadMusicData();
-        else loadGamesData();
+        else if (type === 'game') loadGamesData();
+        else if (type === 'audiovisual') loadAudiovisualsData();
       } else {
         alert('Erro ao remover tag');
       }
