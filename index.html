@@ -449,6 +449,19 @@
     return div.textContent || div.innerText || '';
   }
 
+  // Extrai ID do YouTube de uma URL (necessário para audiovisuais)
+  function extractYouTubeId(url) {
+    if (!url) return null;
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([^#&?]*)/,
+    ];
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1] && match[1].length === 11) return match[1];
+    }
+    return null;
+  }
+
   // ==================================================================
   // 3. applyConfig — populates home from config.js
   // ==================================================================
@@ -704,6 +717,14 @@
     const items = type === 'music' ? musicItemsRaw : audiovisualsItemsRaw;
     const video = items.find(v => v.id === id);
     if (!video) return;
+
+    // Para audiovisuais, precisamos extrair o ID real do YouTube da URL
+    let embedId = video.id;
+    if (type !== 'music' && video.url) {
+      const ytId = extractYouTubeId(video.url);
+      if (ytId) embedId = ytId;
+    }
+
     const desc = video.description ? video.description.trim() : 'No description available.';
     const other = items.filter(vv => vv.channelTitle === video.channelTitle && vv.id !== video.id);
     const cardId = type === 'music' ? 'detail-card' : 'audiovisual-detail-card';
@@ -712,7 +733,7 @@
       <div class="detail-container">
         <div class="detail-player">
           <div class="video-embed">
-            <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/${embedId}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
           </div>
           ${other.length ? `<div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div><div class="other-videos-grid" id="${type}-other-videos-grid"></div>` : ''}
         </div>
@@ -734,7 +755,13 @@
     `;
     if (other.length) {
       const grid = dc.querySelector(`#${type}-other-videos-grid`);
-      grid.innerHTML = other.map(vv => `
+      grid.innerHTML = other.map(vv => {
+        let otherEmbedId = vv.id;
+        if (type !== 'music' && vv.url) {
+          const oytId = extractYouTubeId(vv.url);
+          if (oytId) otherEmbedId = oytId;
+        }
+        return `
         <div class="other-video-card" onclick="navigateTo('${type === 'music' ? 'view-video-detail' : 'view-audiovisual-detail'}', '${vv.id}')">
           <img class="other-video-thumb" src="${esc(vv.thumbnail)}" loading="lazy">
           <div class="other-video-info">
@@ -742,7 +769,7 @@
             <div class="other-video-views">👁️ ${formatNumber(vv.viewCount)}</div>
           </div>
         </div>
-      `).join('');
+      `}).join('');
     }
     if (type === 'music') {
       const lc = dc.querySelector(`#lyrics-container-${video.id}`);
