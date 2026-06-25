@@ -121,16 +121,13 @@
   <div class="view active" id="view-home">
     <div class="card">
 
-      <!-- Avatar -->
       <div class="home-avatar" id="home-avatar">
         <span id="home-avatar-initials">G</span>
       </div>
 
-      <!-- Name + handle -->
       <div class="home-name" id="home-name">GenericBR</div>
       <div class="home-handle" id="home-handle">Dhimitri Rael</div>
 
-      <!-- Language groups with level labels -->
       <div class="home-langs">
         <div class="lang-group">
           <span class="lang-level">Native</span>
@@ -148,33 +145,24 @@
         </div>
       </div>
 
-      <!-- Bio -->
       <p class="home-bio" id="home-bio">
         Indie game localizer &amp; Vocaloid lyric adapter. Drop me a Discord message for most things — email for large projects.
       </p>
 
-      <!-- Live stat line -->
       <div class="home-stats" id="home-stats"></div>
 
-      <!-- Buttons -->
       <div class="home-buttons">
-
-        <!-- Primary CTA -->
         <div class="home-btn-primary" onclick="navigateTo('view-portfolio-pasta')" role="button" tabindex="0">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
           Portfolio
         </div>
 
-        <!-- Secondary chips -->
         <div class="home-chips">
-
-          <!-- YouTube -->
           <a class="home-chip" id="home-yt" href="#" target="_blank" rel="noopener">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.12C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.57A3 3 0 0 0 .5 6.19 31.3 31.3 0 0 0 0 12a31.3 31.3 0 0 0 .5 5.81 3 3 0 0 0 2.12 2.12C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.57a3 3 0 0 0 2.12-2.12A31.3 31.3 0 0 0 24 12a31.3 31.3 0 0 0-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
             YouTube
           </a>
 
-          <!-- Contact dropdown -->
           <div class="home-contact-wrap">
             <div class="home-chip" id="contact-toggle" role="button" tabindex="0" aria-haspopup="true">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -192,18 +180,14 @@
             </div>
           </div>
 
-          <!-- About -->
           <div class="home-chip" onclick="navigateTo('view-about')" role="button" tabindex="0">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             About
           </div>
-
         </div>
       </div>
 
-      <!-- Footer -->
       <div class="home-footer" id="home-footer">GenericBR · <span id="footer-year"></span></div>
-
     </div>
   </div>
 
@@ -218,7 +202,6 @@
     <div class="card">
       <div class="pasta-list">
 
-        <!-- Steam / Games -->
         <div class="pasta-item" onclick="navigateTo('view-games')" role="button" tabindex="0">
           <div class="pasta-item-icon">
             <img src="images/steam-icon.png" alt="Steam" onerror="this.style.display='none'; this.nextSibling.style.display='block';">
@@ -231,7 +214,6 @@
           <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <!-- Music -->
         <div class="pasta-item" onclick="navigateTo('view-music')" role="button" tabindex="0">
           <div class="pasta-item-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -243,7 +225,6 @@
           <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <!-- Audiovisuais -->
         <div class="pasta-item" onclick="navigateTo('view-audiovisuals')" role="button" tabindex="0">
           <div class="pasta-item-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
@@ -360,7 +341,7 @@
     </div>
   </div>
 
-  <!-- ========== VIEW DETALHE AUDIOVISUAL (identical to music but no lyrics) ========== -->
+  <!-- ========== VIEW DETALHE AUDIOVISUAL (identical to music detail) ========== -->
   <div class="view" id="view-audiovisual-detail">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-audiovisuals')" title="Voltar para lista">
@@ -437,6 +418,17 @@
     const div = document.createElement('div');
     div.innerHTML = text;
     return div.textContent || div.innerText || '';
+  }
+  // Extrai ID do YouTube de uma URL (para uso no frontend)
+  function extractYouTubeIdClient(url) {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([^#\&\?]*).*/,
+    ];
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1] && match[1].length === 11) return match[1];
+    }
+    return null;
   }
 
   // ==================================================================
@@ -683,10 +675,21 @@
     }
   }
 
+  // ==================================================================
+  // 6. Generic video detail (used by both music and audiovisuals)
+  // ==================================================================
   function showVideoDetail(id, type = 'music') {
     const items = type === 'music' ? musicItemsRaw : audiovisualsItemsRaw;
     const video = items.find(v => v.id === id);
     if (!video) return;
+
+    // Para audiovisuais, o id do item pode ser um UUID interno; precisamos do ID do YouTube para o iframe.
+    let embedId = video.id;
+    if (type === 'audiovisual' && video.url) {
+      const ytId = extractYouTubeIdClient(video.url);
+      if (ytId) embedId = ytId;
+    }
+
     const desc = video.description ? video.description.trim() : 'No description available.';
     const other = items.filter(vv => vv.channelTitle === video.channelTitle && vv.id !== video.id);
     const cardId = type === 'music' ? 'detail-card' : 'audiovisual-detail-card';
@@ -695,7 +698,7 @@
       <div class="detail-container">
         <div class="detail-player">
           <div class="video-embed">
-            <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/${embedId}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
           </div>
           ${other.length ? `<div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div><div class="other-videos-grid" id="${type}-other-videos-grid"></div>` : ''}
         </div>
@@ -735,7 +738,7 @@
   }
 
   // ==================================================================
-  // 6. Audiovisuals (fetches all info from backend)
+  // 7. Audiovisuals (fetches all info from backend)
   // ==================================================================
   async function loadAudiovisuals() {
     const grid = document.getElementById('audiovisuals-grid');
@@ -815,7 +818,7 @@
   }
 
   // ==================================================================
-  // 7. Games
+  // 8. Games
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -981,7 +984,7 @@
   }
 
   // ==================================================================
-  // 8. Init
+  // 9. Init
   // ==================================================================
   document.addEventListener('DOMContentLoaded', async () => {
     applyConfig();
