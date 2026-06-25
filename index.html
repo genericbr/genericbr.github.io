@@ -570,36 +570,47 @@
   }
 
   function processPath(path) {
-    if (path === '/portfolio' || path === '/portfolio/') setActiveView('view-portfolio-pasta');
-    else if (path === '/music' || path === '/music/') setActiveView('view-music');
-    else if (path === '/games' || path === '/games/') setActiveView('view-games');
-    else if (path === '/audiovisuals' || path === '/audiovisuals/') setActiveView('view-audiovisuals');
-    else if (path === '/about' || path === '/about/') setActiveView('view-about');
-    else if (path.startsWith('/video/')) {
-      const id = path.split('/video/')[1];
-      if (id && musicItemsRaw.length) showVideoDetail(id, 'music');
-      else if (id) {
-        const wait = setInterval(() => {
-          if (musicItemsRaw.length) { clearInterval(wait); showVideoDetail(id, 'music'); }
-        }, 100);
+    // Remove query string e hash
+    const cleanPath = path.split('?')[0].split('#')[0];
+    // Remove trailing slash (exceto se for a raiz)
+    const normalizedPath = cleanPath.length > 1 ? cleanPath.replace(/\/+$/, '') : cleanPath;
+
+    if (normalizedPath === '/portfolio' || normalizedPath === '/portfolio/') setActiveView('view-portfolio-pasta');
+    else if (normalizedPath === '/music' || normalizedPath === '/music/') setActiveView('view-music');
+    else if (normalizedPath === '/games' || normalizedPath === '/games/') setActiveView('view-games');
+    else if (normalizedPath === '/audiovisuals' || normalizedPath === '/audiovisuals/') setActiveView('view-audiovisuals');
+    else if (normalizedPath === '/about' || normalizedPath === '/about/') setActiveView('view-about');
+    else if (normalizedPath.startsWith('/video/')) {
+      const id = normalizedPath.split('/video/')[1];
+      if (id) {
+        if (musicItemsRaw.length) showVideoDetail(id, 'music');
+        else {
+          const wait = setInterval(() => {
+            if (musicItemsRaw.length) { clearInterval(wait); showVideoDetail(id, 'music'); }
+          }, 100);
+        }
       } else setActiveView('view-home');
     }
-    else if (path.startsWith('/game/')) {
-      const id = path.split('/game/')[1];
-      if (id && gamesList.length) showGameDetail(id);
-      else if (id) {
-        const wait = setInterval(() => {
-          if (gamesList.length) { clearInterval(wait); showGameDetail(id); }
-        }, 100);
+    else if (normalizedPath.startsWith('/game/')) {
+      const id = normalizedPath.split('/game/')[1];
+      if (id) {
+        if (gamesList.length) showGameDetail(id);
+        else {
+          const wait = setInterval(() => {
+            if (gamesList.length) { clearInterval(wait); showGameDetail(id); }
+          }, 100);
+        }
       } else setActiveView('view-home');
     }
-    else if (path.startsWith('/audiovisual/')) {
-      const id = path.split('/audiovisual/')[1];
-      if (id && audiovisualsItemsRaw.length) showAudiovisualDetail(id);
-      else if (id) {
-        const wait = setInterval(() => {
-          if (audiovisualsItemsRaw.length) { clearInterval(wait); showAudiovisualDetail(id); }
-        }, 100);
+    else if (normalizedPath.startsWith('/audiovisual/')) {
+      const id = normalizedPath.split('/audiovisual/')[1];
+      if (id) {
+        if (audiovisualsItemsRaw.length) showAudiovisualDetail(id);
+        else {
+          const wait = setInterval(() => {
+            if (audiovisualsItemsRaw.length) { clearInterval(wait); showAudiovisualDetail(id); }
+          }, 100);
+        }
       } else setActiveView('view-home');
     }
     else {
@@ -643,6 +654,7 @@
           sortSelect.removeEventListener('change', handleSortChange);
           sortSelect.addEventListener('change', handleSortChange);
         }
+        // Processa rota pendente (vídeo) após carregar dados
         if (window.location.pathname.startsWith('/video/')) {
           const id = window.location.pathname.split('/video/')[1];
           if (id) showVideoDetail(id, 'music');
@@ -730,7 +742,14 @@
   function showVideoDetail(id, type = 'music') {
     const items = type === 'music' ? musicItemsRaw : audiovisualsItemsRaw;
     const video = items.find(v => v.id === id);
-    if (!video) return;
+
+    // Fallback se o vídeo não for encontrado
+    if (!video) {
+      const card = document.getElementById(type === 'music' ? 'detail-card' : 'audiovisual-detail-card');
+      card.innerHTML = '<div class="error-msg">⚠️ Vídeo não encontrado.</div>';
+      setActiveView(type === 'music' ? 'view-video-detail' : 'view-audiovisual-detail');
+      return;
+    }
 
     let embedId = video.id;
     if (type !== 'music' && video.url) {
