@@ -112,31 +112,32 @@
     }
     .sort-controls select option { background: var(--surface); color: var(--text); }
 
-    /* ========== AUDIOVISUAL DETAIL — full-width video, consistent transition ========== */
+    /* ========== AUDIOVISUAL DETAIL — clean layout, video with padding, no white borders ========== */
     #view-audiovisual-detail .card {
-      padding: 1.75rem 2rem;         /* mesmo padding dos outros cards */
-      overflow: hidden;
+      padding: 1.75rem 2rem;                /* igual aos outros cards */
     }
     .av-detail-container {
       display: flex;
       flex-direction: column;
+      gap: 1.5rem;
     }
     .av-detail-player {
       width: 100%;
-      margin: -1.75rem -2rem 1.5rem;   /* quebra o padding do card apenas no topo */
     }
     .av-video-embed {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
       background: #000;
-      border-radius: 12px 12px 0 0;
+      border-radius: 12px;
+      overflow: hidden;                     /* garante que o iframe respeite as bordas */
     }
     .av-video-embed iframe {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
+      border: none;
     }
     .av-detail-info {
       display: flex;
@@ -171,7 +172,6 @@
       .home-chip { padding: 0.45rem 0.75rem; font-size: 0.76rem; }
       .home-langs { gap: 0.9rem; }
       #view-audiovisual-detail .card { padding: 1rem 1.25rem; }
-      .av-detail-player { margin: -1rem -1.25rem 1rem; }
     }
   </style>
 </head>
@@ -764,7 +764,7 @@
       const lc = dc.querySelector(`#lyrics-container-${video.id}`);
       if (lc) loadLyrics(video.id, lc);
     } else {
-      // Layout exclusivo audiovisual com avatar e link do canal
+      // Layout exclusivo audiovisual: vídeo centralizado com padding, informações abaixo
       const channelUrl = video.channelId 
         ? `https://www.youtube.com/channel/${video.channelId}`
         : `https://www.youtube.com/results?search_query=${encodeURIComponent(video.channelTitle)}`;
