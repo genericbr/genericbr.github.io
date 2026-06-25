@@ -138,6 +138,7 @@
       width: 100%;
       height: 100%;
       border: none;
+      clip-path: inset(0 round 12px);       /* 👈 MÁSCARA DIRETA: elimina qualquer borda branca do YouTube */
     }
     .av-detail-info {
       display: flex;
@@ -277,7 +278,7 @@
         </div>
         <div class="pasta-item" onclick="navigateTo('view-audiovisuals')" role="button" tabindex="0">
           <div class="pasta-item-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h12M12 17v4"/></svg>
           </div>
           <div class="pasta-item-body">
             <div class="pasta-item-title">Audiovisuals</div>
@@ -506,7 +507,7 @@
   }
 
   // ==================================================================
-  // 4. Routing
+  // 4. Routing (modificado para suporte ao GitHub Pages 404)
   // ==================================================================
   function navigateTo(viewId, param = null) {
     if (viewId === 'view-video-detail' && param) {
@@ -550,12 +551,30 @@
   }
 
   function restoreFromPath() {
-    const path = window.location.pathname;
-    if (path === '/portfolio') setActiveView('view-portfolio-pasta');
-    else if (path === '/music') setActiveView('view-music');
-    else if (path === '/games') setActiveView('view-games');
-    else if (path === '/audiovisuals') setActiveView('view-audiovisuals');
-    else if (path === '/about') setActiveView('view-about');
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectPath = urlParams.get('path');
+
+    // Se veio do 404, use o path real e limpe a URL
+    if (redirectPath) {
+      const decodedPath = decodeURIComponent(redirectPath);
+      // Remove o parâmetro "path" da URL sem recarregar a página
+      const cleanUrl = window.location.origin + decodedPath;
+      history.replaceState(null, '', cleanUrl);
+      // Agora processa o decodedPath normalmente
+      processPath(decodedPath);
+      return;
+    }
+
+    // Comportamento normal: usa o pathname atual
+    processPath(window.location.pathname);
+  }
+
+  function processPath(path) {
+    if (path === '/portfolio' || path === '/portfolio/') setActiveView('view-portfolio-pasta');
+    else if (path === '/music' || path === '/music/') setActiveView('view-music');
+    else if (path === '/games' || path === '/games/') setActiveView('view-games');
+    else if (path === '/audiovisuals' || path === '/audiovisuals/') setActiveView('view-audiovisuals');
+    else if (path === '/about' || path === '/about/') setActiveView('view-about');
     else if (path.startsWith('/video/')) {
       const id = path.split('/video/')[1];
       if (id && musicItemsRaw.length) showVideoDetail(id, 'music');
@@ -564,7 +583,8 @@
           if (musicItemsRaw.length) { clearInterval(wait); showVideoDetail(id, 'music'); }
         }, 100);
       } else setActiveView('view-home');
-    } else if (path.startsWith('/game/')) {
+    }
+    else if (path.startsWith('/game/')) {
       const id = path.split('/game/')[1];
       if (id && gamesList.length) showGameDetail(id);
       else if (id) {
@@ -572,7 +592,8 @@
           if (gamesList.length) { clearInterval(wait); showGameDetail(id); }
         }, 100);
       } else setActiveView('view-home');
-    } else if (path.startsWith('/audiovisual/')) {
+    }
+    else if (path.startsWith('/audiovisual/')) {
       const id = path.split('/audiovisual/')[1];
       if (id && audiovisualsItemsRaw.length) showAudiovisualDetail(id);
       else if (id) {
@@ -580,7 +601,10 @@
           if (audiovisualsItemsRaw.length) { clearInterval(wait); showAudiovisualDetail(id); }
         }, 100);
       } else setActiveView('view-home');
-    } else setActiveView('view-home');
+    }
+    else {
+      setActiveView('view-home');
+    }
   }
 
   window.addEventListener('popstate', restoreFromPath);
