@@ -449,17 +449,23 @@
     return div.textContent || div.innerText || '';
   }
 
-  // Extrai ID do YouTube de uma URL (necessário para audiovisuais)
+  /**
+   * Extrai o ID de 11 caracteres de uma URL do YouTube.
+   * Suporta youtube.com/watch?v=, youtu.be/, youtube.com/embed/, /v/, /shorts/
+   */
   function extractYouTubeId(url) {
     if (!url) return null;
+    // Patterns cobrindo os formatos mais comuns
     const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([^#&?]*)/,
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([^#&?]{11})/
     ];
     for (const pattern of patterns) {
       const match = url.match(pattern);
-      if (match && match[1] && match[1].length === 11) return match[1];
+      if (match && match[1]) return match[1];
     }
-    return null;
+    // Se nenhum pattern bater, tenta buscar qualquer string de 11 caracteres que pareça um ID
+    const looseMatch = url.match(/[?&\/]([A-Za-z0-9_-]{11})(?:[&?#]|$)/);
+    return looseMatch ? looseMatch[1] : null;
   }
 
   // ==================================================================
@@ -718,11 +724,25 @@
     const video = items.find(v => v.id === id);
     if (!video) return;
 
-    // Para audiovisuais, precisamos extrair o ID real do YouTube da URL
-    let embedId = video.id;
-    if (type !== 'music' && video.url) {
-      const ytId = extractYouTubeId(video.url);
-      if (ytId) embedId = ytId;
+    // Determina o ID real a ser usado no embed
+    let embedId = video.id; // músicas já usam o ID do YouTube diretamente
+    if (type !== 'music') {
+      if (video.url) {
+        const ytId = extractYouTubeId(video.url);
+        if (ytId) {
+          embedId = ytId;
+          console.log('Audiovisual YouTube ID extraído:', embedId);
+        } else {
+          console.warn('Falha ao extrair ID do YouTube da URL:', video.url);
+        }
+      }
+      // Se ainda não temos um ID válido (11 caracteres), mostra mensagem de erro
+      if (!/^[A-Za-z0-9_-]{11}$/.test(embedId)) {
+        const dc = document.getElementById(type === 'music' ? 'detail-card' : 'audiovisual-detail-card');
+        dc.innerHTML = '<div class="error-msg">⚠️ URL do vídeo inválida ou não suportada.</div>';
+        setActiveView(type === 'music' ? 'view-video-detail' : 'view-audiovisual-detail');
+        return;
+      }
     }
 
     const desc = video.description ? video.description.trim() : 'No description available.';
