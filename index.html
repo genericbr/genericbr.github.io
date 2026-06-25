@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GenericBR - Portfólio de Tradução</title>
+  <title>GenericBR</title>
   <script src="config.js"></script>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -243,7 +243,7 @@
           <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <!-- Audiovisuais (NEW – copy of music behavior) -->
+        <!-- Audiovisuais -->
         <div class="pasta-item" onclick="navigateTo('view-audiovisuals')" role="button" tabindex="0">
           <div class="pasta-item-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
@@ -330,7 +330,7 @@
     </div>
   </div>
 
-  <!-- ========== VIEW AUDIOVISUAIS (COPY OF MUSIC) ========== -->
+  <!-- ========== VIEW AUDIOVISUAIS ========== -->
   <div class="view" id="view-audiovisuals">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
@@ -360,7 +360,7 @@
     </div>
   </div>
 
-  <!-- ========== VIEW DETALHE AUDIOVISUAL (copy of video detail) ========== -->
+  <!-- ========== VIEW DETALHE AUDIOVISUAL (identical to music but no lyrics) ========== -->
   <div class="view" id="view-audiovisual-detail">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-audiovisuals')" title="Voltar para lista">
@@ -411,10 +411,10 @@
   // ==================================================================
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let musicItemsRaw = [];
-  let audiovisualsItemsRaw = [];        // NEW – mirror of musicItemsRaw
+  let audiovisualsItemsRaw = [];
   let gamesList = [];
   let currentSort = 'date_desc';
-  let currentAvSort = 'date_desc';      // NEW
+  let currentAvSort = 'date_desc';
 
   // ==================================================================
   // 2. Utilities
@@ -458,7 +458,6 @@
       homeAvatar.innerHTML = `<span>${name.charAt(0).toUpperCase()}</span>`;
     }
 
-    // About Me sync
     const aboutAvatar = document.getElementById('about-avatar');
     if (aboutAvatar) {
       aboutAvatar.innerHTML = c.avatar
@@ -480,23 +479,16 @@
   // 4. Routing
   // ==================================================================
   function navigateTo(viewId, param = null) {
-    // Music detail
     if (viewId === 'view-video-detail' && param) {
       history.pushState({ view: viewId, videoId: param }, '', `/video/${param}`);
       showVideoDetail(param, 'music');
-    }
-    // Game detail
-    else if (viewId === 'view-game-detail' && param) {
+    } else if (viewId === 'view-game-detail' && param) {
       history.pushState({ view: viewId, appId: param }, '', `/game/${param}`);
       showGameDetail(param);
-    }
-    // Audiovisual detail
-    else if (viewId === 'view-audiovisual-detail' && param) {
+    } else if (viewId === 'view-audiovisual-detail' && param) {
       history.pushState({ view: viewId, avId: param }, '', `/audiovisual/${param}`);
       showAudiovisualDetail(param);
-    }
-    // Static views
-    else {
+    } else {
       let path = '/';
       if (viewId === 'view-portfolio-pasta') path = '/portfolio';
       else if (viewId === 'view-music') path = '/music';
@@ -509,7 +501,6 @@
   }
 
   function setActiveView(viewId) {
-    // Clear embedded players when leaving detail views
     const musicDetail = document.getElementById('view-video-detail');
     if (musicDetail && musicDetail.classList.contains('active') && viewId !== 'view-video-detail') {
       const iframe = musicDetail.querySelector('iframe');
@@ -543,8 +534,7 @@
           if (musicItemsRaw.length) { clearInterval(wait); showVideoDetail(id, 'music'); }
         }, 100);
       } else setActiveView('view-home');
-    }
-    else if (path.startsWith('/game/')) {
+    } else if (path.startsWith('/game/')) {
       const id = path.split('/game/')[1];
       if (id && gamesList.length) showGameDetail(id);
       else if (id) {
@@ -552,8 +542,7 @@
           if (gamesList.length) { clearInterval(wait); showGameDetail(id); }
         }, 100);
       } else setActiveView('view-home');
-    }
-    else if (path.startsWith('/audiovisual/')) {
+    } else if (path.startsWith('/audiovisual/')) {
       const id = path.split('/audiovisual/')[1];
       if (id && audiovisualsItemsRaw.length) showAudiovisualDetail(id);
       else if (id) {
@@ -561,13 +550,11 @@
           if (audiovisualsItemsRaw.length) { clearInterval(wait); showAudiovisualDetail(id); }
         }, 100);
       } else setActiveView('view-home');
-    }
-    else setActiveView('view-home');
+    } else setActiveView('view-home');
   }
 
   window.addEventListener('popstate', restoreFromPath);
 
-  // Contact dropdown
   document.addEventListener('click', function(e) {
     const toggle = document.getElementById('contact-toggle');
     const dropdown = document.getElementById('contact-dropdown');
@@ -587,7 +574,7 @@
     const statsDiv = document.getElementById('music-stats');
     try {
       grid.innerHTML = '<div class="state"><div class="spinner"></div>Fetching from YouTube...</div>';
-      const response = await fetch(WORKER_URL);       // main music playlist
+      const response = await fetch(WORKER_URL);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const videoData = await response.json();
       if (videoData && videoData.length) {
@@ -748,14 +735,13 @@
   }
 
   // ==================================================================
-  // 6. Audiovisuals (copy of music – separate playlist endpoint)
+  // 6. Audiovisuals (fetches all info from backend)
   // ==================================================================
   async function loadAudiovisuals() {
     const grid = document.getElementById('audiovisuals-grid');
     const statsDiv = document.getElementById('audiovisuals-stats');
     try {
-      grid.innerHTML = '<div class="state"><div class="spinner"></div>Fetching audiovisuals from YouTube...</div>';
-      // Assume a Worker route /api/audiovisuals/playlist returns the same data structure
+      grid.innerHTML = '<div class="state"><div class="spinner"></div>Fetching audiovisuals...</div>';
       const response = await fetch(`${WORKER_URL}/api/audiovisuals/playlist`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const videoData = await response.json();
@@ -825,12 +811,11 @@
   }
 
   function showAudiovisualDetail(id) {
-    // Reuse the generic showVideoDetail with type 'audiovisual'
     showVideoDetail(id, 'audiovisual');
   }
 
   // ==================================================================
-  // 7. Games (unchanged)
+  // 7. Games
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -1001,7 +986,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     applyConfig();
     await loadMusic();
-    await loadAudiovisuals();   // NEW
+    await loadAudiovisuals();
     await loadGames();
     restoreFromPath();
   });
