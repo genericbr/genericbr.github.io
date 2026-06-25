@@ -21,20 +21,32 @@ const CONFIG = {
     portfolio: "https://genericbr.carrd.co",
   },
 
-  // ── YouTube API ──────────────────────────────────────────────
-  //  Como obter a API Key e o Playlist ID: veja README.md
+  // ── YouTube API (chave única para todas as playlists) ────────
+  //  Como obter a API Key: veja README.md
   youtube: {
-    apiKey:     "YOUR_YOUTUBE_API_KEY_HERE",
-    playlistId: "PLsX_idXfvgUKeFHYUvGJOkwF0mu4nZy_t",
-    maxResults: 50,
+    apiKey: "YOUR_YOUTUBE_API_KEY_HERE",
+  },
+
+  // ── Playlists do YouTube ─────────────────────────────────────
+  //  Duas playlists separadas: música e audiovisuais.
+  //  ID da playlist = o valor depois de "list=" na URL do YouTube.
+  playlists: {
+    music: {
+      id: "PLsX_idXfvgUKeFHYUvGJOkwF0mu4nZy_t",   // <-- sua playlist de músicas
+      maxResults: 50,
+    },
+    audiovisuals: {
+      id: "YOUR_AUDIOVISUALS_PLAYLIST_ID",        // <-- insira o ID da playlist de audiovisuais
+      maxResults: 50,
+    },
   },
 
   // ── Steam ────────────────────────────────────────────────────
   //  appId = número na URL da loja: store.steampowered.com/app/XXXXXX/
   steam: {
     games: [
-    { appId: "4178020", name: "Lured In", dev: "Angler Interactive", role: "Localizador PT-BR", note: "Early Access" },
-  ],
-},
+      { appId: "4178020", name: "Lured In", dev: "Angler Interactive", role: "Localizador PT-BR", note: "Early Access" },
+    ],
+  },
 
 };
