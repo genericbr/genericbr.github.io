@@ -9,8 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     /* ========== HOME — scoped to #view-home ========== */
-
-    /* Override style.css card for home — centered column */
     #view-home .card {
       position: relative;
       display: flex !important;
@@ -23,259 +21,109 @@
       margin: 0 auto;
       overflow: hidden;
     }
-
-    /* Signature element: green→blue gradient accent line at top of home card */
     #view-home .card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 2px;
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        #00a86b 25%,
-        #2979ff 75%,
-        transparent 100%
-      );
+      background: linear-gradient(90deg, transparent 0%, #00a86b 25%, #2979ff 75%, transparent 100%);
       border-radius: 20px 20px 0 0;
     }
-
-    /* ── Avatar ── */
     .home-avatar {
-      width: 84px;
-      height: 84px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      background: var(--card);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--muted);
-      overflow: hidden;
-      margin-bottom: 1.1rem;
-      flex-shrink: 0;
-      box-shadow: 0 0 0 4px rgba(0, 168, 107, 0.08);
+      width: 84px; height: 84px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1); background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; font-weight: 600; color: var(--muted);
+      overflow: hidden; margin-bottom: 1.1rem; flex-shrink: 0;
+      box-shadow: 0 0 0 4px rgba(0,168,107,0.08);
     }
     .home-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-    /* ── Name + handle ── */
-    .home-name {
-      font-size: 1.6rem;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-      line-height: 1.15;
-      color: var(--text);
-      margin-bottom: 0.2rem;
-    }
-    .home-handle {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.66rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1.25rem;
-    }
-
-    /* ── Language groups ── */
-    .home-langs {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      justify-content: center;
-      margin-bottom: 1.25rem;
-    }
-
-    .lang-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .lang-level {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.52rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      opacity: 0.7;
-    }
-
-    .lang-sep {
-      width: 1px;
-      height: 32px;
-      background: var(--border);
-      border-radius: 1px;
-    }
-
-    .home-lang {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.64rem;
-      letter-spacing: 0.06em;
-      padding: 0.22rem 0.65rem;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: var(--card);
-    }
-    .home-lang.native {
-      border-color: rgba(0, 168, 107, 0.45);
-      color: #00c47e;
-      background: rgba(0, 168, 107, 0.09);
-    }
-    .home-lang.fluent {
-      border-color: rgba(41, 121, 255, 0.4);
-      color: #5d9eff;
-      background: rgba(41, 121, 255, 0.09);
-    }
-    .home-lang.learning {
-      border-color: rgba(255, 180, 50, 0.4);
-      color: #f0a832;
-      background: rgba(255, 180, 50, 0.09);
-    }
-
-    /* ── Bio ── */
-    .home-bio {
-      font-size: 0.84rem;
-      color: var(--muted);
-      line-height: 1.65;
-      max-width: 340px;
-      margin-bottom: 1.1rem;
-    }
-
-    /* ── Live stat line ── */
+    .home-name { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.5px; line-height: 1.15; color: var(--text); margin-bottom: 0.2rem; }
+    .home-handle { font-family: 'DM Mono', monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem; }
+    .home-langs { display: flex; align-items: center; gap: 1.25rem; justify-content: center; margin-bottom: 1.25rem; }
+    .lang-group { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+    .lang-level { font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); opacity: 0.7; }
+    .lang-sep { width: 1px; height: 32px; background: var(--border); border-radius: 1px; }
+    .home-lang { font-family: 'DM Mono', monospace; font-size: 0.64rem; letter-spacing: 0.06em; padding: 0.22rem 0.65rem; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); background: var(--card); }
+    .home-lang.native { border-color: rgba(0,168,107,0.45); color: #00c47e; background: rgba(0,168,107,0.09); }
+    .home-lang.fluent { border-color: rgba(41,121,255,0.4); color: #5d9eff; background: rgba(41,121,255,0.09); }
+    .home-lang.learning { border-color: rgba(255,180,50,0.4); color: #f0a832; background: rgba(255,180,50,0.09); }
+    .home-bio { font-size: 0.84rem; color: var(--muted); line-height: 1.65; max-width: 340px; margin-bottom: 1.1rem; }
     .home-stats {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.64rem;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.04em;
-      min-height: 1rem;
-      background: rgba(255, 255, 255, 0.025);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 0.3rem 0.85rem;
-      display: inline-block;
+      font-family: 'DM Mono', monospace; font-size: 0.64rem; color: var(--muted);
+      margin-bottom: 1.5rem; letter-spacing: 0.04em; min-height: 1rem;
+      background: rgba(255,255,255,0.025); border: 1px solid var(--border);
+      border-radius: 20px; padding: 0.3rem 0.85rem; display: inline-block;
     }
     .home-stats:empty { display: none; }
-    .home-stats span {
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    /* ── Button column ── */
-    .home-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      width: 100%;
-      max-width: 320px;
-    }
-
-    /* Primary CTA */
+    .home-stats span { color: var(--text); font-weight: 500; }
+    .home-buttons { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; max-width: 320px; }
     .home-btn-primary {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.45rem;
-      padding: 0.78rem 1.2rem;
-      border-radius: 12px;
-      background: #00a86b;
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.88rem;
-      text-decoration: none;
-      cursor: pointer;
-      border: none;
-      transition: filter 0.15s, transform 0.1s;
-      width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+      padding: 0.78rem 1.2rem; border-radius: 12px; background: #00a86b;
+      color: #fff; font-weight: 600; font-size: 0.88rem; text-decoration: none;
+      cursor: pointer; border: none; transition: filter 0.15s, transform 0.1s; width: 100%;
     }
     .home-btn-primary:hover  { filter: brightness(1.12); }
     .home-btn-primary:active { transform: scale(0.98); }
-
-    /* Secondary chips row */
-    .home-chips {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
+    .home-chips { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
     .home-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.5rem 0.9rem;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      transition: border-color 0.15s, background 0.15s;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.5rem 0.9rem; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-size: 0.8rem; font-weight: 500;
+      cursor: pointer; text-decoration: none; transition: border-color 0.15s, background 0.15s; white-space: nowrap;
     }
-    .home-chip:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.04);
-    }
+    .home-chip:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
     .home-chip svg { flex-shrink: 0; }
-
-    /* Contact dropdown */
     .home-contact-wrap { position: relative; }
     .home-contact-dropdown {
-      display: none;
-      position: absolute;
-      bottom: calc(100% + 0.4rem);
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--surface);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 14px;
-      padding: 0.35rem;
-      flex-direction: column;
-      gap: 0.1rem;
-      z-index: 50;
-      min-width: 165px;
-      box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.55);
+      display: none; position: absolute; bottom: calc(100% + 0.4rem); left: 50%;
+      transform: translateX(-50%); background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+      padding: 0.35rem; flex-direction: column; gap: 0.1rem; z-index: 50;
+      min-width: 165px; box-shadow: 0 -12px 32px rgba(0,0,0,0.55);
     }
     .home-contact-dropdown.active { display: flex; }
     .home-contact-dropdown a {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      color: var(--text);
-      text-decoration: none;
-      padding: 0.5rem 0.75rem;
-      border-radius: 10px;
-      font-size: 0.78rem;
-      font-weight: 500;
-      transition: background 0.12s;
+      display: flex; align-items: center; gap: 0.6rem; color: var(--text);
+      text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 10px;
+      font-size: 0.78rem; font-weight: 500; transition: background 0.12s;
     }
-    .home-contact-dropdown a:hover { background: rgba(255, 255, 255, 0.06); }
-
-    /* Footer */
+    .home-contact-dropdown a:hover { background: rgba(255,255,255,0.06); }
     .home-footer {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.58rem;
-      color: rgba(107, 113, 148, 0.55);
-      margin-top: 1.75rem;
-      letter-spacing: 0.05em;
+      font-family: 'DM Mono', monospace; font-size: 0.58rem;
+      color: rgba(107,113,148,0.55); margin-top: 1.75rem; letter-spacing: 0.05em;
     }
 
     /* ========== GAME DETAIL — slideshow + info ========== */
     .detail-description { white-space: pre-wrap; word-break: break-word; }
-
     .sort-controls label { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; color: var(--text); }
     .sort-controls select {
       background: var(--card); border: none; color: var(--text);
       font-family: 'DM Sans', sans-serif; font-size: 0.7rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 6px;
     }
     .sort-controls select option { background: var(--surface); color: var(--text); }
+
+    /* ========== AUDIOVISUALS grid & card styles ========== */
+    .audiovisuals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .audiovisual-card {
+      background: var(--card); border-radius: 14px; overflow: hidden;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .audiovisual-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+    .audiovisual-thumb {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
+      background: var(--bg);
+    }
+    .audiovisual-info { padding: 0.75rem; }
+    .audiovisual-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; color: var(--text); }
+    .audiovisual-meta { font-size: 0.7rem; color: var(--muted); display: flex; flex-direction: column; gap: 0.2rem; }
+    .audiovisual-type { text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.05em; opacity: 0.7; }
 
     /* ========== RESPONSIVE ========== */
     @media (max-width: 520px) {
@@ -416,6 +264,18 @@
           <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
+        <!-- Audiovisuais (NEW) -->
+        <div class="pasta-item" onclick="navigateTo('view-audiovisuals')" role="button" tabindex="0">
+          <div class="pasta-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div class="pasta-item-body">
+            <div class="pasta-item-title">Audiovisuals</div>
+            <div class="pasta-item-desc">Video production, editing &amp; direction</div>
+          </div>
+          <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
       </div>
     </div>
   </div>
@@ -491,6 +351,44 @@
     </div>
   </div>
 
+  <!-- ========== VIEW AUDIOVISUAIS (LIST) ========== -->
+  <div class="view" id="view-audiovisuals">
+    <div class="section-header">
+      <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">Audiovisual Projects</span>
+      <div class="sort-controls" id="sort-audiovisuals-wrap" style="display:none">
+        <label>Sort by:</label>
+        <select id="sort-audiovisuals">
+          <option value="order_asc">Default order</option>
+          <option value="year_desc">Newest first</option>
+          <option value="year_asc">Oldest first</option>
+          <option value="title_asc">Title A–Z</option>
+          <option value="title_desc">Title Z–A</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="audiovisuals-grid" id="audiovisuals-grid">
+        <div class="state"><div class="spinner"></div>Loading audiovisuals...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== VIEW DETALHE AUDIOVISUAL ========== -->
+  <div class="view" id="view-audiovisual-detail">
+    <div class="section-header">
+      <div class="back-btn" onclick="navigateTo('view-audiovisuals')" title="Voltar para lista">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </div>
+      <span class="section-title">Audiovisual Details</span>
+    </div>
+    <div class="card" id="audiovisual-detail-card">
+      <div class="state"><div class="spinner"></div>Loading...</div>
+    </div>
+  </div>
+
   <!-- ========== VIEW ABOUT ME ========== -->
   <div class="view" id="view-about">
     <div class="section-header">
@@ -530,7 +428,9 @@
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let musicItemsRaw = [];
   let gamesList = [];
+  let audiovisualsList = [];            // NEW
   let currentSort = 'date_desc';
+  let currentAudiovisualSort = 'order_asc'; // NEW
 
   // ==================================================================
   // 2. Utilities
@@ -602,11 +502,15 @@
     } else if (viewId === 'view-game-detail' && param) {
       history.pushState({ view: viewId, appId: param }, '', `/game/${param}`);
       showGameDetail(param);
+    } else if (viewId === 'view-audiovisual-detail' && param) {
+      history.pushState({ view: viewId, avId: param }, '', `/audiovisual/${param}`);
+      showAudiovisualDetail(param);
     } else {
       let path = '/';
       if (viewId === 'view-portfolio-pasta') path = '/portfolio';
       else if (viewId === 'view-music') path = '/music';
       else if (viewId === 'view-games') path = '/games';
+      else if (viewId === 'view-audiovisuals') path = '/audiovisuals';
       else if (viewId === 'view-about') path = '/about';
       history.pushState({ view: viewId }, '', path);
       setActiveView(viewId);
@@ -614,9 +518,15 @@
   }
 
   function setActiveView(viewId) {
+    // Clear any embedded players when leaving detail views
     const videoDetailView = document.getElementById('view-video-detail');
     if (videoDetailView && videoDetailView.classList.contains('active') && viewId !== 'view-video-detail') {
       const iframe = document.getElementById('detail-card')?.querySelector('iframe');
+      if (iframe && iframe.src) iframe.src = 'about:blank';
+    }
+    const avDetailView = document.getElementById('view-audiovisual-detail');
+    if (avDetailView && avDetailView.classList.contains('active') && viewId !== 'view-audiovisual-detail') {
+      const iframe = document.getElementById('audiovisual-detail-card')?.querySelector('iframe');
       if (iframe && iframe.src) iframe.src = 'about:blank';
     }
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -632,6 +542,7 @@
     if (path === '/portfolio') setActiveView('view-portfolio-pasta');
     else if (path === '/music') setActiveView('view-music');
     else if (path === '/games') setActiveView('view-games');
+    else if (path === '/audiovisuals') setActiveView('view-audiovisuals');
     else if (path === '/about') setActiveView('view-about');
     else if (path.startsWith('/video/')) {
       const id = path.split('/video/')[1];
@@ -647,6 +558,14 @@
       else if (id) {
         const wait = setInterval(() => {
           if (gamesList.length) { clearInterval(wait); showGameDetail(id); }
+        }, 100);
+      } else setActiveView('view-home');
+    } else if (path.startsWith('/audiovisual/')) {
+      const id = path.split('/audiovisual/')[1];
+      if (id && audiovisualsList.length) showAudiovisualDetail(id);
+      else if (id) {
+        const wait = setInterval(() => {
+          if (audiovisualsList.length) { clearInterval(wait); showAudiovisualDetail(id); }
         }, 100);
       } else setActiveView('view-home');
     } else setActiveView('view-home');
@@ -714,6 +633,9 @@
     }
     if (gamesList.length) {
       parts.push(`<span>${gamesList.length}</span> game${gamesList.length !== 1 ? 's' : ''}`);
+    }
+    if (audiovisualsList.length) {
+      parts.push(`<span>${audiovisualsList.length}</span> audiovisual project${audiovisualsList.length !== 1 ? 's' : ''}`);
     }
     if (parts.length) el.innerHTML = parts.join(' · ');
   }
@@ -826,7 +748,7 @@
   }
 
   // ==================================================================
-  // 6. Games — cards match music card layout
+  // 6. Games
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -835,7 +757,7 @@
       if (!res.ok) throw new Error();
       const games = await res.json();
       gamesList = games;
-      updateHomeStats(); // refresh with game count
+      updateHomeStats();
       if (!games.length) {
         grid.innerHTML = '<div class="error-msg">No games found.</div>';
         return;
@@ -992,12 +914,143 @@
   }
 
   // ==================================================================
-  // 7. Init
+  // 7. AUDIOVISUAIS (NEW SECTION)
+  // ==================================================================
+  async function loadAudiovisuals() {
+    const grid = document.getElementById('audiovisuals-grid');
+    const sortWrap = document.getElementById('sort-audiovisuals-wrap');
+    try {
+      grid.innerHTML = '<div class="state"><div class="spinner"></div>Loading audiovisuals...</div>';
+      const res = await fetch(`${WORKER_URL}/api/audiovisuals`);
+      if (!res.ok) throw new Error();
+      const items = await res.json();
+      audiovisualsList = items;
+      updateHomeStats();
+      if (!items.length) {
+        grid.innerHTML = '<div class="error-msg">No audiovisual projects found.</div>';
+        if (sortWrap) sortWrap.style.display = 'none';
+        return;
+      }
+      if (sortWrap) sortWrap.style.display = 'flex';
+      renderAudiovisualsGrid();
+      const sortSelect = document.getElementById('sort-audiovisuals');
+      if (sortSelect) {
+        sortSelect.removeEventListener('change', handleAudiovisualSort);
+        sortSelect.addEventListener('change', handleAudiovisualSort);
+      }
+      // Check if we need to restore a detail view from URL
+      if (window.location.pathname.startsWith('/audiovisual/')) {
+        const id = window.location.pathname.split('/audiovisual/')[1];
+        if (id) showAudiovisualDetail(id);
+      }
+    } catch (e) {
+      grid.innerHTML = '<div class="error-msg">Error loading audiovisuals.</div>';
+      if (sortWrap) sortWrap.style.display = 'none';
+    }
+  }
+
+  function handleAudiovisualSort(e) {
+    currentAudiovisualSort = e.target.value;
+    renderAudiovisualsGrid();
+  }
+
+  function renderAudiovisualsGrid() {
+    const grid = document.getElementById('audiovisuals-grid');
+    let sorted = [...audiovisualsList];
+    switch (currentAudiovisualSort) {
+      case 'order_asc': sorted.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999)); break;
+      case 'year_desc': sorted.sort((a, b) => (b.year || 0) - (a.year || 0)); break;
+      case 'year_asc': sorted.sort((a, b) => (a.year || 0) - (b.year || 0)); break;
+      case 'title_asc': sorted.sort((a, b) => a.title.localeCompare(b.title)); break;
+      case 'title_desc': sorted.sort((a, b) => b.title.localeCompare(a.title)); break;
+    }
+    grid.innerHTML = sorted.map(item => `
+      <div class="audiovisual-card" onclick="navigateTo('view-audiovisual-detail', '${item.id}')">
+        ${item.thumbnail ? `<img class="audiovisual-thumb" src="${esc(item.thumbnail)}" alt="${esc(item.title)}" loading="lazy">` : `<div class="audiovisual-thumb" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.2rem;">🎬</div>`}
+        <div class="audiovisual-info">
+          <div class="audiovisual-title">${esc(item.title)}</div>
+          <div class="audiovisual-meta">
+            <span class="audiovisual-type">${esc(item.type || 'Video')}</span>
+            <span>${esc(item.role || '')}</span>
+            <span>${esc(item.client || '')}</span>
+            <span>${item.year ? '📅 ' + item.year : ''}</span>
+            ${item.duration ? `<span>⏱️ ${esc(item.duration)}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function showAudiovisualDetail(id) {
+    const item = audiovisualsList.find(i => i.id === id);
+    if (!item) return;
+
+    // Fetch tags
+    let tags = [];
+    try {
+      const tagsRes = await fetch(`${WORKER_URL}/api/audiovisuals/tags?id=${id}`);
+      tags = (await tagsRes.json()).tags || [];
+    } catch (e) { console.warn(e); }
+
+    const provider = item.provider || 'youtube';
+    const videoUrl = item.url || '';
+
+    // Determine embed URL based on provider (basic support for YouTube, Vimeo, generic)
+    let embedHtml = '';
+    if (provider === 'youtube' && videoUrl) {
+      const ytId = extractYouTubeId(videoUrl);
+      if (ytId) {
+        embedHtml = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=0&modestbranding=1&rel=0" allowfullscreen></iframe>`;
+      }
+    } else if (provider === 'vimeo' && videoUrl) {
+      const vimeoId = videoUrl.split('/').pop();
+      embedHtml = `<iframe src="https://player.vimeo.com/video/${vimeoId}" allowfullscreen></iframe>`;
+    } else if (videoUrl) {
+      embedHtml = `<a href="${esc(videoUrl)}" target="_blank" rel="noopener" class="home-btn-primary" style="width:fit-content; margin: 1rem auto;">▶️ Watch on ${esc(provider)}</a>`;
+    }
+
+    const card = document.getElementById('audiovisual-detail-card');
+    card.innerHTML = `
+      <div class="detail-container">
+        <div class="detail-player">
+          ${embedHtml ? `<div class="video-embed">${embedHtml}</div>` : ''}
+        </div>
+        <div class="detail-info">
+          <div class="detail-title">${esc(item.title)}</div>
+          <div style="margin-bottom:0.75rem;">
+            <span class="role-badge" style="background:rgba(245,158,11,0.2)">${esc(item.type || 'Video')}</span>
+            ${tags.map(t => `<span class="game-tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${esc(t.name || t)}</span>`).join('')}
+          </div>
+          <div class="detail-stats">
+            <span>🎭 ${esc(item.role || '—')}</span>
+            <span>🏢 ${esc(item.client || '—')}</span>
+            ${item.year ? `<span>📅 ${item.year}</span>` : ''}
+            ${item.duration ? `<span>⏱️ ${item.duration}</span>` : ''}
+          </div>
+          <div class="detail-description">${esc(item.description || 'No description.')}</div>
+          ${item.url ? `<a href="${esc(item.url)}" target="_blank" rel="noopener" class="home-chip" style="margin-top:1rem;">🔗 Open original link</a>` : ''}
+        </div>
+      </div>
+    `;
+
+    setActiveView('view-audiovisual-detail');
+  }
+
+  // Helper to extract YouTube video ID from various URL formats
+  function extractYouTubeId(url) {
+    const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[1].length === 11) ? match[1] : null;
+  }
+
+  // ==================================================================
+  // 8. Init
   // ==================================================================
   document.addEventListener('DOMContentLoaded', async () => {
     applyConfig();
     await loadMusic();
     await loadGames();
+    await loadAudiovisuals();
     restoreFromPath();
   });
 </script>
