@@ -112,11 +112,14 @@
     }
     .sort-controls select option { background: var(--surface); color: var(--text); }
 
-    /* ========== AUDIOVISUAL DETAIL — full-width ========== */
+    /* ========== AUDIOVISUAL DETAIL — full-width video, no white borders ========== */
+    #view-audiovisual-detail .card {
+      padding: 0 !important;
+      overflow: hidden;
+    }
     .av-detail-container {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
     }
     .av-detail-player {
       width: 100%;
@@ -126,8 +129,6 @@
       width: 100%;
       aspect-ratio: 16 / 9;
       background: #000;
-      border-radius: 12px;
-      overflow: hidden;
     }
     .av-video-embed iframe {
       position: absolute;
@@ -136,10 +137,28 @@
       height: 100%;
     }
     .av-detail-info {
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
     }
+    .creator-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0.25rem 0 0.5rem;
+    }
+    .creator-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 600;
+      color: var(--text); flex-shrink: 0;
+    }
+    .creator-link {
+      color: var(--text); text-decoration: none; font-weight: 500; font-size: 0.9rem;
+    }
+    .creator-link:hover { text-decoration: underline; color: #5d9eff; }
 
     /* ========== RESPONSIVE ========== */
     @media (max-width: 520px) {
@@ -147,6 +166,7 @@
       .home-chips { gap: 0.4rem; }
       .home-chip { padding: 0.45rem 0.75rem; font-size: 0.76rem; }
       .home-langs { gap: 0.9rem; }
+      .av-detail-info { padding: 1rem; }
     }
   </style>
 </head>
@@ -489,7 +509,7 @@
       showVideoDetail(param, 'music');
     } else if (viewId === 'view-game-detail' && param) {
       history.pushState({ view: viewId, appId: param }, '', `/game/${param}`);
-      showGameDetail(param); // will instantly show loading and fetch data
+      showGameDetail(param);
     } else if (viewId === 'view-audiovisual-detail' && param) {
       history.pushState({ view: viewId, avId: param }, '', `/audiovisual/${param}`);
       showAudiovisualDetail(param);
@@ -740,7 +760,7 @@
       const lc = dc.querySelector(`#lyrics-container-${video.id}`);
       if (lc) loadLyrics(video.id, lc);
     } else {
-      // layout exclusivo audiovisual: vídeo full-width e informações abaixo
+      // layout exclusivo audiovisual: vídeo full-width, seção do criador
       dc.innerHTML = `
         <div class="av-detail-container">
           <div class="av-detail-player">
@@ -750,7 +770,10 @@
           </div>
           <div class="av-detail-info">
             <div class="detail-title">${esc(video.title)}</div>
-            <div class="detail-channel">${esc(video.channelTitle)}</div>
+            <div class="creator-section">
+              <div class="creator-avatar">${video.channelTitle.charAt(0).toUpperCase()}</div>
+              <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(video.channelTitle)}" target="_blank" rel="noopener" class="creator-link">${esc(video.channelTitle)}</a>
+            </div>
             <div class="detail-stats">
               <span>👁️ ${formatNumber(video.viewCount)} views</span>
               <span>📅 ${formatDate(video.publishedAt)}</span>
@@ -934,7 +957,6 @@
 
   async function showGameDetail(appId) {
     const detailCard = document.getElementById('game-detail-card');
-    // Mostra imediatamente a UI de carregamento
     detailCard.innerHTML = '<div class="state"><div class="spinner"></div>Loading game info...</div>';
     setActiveView('view-game-detail');
 
@@ -944,14 +966,13 @@
       return;
     }
 
-    // Busca dados adicionais
     let steamData = null;
-    let tags = [], creditsImage = '', creditsChips = [];
     try {
       const steamRes = await fetch(`${WORKER_URL}/api/steam/app?appids=${appId}`);
       if (steamRes.ok) steamData = await steamRes.json();
     } catch(e) { console.warn('Steam API error', e); }
 
+    let tags = [], creditsImage = '', creditsChips = [];
     try {
       const tagsRes = await fetch(`${WORKER_URL}/api/games/tags?id=${appId}`);
       tags = (await tagsRes.json()).tags || [];
