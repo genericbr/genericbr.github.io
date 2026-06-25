@@ -112,9 +112,9 @@
     }
     .sort-controls select option { background: var(--surface); color: var(--text); }
 
-    /* ========== AUDIOVISUAL DETAIL — full-width video, no white borders ========== */
+    /* ========== AUDIOVISUAL DETAIL — full-width video, consistent transition ========== */
     #view-audiovisual-detail .card {
-      padding: 0 !important;
+      padding: 1.75rem 2rem;         /* mesmo padding dos outros cards */
       overflow: hidden;
     }
     .av-detail-container {
@@ -123,12 +123,14 @@
     }
     .av-detail-player {
       width: 100%;
+      margin: -1.75rem -2rem 1.5rem;   /* quebra o padding do card apenas no topo */
     }
     .av-video-embed {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
       background: #000;
+      border-radius: 12px 12px 0 0;
     }
     .av-video-embed iframe {
       position: absolute;
@@ -137,7 +139,6 @@
       height: 100%;
     }
     .av-detail-info {
-      padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
@@ -169,7 +170,8 @@
       .home-chips { gap: 0.4rem; }
       .home-chip { padding: 0.45rem 0.75rem; font-size: 0.76rem; }
       .home-langs { gap: 0.9rem; }
-      .av-detail-info { padding: 1rem; }
+      #view-audiovisual-detail .card { padding: 1rem 1.25rem; }
+      .av-detail-player { margin: -1rem -1.25rem 1rem; }
     }
   </style>
 </head>
@@ -279,7 +281,7 @@
           </div>
           <div class="pasta-item-body">
             <div class="pasta-item-title">Audiovisuals</div>
-            <div class="pasta-item-desc">Video production, editing &amp; direction</div>
+            <div class="pasta-item-desc">Audiovisual production &amp; editing portfolio</div>
           </div>
           <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
