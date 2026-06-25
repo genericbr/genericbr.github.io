@@ -104,27 +104,6 @@
     }
     .sort-controls select option { background: var(--surface); color: var(--text); }
 
-    /* ========== AUDIOVISUALS grid & card styles ========== */
-    .audiovisuals-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-    .audiovisual-card {
-      background: var(--card); border-radius: 14px; overflow: hidden;
-      cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    .audiovisual-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-    .audiovisual-thumb {
-      width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block;
-      background: var(--bg);
-    }
-    .audiovisual-info { padding: 0.75rem; }
-    .audiovisual-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.2rem; color: var(--text); }
-    .audiovisual-meta { font-size: 0.7rem; color: var(--muted); display: flex; flex-direction: column; gap: 0.2rem; }
-    .audiovisual-type { text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.05em; opacity: 0.7; }
-
     /* ========== RESPONSIVE ========== */
     @media (max-width: 520px) {
       #view-home .card { padding: 2rem 1.25rem 1.75rem !important; }
@@ -264,7 +243,7 @@
           <svg class="pasta-item-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
-        <!-- Audiovisuais (NEW) -->
+        <!-- Audiovisuais (NEW – copy of music behavior) -->
         <div class="pasta-item" onclick="navigateTo('view-audiovisuals')" role="button" tabindex="0">
           <div class="pasta-item-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
@@ -310,7 +289,7 @@
     </div>
   </div>
 
-  <!-- ========== VIEW DETALHE VÍDEO ========== -->
+  <!-- ========== VIEW DETALHE VÍDEO (música) ========== -->
   <div class="view" id="view-video-detail">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-music')" title="Voltar para lista">
@@ -351,32 +330,37 @@
     </div>
   </div>
 
-  <!-- ========== VIEW AUDIOVISUAIS (LIST) ========== -->
+  <!-- ========== VIEW AUDIOVISUAIS (COPY OF MUSIC) ========== -->
   <div class="view" id="view-audiovisuals">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-portfolio-pasta')" title="Voltar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </div>
       <span class="section-title">Audiovisual Projects</span>
-      <div class="sort-controls" id="sort-audiovisuals-wrap" style="display:none">
+      <div class="sort-controls">
         <label>Sort by:</label>
         <select id="sort-audiovisuals">
-          <option value="order_asc">Default order</option>
-          <option value="year_desc">Newest first</option>
-          <option value="year_asc">Oldest first</option>
+          <option value="original">Original order</option>
+          <option value="views_desc">Most views</option>
+          <option value="views_asc">Least views</option>
+          <option value="date_desc" selected>Newest first</option>
+          <option value="date_asc">Oldest first</option>
           <option value="title_asc">Title A–Z</option>
           <option value="title_desc">Title Z–A</option>
         </select>
       </div>
     </div>
     <div class="card">
-      <div class="audiovisuals-grid" id="audiovisuals-grid">
-        <div class="state"><div class="spinner"></div>Loading audiovisuals...</div>
+      <div id="audiovisuals-stats" class="stats-bar" style="display: none;">
+        <div class="total-views">🎬 Total views: <strong id="av-total-views-count">0</strong></div>
+      </div>
+      <div class="music-grid" id="audiovisuals-grid">
+        <div class="state"><div class="spinner"></div>Loading YouTube...</div>
       </div>
     </div>
   </div>
 
-  <!-- ========== VIEW DETALHE AUDIOVISUAL ========== -->
+  <!-- ========== VIEW DETALHE AUDIOVISUAL (copy of video detail) ========== -->
   <div class="view" id="view-audiovisual-detail">
     <div class="section-header">
       <div class="back-btn" onclick="navigateTo('view-audiovisuals')" title="Voltar para lista">
@@ -427,10 +411,10 @@
   // ==================================================================
   const WORKER_URL = 'https://portfolio.genericbr-business.workers.dev';
   let musicItemsRaw = [];
+  let audiovisualsItemsRaw = [];        // NEW – mirror of musicItemsRaw
   let gamesList = [];
-  let audiovisualsList = [];            // NEW
   let currentSort = 'date_desc';
-  let currentAudiovisualSort = 'order_asc'; // NEW
+  let currentAvSort = 'date_desc';      // NEW
 
   // ==================================================================
   // 2. Utilities
@@ -496,16 +480,23 @@
   // 4. Routing
   // ==================================================================
   function navigateTo(viewId, param = null) {
+    // Music detail
     if (viewId === 'view-video-detail' && param) {
       history.pushState({ view: viewId, videoId: param }, '', `/video/${param}`);
-      showVideoDetail(param);
-    } else if (viewId === 'view-game-detail' && param) {
+      showVideoDetail(param, 'music');
+    }
+    // Game detail
+    else if (viewId === 'view-game-detail' && param) {
       history.pushState({ view: viewId, appId: param }, '', `/game/${param}`);
       showGameDetail(param);
-    } else if (viewId === 'view-audiovisual-detail' && param) {
+    }
+    // Audiovisual detail
+    else if (viewId === 'view-audiovisual-detail' && param) {
       history.pushState({ view: viewId, avId: param }, '', `/audiovisual/${param}`);
       showAudiovisualDetail(param);
-    } else {
+    }
+    // Static views
+    else {
       let path = '/';
       if (viewId === 'view-portfolio-pasta') path = '/portfolio';
       else if (viewId === 'view-music') path = '/music';
@@ -518,15 +509,15 @@
   }
 
   function setActiveView(viewId) {
-    // Clear any embedded players when leaving detail views
-    const videoDetailView = document.getElementById('view-video-detail');
-    if (videoDetailView && videoDetailView.classList.contains('active') && viewId !== 'view-video-detail') {
-      const iframe = document.getElementById('detail-card')?.querySelector('iframe');
+    // Clear embedded players when leaving detail views
+    const musicDetail = document.getElementById('view-video-detail');
+    if (musicDetail && musicDetail.classList.contains('active') && viewId !== 'view-video-detail') {
+      const iframe = musicDetail.querySelector('iframe');
       if (iframe && iframe.src) iframe.src = 'about:blank';
     }
-    const avDetailView = document.getElementById('view-audiovisual-detail');
-    if (avDetailView && avDetailView.classList.contains('active') && viewId !== 'view-audiovisual-detail') {
-      const iframe = document.getElementById('audiovisual-detail-card')?.querySelector('iframe');
+    const avDetail = document.getElementById('view-audiovisual-detail');
+    if (avDetail && avDetail.classList.contains('active') && viewId !== 'view-audiovisual-detail') {
+      const iframe = avDetail.querySelector('iframe');
       if (iframe && iframe.src) iframe.src = 'about:blank';
     }
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -546,13 +537,14 @@
     else if (path === '/about') setActiveView('view-about');
     else if (path.startsWith('/video/')) {
       const id = path.split('/video/')[1];
-      if (id && musicItemsRaw.length) showVideoDetail(id);
+      if (id && musicItemsRaw.length) showVideoDetail(id, 'music');
       else if (id) {
         const wait = setInterval(() => {
-          if (musicItemsRaw.length) { clearInterval(wait); showVideoDetail(id); }
+          if (musicItemsRaw.length) { clearInterval(wait); showVideoDetail(id, 'music'); }
         }, 100);
       } else setActiveView('view-home');
-    } else if (path.startsWith('/game/')) {
+    }
+    else if (path.startsWith('/game/')) {
       const id = path.split('/game/')[1];
       if (id && gamesList.length) showGameDetail(id);
       else if (id) {
@@ -560,15 +552,17 @@
           if (gamesList.length) { clearInterval(wait); showGameDetail(id); }
         }, 100);
       } else setActiveView('view-home');
-    } else if (path.startsWith('/audiovisual/')) {
+    }
+    else if (path.startsWith('/audiovisual/')) {
       const id = path.split('/audiovisual/')[1];
-      if (id && audiovisualsList.length) showAudiovisualDetail(id);
+      if (id && audiovisualsItemsRaw.length) showAudiovisualDetail(id);
       else if (id) {
         const wait = setInterval(() => {
-          if (audiovisualsList.length) { clearInterval(wait); showAudiovisualDetail(id); }
+          if (audiovisualsItemsRaw.length) { clearInterval(wait); showAudiovisualDetail(id); }
         }, 100);
       } else setActiveView('view-home');
-    } else setActiveView('view-home');
+    }
+    else setActiveView('view-home');
   }
 
   window.addEventListener('popstate', restoreFromPath);
@@ -593,7 +587,7 @@
     const statsDiv = document.getElementById('music-stats');
     try {
       grid.innerHTML = '<div class="state"><div class="spinner"></div>Fetching from YouTube...</div>';
-      const response = await fetch(WORKER_URL);
+      const response = await fetch(WORKER_URL);       // main music playlist
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const videoData = await response.json();
       if (videoData && videoData.length) {
@@ -610,7 +604,7 @@
         }
         if (window.location.pathname.startsWith('/video/')) {
           const id = window.location.pathname.split('/video/')[1];
-          if (id) showVideoDetail(id);
+          if (id) showVideoDetail(id, 'music');
         }
       } else {
         grid.innerHTML = '<div class="error-msg">No videos found.</div>';
@@ -634,8 +628,9 @@
     if (gamesList.length) {
       parts.push(`<span>${gamesList.length}</span> game${gamesList.length !== 1 ? 's' : ''}`);
     }
-    if (audiovisualsList.length) {
-      parts.push(`<span>${audiovisualsList.length}</span> audiovisual project${audiovisualsList.length !== 1 ? 's' : ''}`);
+    if (audiovisualsItemsRaw.length) {
+      const avViews = audiovisualsItemsRaw.reduce((s, v) => s + v.viewCount, 0);
+      parts.push(`<span>${audiovisualsItemsRaw.length}</span> audiovisual project${audiovisualsItemsRaw.length !== 1 ? 's' : ''} · <span>${formatNumber(avViews)}</span> views`);
     }
     if (parts.length) el.innerHTML = parts.join(' · ');
   }
@@ -701,19 +696,21 @@
     }
   }
 
-  function showVideoDetail(id) {
-    const video = musicItemsRaw.find(v => v.id === id);
+  function showVideoDetail(id, type = 'music') {
+    const items = type === 'music' ? musicItemsRaw : audiovisualsItemsRaw;
+    const video = items.find(v => v.id === id);
     if (!video) return;
     const desc = video.description ? video.description.trim() : 'No description available.';
-    const other = musicItemsRaw.filter(vv => vv.channelTitle === video.channelTitle && vv.id !== video.id);
-    const dc = document.getElementById('detail-card');
+    const other = items.filter(vv => vv.channelTitle === video.channelTitle && vv.id !== video.id);
+    const cardId = type === 'music' ? 'detail-card' : 'audiovisual-detail-card';
+    const dc = document.getElementById(cardId);
     dc.innerHTML = `
       <div class="detail-container">
         <div class="detail-player">
           <div class="video-embed">
             <iframe src="https://www.youtube.com/embed/${video.id}?autoplay=0&modestbranding=1&rel=0&cc_lang_pref=pt&cc_load_policy=1&hl=pt" allowfullscreen></iframe>
           </div>
-          ${other.length ? `<div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div><div class="other-videos-grid" id="other-videos-grid"></div>` : ''}
+          ${other.length ? `<div class="other-videos-title">🎵 More from ${esc(video.channelTitle)}</div><div class="other-videos-grid" id="${type}-other-videos-grid"></div>` : ''}
         </div>
         <div class="detail-info">
           <div class="detail-title">${esc(video.title)}</div>
@@ -723,17 +720,18 @@
             <span>📅 ${formatDate(video.publishedAt)}</span>
           </div>
           <div class="detail-description">${esc(desc)}</div>
+          ${type === 'music' ? `
           <div class="lyrics-section">
             <div class="lyrics-header"><span>📝</span> Lyrics / Translation</div>
             <div id="lyrics-container-${video.id}" class="lyrics-container"></div>
-          </div>
+          </div>` : ''}
         </div>
       </div>
     `;
     if (other.length) {
-      const grid = dc.querySelector('#other-videos-grid');
+      const grid = dc.querySelector(`#${type}-other-videos-grid`);
       grid.innerHTML = other.map(vv => `
-        <div class="other-video-card" onclick="navigateTo('view-video-detail', '${vv.id}')">
+        <div class="other-video-card" onclick="navigateTo('${type === 'music' ? 'view-video-detail' : 'view-audiovisual-detail'}', '${vv.id}')">
           <img class="other-video-thumb" src="${esc(vv.thumbnail)}" loading="lazy">
           <div class="other-video-info">
             <div class="other-video-title">${esc(vv.title)}</div>
@@ -742,13 +740,97 @@
         </div>
       `).join('');
     }
-    const lc = dc.querySelector(`#lyrics-container-${video.id}`);
-    if (lc) loadLyrics(video.id, lc);
-    setActiveView('view-video-detail');
+    if (type === 'music') {
+      const lc = dc.querySelector(`#lyrics-container-${video.id}`);
+      if (lc) loadLyrics(video.id, lc);
+    }
+    setActiveView(type === 'music' ? 'view-video-detail' : 'view-audiovisual-detail');
   }
 
   // ==================================================================
-  // 6. Games
+  // 6. Audiovisuals (copy of music – separate playlist endpoint)
+  // ==================================================================
+  async function loadAudiovisuals() {
+    const grid = document.getElementById('audiovisuals-grid');
+    const statsDiv = document.getElementById('audiovisuals-stats');
+    try {
+      grid.innerHTML = '<div class="state"><div class="spinner"></div>Fetching audiovisuals from YouTube...</div>';
+      // Assume a Worker route /api/audiovisuals/playlist returns the same data structure
+      const response = await fetch(`${WORKER_URL}/api/audiovisuals/playlist`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const videoData = await response.json();
+      if (videoData && videoData.length) {
+        audiovisualsItemsRaw = videoData;
+        renderAudiovisualsGrid();
+        statsDiv.style.display = 'flex';
+        updateAvTotalViews();
+        updateHomeStats();
+        const sortSelect = document.getElementById('sort-audiovisuals');
+        if (sortSelect) {
+          sortSelect.removeEventListener('change', handleAvSortChange);
+          sortSelect.addEventListener('change', handleAvSortChange);
+        }
+        if (window.location.pathname.startsWith('/audiovisual/')) {
+          const id = window.location.pathname.split('/audiovisual/')[1];
+          if (id) showAudiovisualDetail(id);
+        }
+      } else {
+        grid.innerHTML = '<div class="error-msg">No audiovisual projects found.</div>';
+        statsDiv.style.display = 'none';
+      }
+    } catch (err) {
+      console.error(err);
+      grid.innerHTML = `<div class="error-msg">❌ Error: ${esc(err.message)}</div>`;
+      statsDiv.style.display = 'none';
+    }
+  }
+
+  function handleAvSortChange(e) {
+    currentAvSort = e.target.value;
+    renderAudiovisualsGrid();
+  }
+
+  function renderAudiovisualsGrid() {
+    const grid = document.getElementById('audiovisuals-grid');
+    let sorted = [...audiovisualsItemsRaw];
+    switch (currentAvSort) {
+      case 'views_desc': sorted.sort((a, b) => b.viewCount - a.viewCount); break;
+      case 'views_asc':  sorted.sort((a, b) => a.viewCount - b.viewCount); break;
+      case 'date_desc':  sorted.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)); break;
+      case 'date_asc':   sorted.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt)); break;
+      case 'title_asc':  sorted.sort((a, b) => a.title.localeCompare(b.title)); break;
+      case 'title_desc': sorted.sort((a, b) => b.title.localeCompare(a.title)); break;
+      default: sorted = [...audiovisualsItemsRaw];
+    }
+    grid.innerHTML = sorted.map(v => `
+      <div class="music-card" onclick="navigateTo('view-audiovisual-detail', '${v.id}')">
+        ${v.thumbnail ? `<img class="music-thumb" src="${esc(v.thumbnail)}" alt="Thumbnail" loading="lazy">` : '<div class="music-thumb" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.5rem;">🎬</div>'}
+        <div class="music-info">
+          <div class="music-title">${esc(v.title)}</div>
+          <div class="music-meta">
+            <div class="music-views">👁️ ${formatNumber(v.viewCount)} views</div>
+            <div class="music-date">📅 ${formatDate(v.publishedAt)}</div>
+            <div class="music-channel">🎤 ${esc(v.channelTitle)}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    updateAvTotalViews();
+  }
+
+  function updateAvTotalViews() {
+    const total = audiovisualsItemsRaw.reduce((sum, v) => sum + v.viewCount, 0);
+    const el = document.getElementById('av-total-views-count');
+    if (el) el.innerText = formatNumber(total);
+  }
+
+  function showAudiovisualDetail(id) {
+    // Reuse the generic showVideoDetail with type 'audiovisual'
+    showVideoDetail(id, 'audiovisual');
+  }
+
+  // ==================================================================
+  // 7. Games (unchanged)
   // ==================================================================
   async function loadGames() {
     const grid = document.getElementById('games-grid');
@@ -914,143 +996,13 @@
   }
 
   // ==================================================================
-  // 7. AUDIOVISUAIS (NEW SECTION)
-  // ==================================================================
-  async function loadAudiovisuals() {
-    const grid = document.getElementById('audiovisuals-grid');
-    const sortWrap = document.getElementById('sort-audiovisuals-wrap');
-    try {
-      grid.innerHTML = '<div class="state"><div class="spinner"></div>Loading audiovisuals...</div>';
-      const res = await fetch(`${WORKER_URL}/api/audiovisuals`);
-      if (!res.ok) throw new Error();
-      const items = await res.json();
-      audiovisualsList = items;
-      updateHomeStats();
-      if (!items.length) {
-        grid.innerHTML = '<div class="error-msg">No audiovisual projects found.</div>';
-        if (sortWrap) sortWrap.style.display = 'none';
-        return;
-      }
-      if (sortWrap) sortWrap.style.display = 'flex';
-      renderAudiovisualsGrid();
-      const sortSelect = document.getElementById('sort-audiovisuals');
-      if (sortSelect) {
-        sortSelect.removeEventListener('change', handleAudiovisualSort);
-        sortSelect.addEventListener('change', handleAudiovisualSort);
-      }
-      // Check if we need to restore a detail view from URL
-      if (window.location.pathname.startsWith('/audiovisual/')) {
-        const id = window.location.pathname.split('/audiovisual/')[1];
-        if (id) showAudiovisualDetail(id);
-      }
-    } catch (e) {
-      grid.innerHTML = '<div class="error-msg">Error loading audiovisuals.</div>';
-      if (sortWrap) sortWrap.style.display = 'none';
-    }
-  }
-
-  function handleAudiovisualSort(e) {
-    currentAudiovisualSort = e.target.value;
-    renderAudiovisualsGrid();
-  }
-
-  function renderAudiovisualsGrid() {
-    const grid = document.getElementById('audiovisuals-grid');
-    let sorted = [...audiovisualsList];
-    switch (currentAudiovisualSort) {
-      case 'order_asc': sorted.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999)); break;
-      case 'year_desc': sorted.sort((a, b) => (b.year || 0) - (a.year || 0)); break;
-      case 'year_asc': sorted.sort((a, b) => (a.year || 0) - (b.year || 0)); break;
-      case 'title_asc': sorted.sort((a, b) => a.title.localeCompare(b.title)); break;
-      case 'title_desc': sorted.sort((a, b) => b.title.localeCompare(a.title)); break;
-    }
-    grid.innerHTML = sorted.map(item => `
-      <div class="audiovisual-card" onclick="navigateTo('view-audiovisual-detail', '${item.id}')">
-        ${item.thumbnail ? `<img class="audiovisual-thumb" src="${esc(item.thumbnail)}" alt="${esc(item.title)}" loading="lazy">` : `<div class="audiovisual-thumb" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:1.2rem;">🎬</div>`}
-        <div class="audiovisual-info">
-          <div class="audiovisual-title">${esc(item.title)}</div>
-          <div class="audiovisual-meta">
-            <span class="audiovisual-type">${esc(item.type || 'Video')}</span>
-            <span>${esc(item.role || '')}</span>
-            <span>${esc(item.client || '')}</span>
-            <span>${item.year ? '📅 ' + item.year : ''}</span>
-            ${item.duration ? `<span>⏱️ ${esc(item.duration)}</span>` : ''}
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  async function showAudiovisualDetail(id) {
-    const item = audiovisualsList.find(i => i.id === id);
-    if (!item) return;
-
-    // Fetch tags
-    let tags = [];
-    try {
-      const tagsRes = await fetch(`${WORKER_URL}/api/audiovisuals/tags?id=${id}`);
-      tags = (await tagsRes.json()).tags || [];
-    } catch (e) { console.warn(e); }
-
-    const provider = item.provider || 'youtube';
-    const videoUrl = item.url || '';
-
-    // Determine embed URL based on provider (basic support for YouTube, Vimeo, generic)
-    let embedHtml = '';
-    if (provider === 'youtube' && videoUrl) {
-      const ytId = extractYouTubeId(videoUrl);
-      if (ytId) {
-        embedHtml = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=0&modestbranding=1&rel=0" allowfullscreen></iframe>`;
-      }
-    } else if (provider === 'vimeo' && videoUrl) {
-      const vimeoId = videoUrl.split('/').pop();
-      embedHtml = `<iframe src="https://player.vimeo.com/video/${vimeoId}" allowfullscreen></iframe>`;
-    } else if (videoUrl) {
-      embedHtml = `<a href="${esc(videoUrl)}" target="_blank" rel="noopener" class="home-btn-primary" style="width:fit-content; margin: 1rem auto;">▶️ Watch on ${esc(provider)}</a>`;
-    }
-
-    const card = document.getElementById('audiovisual-detail-card');
-    card.innerHTML = `
-      <div class="detail-container">
-        <div class="detail-player">
-          ${embedHtml ? `<div class="video-embed">${embedHtml}</div>` : ''}
-        </div>
-        <div class="detail-info">
-          <div class="detail-title">${esc(item.title)}</div>
-          <div style="margin-bottom:0.75rem;">
-            <span class="role-badge" style="background:rgba(245,158,11,0.2)">${esc(item.type || 'Video')}</span>
-            ${tags.map(t => `<span class="game-tag" style="background:${t.color || 'rgba(255,255,255,0.08)'}">${esc(t.name || t)}</span>`).join('')}
-          </div>
-          <div class="detail-stats">
-            <span>🎭 ${esc(item.role || '—')}</span>
-            <span>🏢 ${esc(item.client || '—')}</span>
-            ${item.year ? `<span>📅 ${item.year}</span>` : ''}
-            ${item.duration ? `<span>⏱️ ${item.duration}</span>` : ''}
-          </div>
-          <div class="detail-description">${esc(item.description || 'No description.')}</div>
-          ${item.url ? `<a href="${esc(item.url)}" target="_blank" rel="noopener" class="home-chip" style="margin-top:1rem;">🔗 Open original link</a>` : ''}
-        </div>
-      </div>
-    `;
-
-    setActiveView('view-audiovisual-detail');
-  }
-
-  // Helper to extract YouTube video ID from various URL formats
-  function extractYouTubeId(url) {
-    const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[1].length === 11) ? match[1] : null;
-  }
-
-  // ==================================================================
   // 8. Init
   // ==================================================================
   document.addEventListener('DOMContentLoaded', async () => {
     applyConfig();
     await loadMusic();
+    await loadAudiovisuals();   // NEW
     await loadGames();
-    await loadAudiovisuals();
     restoreFromPath();
   });
 </script>
