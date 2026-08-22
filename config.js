@@ -8,7 +8,7 @@ const CONFIG = {
   name:    "GenericBR",
   handle:  "Dhimitri Rael",
   tagline: "English · Portuguese Translator",
-  bio:     "Feel free to contact me directly via Discord — for complex projects (like an album or game translation), email me instead.",
+  bio:     "Specialized EN→PT-BR localizer for games, audiovisual, and music. Credits across indie animation, official lyric adaptations, and game localization.",
 
   // ── Avatar (URL de imagem — pode ser do GitHub, imgur, etc.) ─
   avatar: "https://genericbr.carrd.co/assets/images/image01.jpg?v=5985aec8",  // ex: "https://i.imgur.com/xxxx.jpg"
