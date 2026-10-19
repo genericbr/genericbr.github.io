@@ -4,6 +4,13 @@
 
 const CONFIG = {
 
+  // Serviço de conteúdo.
+  api: { baseUrl: "https://portfolio.genericbr-business.workers.dev" },
+
+  // Banners locais opcionais: { id, title, subtitle, image, href, label, enabled, order }.
+  // Anúncios opcionais para o perfil.
+  banners: [],
+
   // ── Informações pessoais ─────────────────────────────────────
   name:    "GenericBR",
   handle:  "Dhimitri Rael",

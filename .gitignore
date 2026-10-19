@@ -1,0 +1,11 @@
+dist/
+node_modules/
+backend/
+Worker.txt
+worker.mjs
+wrangler.toml
+.wrangler/
+.dev.vars*
+.env*
+qa/
+.rcs/
