@@ -34,15 +34,14 @@
     try { const parsed = new URL(value); return ['https:', 'http:'].includes(parsed.protocol) && !parsed.username && !parsed.password ? parsed.href : ''; }
     catch { return ''; }
   }
-  function panel(message = {}, unavailable = false, collecting = true) {
+  function panel(message = {}, unavailable = false) {
     if (!message || typeof message !== 'object') message = {};
-    if (!collecting && !message.title && !message.text && !imageURL(message.image)) return;
+    if (!unavailable && !message.title && !message.text && !imageURL(message.image)) return;
     const section = document.createElement('section');
     section.className = 'invite-message'; section.setAttribute('aria-label', 'Invitation message');
     const content = document.createElement('div'); content.className = 'invite-message-content';
     if (message.title) { const heading = document.createElement('h2'); heading.textContent = String(message.title).slice(0,120); content.append(heading); }
     if (message.text || unavailable) { const text = document.createElement('p'); text.className = 'invite-message-text'; text.textContent = unavailable ? 'This invitation is unavailable. You can still browse the portfolio.' : String(message.text).slice(0,3000); content.append(text); }
-    if (!unavailable && collecting) { const notice = document.createElement('small'); notice.className = 'invite-privacy'; notice.textContent = 'Visits through this invitation record your IP address and device information.'; content.append(notice); }
     const image = imageURL(message.image);
     if (image) { const picture = document.createElement('img'); picture.src = image; picture.alt = message.title || 'Invitation image'; picture.decoding = 'async'; picture.referrerPolicy = 'no-referrer'; picture.addEventListener('error', () => picture.remove(), { once:true }); section.append(picture); }
     section.append(content);
@@ -53,7 +52,7 @@
     if (invite.active === false) return;
     const key = 'portfolio:visit:' + invite.token;
     let visitId;
-    try { if (sessionStorage.getItem('portfolioAdminToken')) return; visitId = sessionStorage.getItem(key); } catch {}
+    try { visitId = sessionStorage.getItem(key); } catch {}
     if (!uuid.test(visitId || '')) visitId = crypto.randomUUID();
     let timer, sent = false;
     const stopTimer = () => { clearTimeout(timer); timer = undefined; };
@@ -90,7 +89,7 @@
       else { history.replaceState(history.state, '', '/'); panel({}, true); return; }
     }
     if (code) history.replaceState(history.state, '', invite.path);
-    panel(invite.message, false, invite.active !== false);
+    panel(invite.message);
     record(invite);
   })().catch(() => { /* Optional personalization cannot prevent the portfolio from opening. */ }).finally(() => {
     loading?.remove();

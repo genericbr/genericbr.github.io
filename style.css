@@ -22,7 +22,6 @@ h1,h2,h3,p { margin:0; }
 .invite-message-content { min-width:0; }
 .invite-message h2 { margin-bottom:7px; font-size:17px; font-weight:600; }
 .invite-message-text { color:var(--text); font-size:13px; line-height:1.8; white-space:pre-wrap; overflow-wrap:anywhere; }
-.invite-privacy { display:block; margin-top:10px; color:var(--muted); font-size:10px; line-height:1.6; }
 .invite-message-content>:first-child { margin-top:0; }
 .invite-dismiss { position:absolute; top:9px; right:9px; display:grid; place-items:center; width:28px; height:28px; padding:0; border:0; border-radius:50%; background:transparent; color:var(--muted); font-size:20px; cursor:pointer; }
 .invite-dismiss:hover { color:var(--orange-bright); background:var(--orange-soft); }

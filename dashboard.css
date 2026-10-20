@@ -265,3 +265,67 @@ footer span { color:var(--accent); padding:0 7px; }
   footer { margin:0 16px; }
 }
 @media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; animation:none!important; transition:none!important; } }
+
+/* Tracked links stay compact so the dashboard keeps its personal studio feel. */
+.tracking-root { width:min(100%,1000px); margin-inline:auto; }
+.tracking-heading { display:none; }
+.tracking-create { display:block; padding:14px 16px; margin-bottom:12px; }
+.tracking-create-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.tracking-create h2 { margin:0; font-size:16px; }
+.tracking-create-hint,.tracking-label-note { color:var(--muted); font-size:11px; font-weight:400; }
+.tracking-create form { min-width:0; }
+.tracking-create-fields,.tracking-edit-fields { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1.3fr) minmax(130px,.7fr); gap:9px; }
+.tracking-root label { gap:4px; }
+.tracking-root input,.tracking-root textarea { padding:8px 9px; font-size:12px; }
+.tracking-presets { margin:7px 0 0; gap:4px; }
+.tracking-preset { padding:5px 8px; font-size:10px; }
+.tracking-advanced { margin-top:9px; border:1px solid var(--border); border-radius:7px; }
+.tracking-advanced summary { padding:8px 10px; cursor:pointer; color:var(--muted); font-size:11px; list-style:none; }
+.tracking-advanced summary::-webkit-details-marker,.tracking-edit-details>summary::-webkit-details-marker,.tracking-settings>summary::-webkit-details-marker { display:none; }
+.tracking-advanced summary:before,.tracking-edit-details>summary:before,.tracking-settings>summary:before { content:'›'; display:inline-block; margin-right:7px; color:var(--accent); font-size:16px; line-height:10px; transition:transform .18s ease; }
+.tracking-advanced[open] summary:before,.tracking-edit-details[open]>summary:before,.tracking-settings[open]>summary:before { transform:rotate(90deg); }
+.tracking-advanced .tracking-message { margin:0; border:0; border-top:1px solid var(--border); border-radius:0; }
+.tracking-create .tracking-actions { margin-top:9px; padding-top:9px; }
+.tracking-list { grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:10px; }
+.tracking-card { padding:13px; }
+.tracking-card-head { gap:9px; }
+.tracking-card h3 { font-size:14px; }
+.tracking-path { margin-top:3px; font-size:10px; }
+.tracking-stats { gap:7px; padding:9px 0; margin:8px 0; }
+.tracking-stats strong { font-size:13px; }
+.tracking-stats span { font-size:9px; }
+.tracking-url { gap:6px; padding:7px 8px; margin:0 0 8px; }
+.tracking-url code { font-size:10px; }
+.tracking-url button { padding:5px 7px; font-size:10px; }
+.tracking-edit-details { border-top:1px solid var(--border); }
+.tracking-edit-details>summary { display:flex; align-items:center; gap:8px; padding:9px 0 0; cursor:pointer; color:var(--text); font-size:11px; list-style:none; }
+.tracking-edit-details>summary:before { margin-right:0; }
+.tracking-summary-meta { margin-left:auto; color:var(--muted); font-family:'DM Mono',monospace; font-size:10px; }
+.tracking-edit { padding-top:10px; border-top:0; }
+.tracking-edit-fields { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+.tracking-edit-fields label:last-child { grid-column:1 / -1; }
+.tracking-edit .tracking-message { margin-top:0; }
+.tracking-actions { gap:6px; padding-top:9px; margin-top:9px; }
+.tracking-actions button { padding:6px 9px; font-size:10px; }
+.tracking-check { display:flex!important; align-items:center; gap:7px!important; margin-top:8px; }
+.tracking-check input { width:auto; }
+.tracking-settings { margin:12px 0; padding:0; border:1px solid var(--border); border-radius:9px; background:var(--surface); }
+.tracking-settings>summary { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 13px; cursor:pointer; list-style:none; }
+.tracking-settings>summary>span:first-child { display:flex; align-items:center; gap:9px; }
+.tracking-settings .eyebrow { margin:0; font-size:9px; }
+.tracking-settings>summary strong { font-size:12px; font-weight:600; }
+.tracking-webhook-state { color:var(--muted); font-size:10px; }
+.tracking-settings form { padding:0 13px 13px; }
+.tracking-settings-help { margin:0 0 9px; color:var(--muted); font-size:11px; }
+.tracking-settings .tracking-actions { margin-top:10px; }
+.tracking-note { margin:12px 2px; font-size:10px; }
+@media(max-width:760px) {
+  .tracking-create { padding:12px; }
+  .tracking-create-fields,.tracking-edit-fields { grid-template-columns:1fr; gap:8px; }
+  .tracking-edit-fields label:last-child { grid-column:auto; }
+  .tracking-create-head { align-items:flex-start; flex-direction:column; gap:3px; }
+  .tracking-list { gap:8px; }
+  .tracking-card { padding:11px; }
+  .tracking-settings>summary { align-items:flex-start; }
+  .tracking-webhook-state { text-align:right; }
+}

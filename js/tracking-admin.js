@@ -41,13 +41,13 @@
   }
   function card(l) {
     const m = messageOf(l), image = m.image && imageValid(m.image) ? '<img class="tracking-message-image" src="' + esc(m.image) + '" alt="" loading="lazy" data-message-preview>' : "";
-    return '<article class="tracking-card" data-tracking-id="' + esc(l.id) + '"><div class="tracking-card-head"><div><h3>' + esc(l.label || "Sem nome") + '</h3><p class="tracking-path">' + esc(l.path) + (l.code ? " · <strong>/" + esc(l.code) + "</strong>" : " · link legado") + '</p></div><span class="tracking-state ' + (l.active === false ? "paused" : "active") + '">' + (l.active === false ? "Pausado" : "Ativo") + '</span></div><div class="tracking-stats"><div><strong>' + (l.statsTruncated ? "≥" : "") + count(l.visits) + "</strong><span>visitas</span></div><div><strong>" + date(l.firstVisitAt) + "</strong><span>primeira visita</span></div><div><strong>" + date(l.lastVisitAt) + "</strong><span>última visita</span></div></div>" + (m.title || m.text || image ? '<div class="tracking-message-preview">' + image + "<div><strong>" + esc(m.title) + "</strong><p>" + esc(m.text) + "</p></div></div>" : "") + '<p class="tracking-url"><code>' + esc(destination(l)) + '</code><button type="button" class="secondary" data-copy-link>Copiar</button></p><form class="tracking-edit" data-tracking-edit><label>Nome interno<input name="label" value="' + esc(l.label) + '" required maxlength="80"></label><label>Destino<input name="path" value="' + esc(l.path) + '" required maxlength="180"></label><label>Código curto<input name="code" value="' + esc(l.code || "") + '" minlength="5" maxlength="32" pattern="[a-z0-9]{5,32}" placeholder="automático (5–32 letras/números)"></label>' + presets(l.path) + messageFields(m) + notifyField(l, false) + '<div class="tracking-actions"><button type="submit">Salvar</button><button type="button" class="secondary" data-preview>Pré-visualizar</button><button type="button" class="secondary" data-visit-details>Ver acessos</button><button type="button" class="secondary" data-toggle>' + (l.active === false ? "Ativar" : "Pausar") + '</button><button type="button" class="danger" data-delete>Excluir</button><span class="status" data-status role="status"></span></div><div class="tracking-visits" data-visits-list hidden></div></form></article>';
+    return '<article class="tracking-card" data-tracking-id="' + esc(l.id) + '"><div class="tracking-card-head"><div><h3>' + esc(l.label || "Sem nome") + '</h3><p class="tracking-path">' + esc(l.path) + (l.code ? " · <strong>/" + esc(l.code) + "</strong>" : " · link legado") + '</p></div><span class="tracking-state ' + (l.active === false ? "paused" : "active") + '">' + (l.active === false ? "Pausado" : "Ativo") + '</span></div><div class="tracking-stats"><div><strong>' + (l.statsTruncated ? "≥" : "") + count(l.visits) + "</strong><span>visitas</span></div><div><strong>" + date(l.firstVisitAt) + "</strong><span>primeira visita</span></div><div><strong>" + date(l.lastVisitAt) + "</strong><span>última visita</span></div></div>" + (m.title || m.text || image ? '<div class="tracking-message-preview">' + image + "<div><strong>" + esc(m.title) + "</strong><p>" + esc(m.text) + "</p></div></div>" : "") + '<p class="tracking-url"><code>' + esc(destination(l)) + '</code><button type="button" class="secondary" data-copy-link>Copiar</button></p><details class="tracking-edit-details"><summary><span>Editar link</span><span class="tracking-summary-meta">' + esc(l.code ? "/" + l.code : l.path) + '</span></summary><form class="tracking-edit" data-tracking-edit><div class="tracking-edit-fields"><label>Nome interno<input name="label" value="' + esc(l.label) + '" required maxlength="80"></label><label>Destino<input name="path" value="' + esc(l.path) + '" required maxlength="180"></label><label>Código curto<input name="code" value="' + esc(l.code || "") + '" minlength="5" maxlength="32" pattern="[a-z0-9]{5,32}" placeholder="automático (5–32 letras/números)"></label></div>' + presets(l.path) + '<details class="tracking-advanced"><summary>Mensagem exclusiva (opcional)</summary>' + messageFields(m) + '</details>' + notifyField(l, false) + '<div class="tracking-actions"><button type="submit">Salvar</button><button type="button" class="secondary" data-preview>Pré-visualizar</button><button type="button" class="secondary" data-visit-details>Ver acessos</button><button type="button" class="secondary" data-toggle>' + (l.active === false ? "Ativar" : "Pausar") + '</button><button type="button" class="danger" data-delete>Excluir</button><span class="status" data-status role="status"></span></div><div class="tracking-visits" data-visits-list hidden></div></form></details></article>';
   }
   function createMarkup() {
-    return '<section class="tracking-create"><div><p class="eyebrow">NOVO LINK</p><h2>Criar link rastreável</h2><p class="muted">Use um nome interno para lembrar para quem você enviou o endereço.</p></div><form data-tracking-create><div class="tracking-create-fields"><label>Nome interno<input name="label" required maxlength="80" placeholder="Publisher — apresentação outubro"></label><label>Destino<input name="path" required maxlength="180" value="/portfolio" placeholder="/portfolio"></label></div><label>Código curto opcional<input name="code" minlength="5" maxlength="32" pattern="[a-z0-9]{5,32}" placeholder="automático (5–32 letras/números)"></label>' + presets("/portfolio") + messageFields({}) + notifyField(null, true) + '<div class="tracking-actions"><button type="submit">Criar link</button><span class="status" data-status role="status"></span></div></form></section>';
+    return '<section class="tracking-create"><div class="tracking-create-head"><div><p class="eyebrow">NOVO LINK</p><h2>Criar convite</h2></div><span class="tracking-create-hint">Nome e destino são obrigatórios.</span></div><form data-tracking-create><div class="tracking-create-fields"><label>Nome interno<input name="label" required maxlength="80" placeholder="Publisher — apresentação outubro"></label><label>Destino<input name="path" required maxlength="180" value="/portfolio" placeholder="/portfolio"></label><label>Código curto <span class="tracking-label-note">opcional</span><input name="code" minlength="5" maxlength="32" pattern="[a-z0-9]{5,32}" placeholder="ex.: ka3tv"></label></div>' + presets("/portfolio") + '<details class="tracking-advanced"><summary>Mensagem, imagem e notificações (opcional)</summary>' + messageFields({}) + notifyField(null, true) + '</details><div class="tracking-actions"><button type="submit">Criar link</button><span class="status" data-status role="status"></span></div></form></section>';
   }
   function settingsMarkup() {
-    return '<section class="tracking-settings"><div><p class="eyebrow">DISCORD</p><h2>Notificações de acessos</h2><p class="muted">O Worker pode enviar data, IP, dispositivo e localização aproximada dos acessos feitos por links rastreáveis. Isso não confirma abertura de email.</p></div><form data-webhook-settings><label>URL do webhook<input type="password" name="webhookUrl" autocomplete="new-password" placeholder="Cole uma nova URL para substituir a atual"></label><label class="tracking-check"><input type="checkbox" name="enabled" checked> Ativar notificações</label><div class="tracking-actions"><button type="submit">Salvar configuração</button><button type="button" class="secondary" data-webhook-test>Testar</button><button type="button" class="danger" data-webhook-remove>Remover webhook</button><span class="status" data-status role="status"></span></div></form></section>';
+    return '<details class="tracking-settings"><summary><span><span class="eyebrow">DISCORD</span><strong>Notificações de acessos</strong></span><span class="tracking-webhook-state" data-webhook-state>Carregando status…</span></summary><form data-webhook-settings><p class="tracking-settings-help">Receba data, IP e dispositivo dos acessos feitos por convites rastreáveis.</p><p class="tracking-delivery" data-webhook-delivery></p><label>URL do webhook<input type="password" name="webhookUrl" autocomplete="new-password" placeholder="Cole uma nova URL para substituir a atual"></label><label class="tracking-check"><input type="checkbox" name="enabled" checked> Ativar notificações</label><div class="tracking-actions"><button type="submit">Salvar configuração</button><button type="button" class="secondary" data-webhook-test>Testar</button><button type="button" class="danger" data-webhook-remove>Remover webhook</button><span class="status" data-status role="status"></span></div></form></details>';
   }
   const fields = ["label", "path", "code", "messageTitle", "messageText", "messageImage", "notify", "webhookUrl", "enabled"];
   function fieldState(form) {
@@ -58,6 +58,25 @@
   }
   function dirty(form) {
     form?.classList.toggle("tracking-dirty", form.dataset.initialFields !== fieldState(form));
+  }
+  const deliveryReason = (value) => ({ "missing-config": "webhook não configurado ou pausado", "invalid-payload": "Discord recusou o conteúdo", "invalid-or-revoked-webhook": "webhook inválido ou revogado", "webhook-forbidden": "Discord recusou a permissão", "rate-limited": "Discord limitou o envio", "network-error": "falha de rede", timeout: "tempo de envio esgotado", "webhook-http-error": "Discord recusou o envio", "discord-server-error": "Discord indisponível" }[String(value || "").toLowerCase()] || "falha não detalhada");
+  const deliveryText = (delivery) => {
+    if (!delivery?.status) return "";
+    const when = date(delivery.at);
+    if (delivery.status === "sent") return "Último envio: " + when;
+    if (delivery.status === "failed") return "Último envio falhou: " + when + " · " + deliveryReason(delivery.reason || delivery.error || delivery.code);
+    return "";
+  };
+  function applySettings(f, v) {
+    const configured = !!v?.configured;
+    f.dataset.configured = String(configured);
+    const enabled = configured ? v?.enabled !== false : v?.defaultEnabled === true;
+    $(f, '[name="enabled"]').checked = enabled;
+    f.dataset.initialFields = fieldState(f);
+    const summary = $(f.closest(".tracking-settings"), "[data-webhook-state]");
+    if (summary) summary.textContent = configured ? (enabled ? "Configurado · ativo" : "Configurado · pausado") : "Não configurado";
+    const delivery = $(f, "[data-webhook-delivery]");
+    if (delivery) delivery.textContent = deliveryText(v?.delivery);
   }
   function busyState(root, value, owner = generation) {
     if (!value && busyOwner !== owner) return;
@@ -76,10 +95,9 @@
     try {
       const v = await api("/api/tracking/settings");
       if (token !== generation || !active || !f.isConnected) return;
-      $(f, '[name="enabled"]').checked = v?.enabled !== false;
-      f.dataset.initialFields = fieldState(f);
       const state = $(f, "[data-status]");
-      if (state) state.textContent = v?.configured ? "Webhook configurado (URL oculta)." : "Nenhum webhook configurado.";
+      applySettings(f, { ...v, defaultEnabled: true });
+      if (state) state.textContent = v?.configured ? (v?.enabled === false ? "Configurado · pausado" : "Configurado · ativo") : "Nenhum webhook configurado.";
     } catch (e) {
       if (token !== generation || !active || !f.isConnected) return;
       $(f, "[data-status]").textContent = e.status === 404 ? "Recurso de webhook indisponível no Worker atual." : e.message || "Não foi possível carregar a configuração.";
@@ -250,7 +268,12 @@
       const token = generation;
       busyState(root, true);
       try {
-        await api("/api/tracking/settings", { method: "POST", body: { ...v ? { webhookUrl: v } : {}, enabled: $(f, '[name="enabled"]').checked } });
+        const freshUrl = !!v;
+        const enabled = freshUrl && f.dataset.configured !== "true" ? true : $(f, '[name="enabled"]').checked;
+        const result = await api("/api/tracking/settings", { method: "POST", body: { ...v ? { webhookUrl: v } : {}, enabled } });
+        if (token !== generation || !active || !f.isConnected) return;
+        applySettings(f, { ...(result?.settings || result || {}), configured: result?.configured ?? result?.settings?.configured ?? true, enabled: result?.enabled ?? result?.settings?.enabled ?? enabled });
+        $(f, '[name="enabled"]').checked = enabled;
         $(f, '[name="webhookUrl"]').value = "";
         f.dataset.initialFields = fieldState(f);
         status(f, "Configuração salva. A URL permanece oculta.");
@@ -266,10 +289,24 @@
       const token = generation;
       busyState(root, true);
       try {
-        await api("/api/tracking/webhook/test", { method: "POST", body: {} });
-        if (token === generation && active) status(settings, "Teste enviado.");
+        const result = await api("/api/tracking/webhook/test", { method: "POST", body: {} });
+        let diagnostics;
+        try { diagnostics = await api("/api/tracking/settings"); } catch {}
+        if (token === generation && active && settings.isConnected) {
+          if (diagnostics) applySettings(settings, diagnostics);
+          else if (result?.delivery) applySettings(settings, { configured: settings.dataset.configured === "true", enabled: $(settings, '[name="enabled"]').checked, delivery: result.delivery });
+          status(settings, "Teste enviado.");
+        }
       } catch (e) {
-        if (token === generation && active) status(settings, e.message || "Não foi possível testar o webhook.", true);
+        const errorText = e.message || "Não foi possível testar o webhook.";
+        if (token === generation && active && settings.isConnected) status(settings, errorText, true);
+        try {
+          const diagnostics = await api("/api/tracking/settings");
+          if (token === generation && active && settings.isConnected) {
+            applySettings(settings, diagnostics);
+            status(settings, errorText, true);
+          }
+        } catch {}
       } finally {
         if (active && root.isConnected) busyState(root, false, token);
       }
@@ -280,10 +317,10 @@
       const token = generation;
       busyState(root, true);
       try {
-        await api("/api/tracking/settings", { method: "POST", body: { webhookUrl: "", enabled: false } });
+        const result = await api("/api/tracking/settings", { method: "POST", body: { webhookUrl: "", enabled: false } });
+        if (token !== generation || !active || !settings.isConnected) return;
         $(settings, '[name="webhookUrl"]').value = "";
-        $(settings, '[name="enabled"]').checked = false;
-        settings.dataset.initialFields = fieldState(settings);
+        applySettings(settings, { ...(result?.settings || result || {}), configured: false, enabled: false, delivery: null });
         if (token === generation && active) status(settings, "Webhook removido.");
       } catch (e) {
         if (token === generation && active) status(settings, e.message || "Não foi possível remover o webhook.", true);
