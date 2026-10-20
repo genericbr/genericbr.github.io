@@ -298,7 +298,7 @@
     else if (name === 'about') { setView('about'); }
     else { setView('home'); }
   }
-  function setup() {
+  async function setup() {
     byId('footer-year').textContent = new Date().getFullYear();
     byId('about-name').textContent = cfg.name || 'GenericBR';
     byId('about-bio').textContent = cfg.bio || '';
@@ -351,6 +351,7 @@
       if (event.key === 'Escape' && !byId('view-detail').hidden) { history.pushState(null, '', '/' + state.category); handleRoute(); }
     });
     window.addEventListener('popstate', handleRoute); window.addEventListener('hashchange', handleRoute);
+    await window.PortfolioInviteReady;
     handleRoute();
     load();
   }

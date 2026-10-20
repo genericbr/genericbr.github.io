@@ -1,139 +1,316 @@
-/* Admin-only portfolio visit links. The module deliberately never stores recipient identity. */
-(function () {
+(function() {
   "use strict";
-  const allowedPresets = ["/portfolio", "/", "/audiovisuals", "/music", "/games"];
-  let generation = 0;
-  let active = false;
-  let busy = false;
-  let mountedContainer = null;
-  const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-  const $ = (root, selector) => root.querySelector(selector);
-  function date(value) {
-    if (!value) return "—";
-    const parsed = new Date(value);
-    return Number.isFinite(parsed.getTime()) ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(parsed) : "—";
+  let generation = 0, active = false, busy = false, mounted = null, busyOwner = null;
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const $ = (r, s) => r.querySelector(s);
+  const date = (v) => {
+    if (!v) return "—";
+    const d = new Date(v);
+    return Number.isFinite(d.getTime()) ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(d) : "—";
+  };
+  const count = (v) => Number(v || 0).toLocaleString("pt-BR");
+  const pathValid = (v) => {
+    const p = String(v || "");
+    if (!p || p.trim() !== p || /[\u0000-\u001f\u007f\s\\?#%]/.test(p) || p.includes("..")) return false;
+    return /^(?:\/$|\/portfolio$|\/audiovisuals$|\/music$|\/games$|\/about$|\/(?:video|game)\/[A-Za-z0-9_-]+$|\/audiovisual\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)?)$/.test(p);
+  };
+  const codeValid = (v) => !v || /^[a-z0-9]{5,32}$/.test(String(v));
+  const imageValid = (v) => {
+    if (!v) return true;
+    try {
+      const u = new URL(String(v).trim());
+      return (u.protocol === "http:" || u.protocol === "https:") && !u.username && !u.password && !/[\u0000-\u0020\u007f]/.test(u.href);
+    } catch {
+      return false;
+    }
+  };
+  const messageOf = (l) => ({ title: l?.message?.title || "", text: l?.message?.text || "", image: l?.message?.image || "" });
+  const destination = (l) => l?.code ? new URL("/" + encodeURIComponent(l.code), location.origin).href : new URL(l.path + (l.path.includes("?") ? "&" : "?") + "ref=" + encodeURIComponent(l.id), location.origin).href;
+  const presetLabel = (p) => p === "/" ? "Página inicial" : { "/portfolio": "Portfolio", "/audiovisuals": "Audiovisuais", "/music": "Música", "/games": "Jogos" }[p] || p.slice(1);
+  function presets(current) {
+    return '<div class="tracking-presets" role="group" aria-label="Destinos rápidos">' + presetsList(current) + "</div>";
   }
-  function pathValid(value) {
-    const path = String(value || "");
-    if (!path || path.trim() !== path || /[\u0000-\u001f\u007f\s\\?#%]/.test(path) || path.includes("..")) return false;
-    if (/^(?:\/$|\/portfolio$|\/audiovisuals$|\/music$|\/games$|\/about$)/.test(path)) return true;
-    if (/^\/(?:video|game)\/[A-Za-z0-9_-]+$/.test(path)) return true;
-    return /^\/audiovisual\/[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)?$/.test(path);
+  function presetsList(current) {
+    return ["/", "/portfolio", "/audiovisuals", "/music", "/games"].map((p) => '<button type="button" class="secondary tracking-preset" data-path="' + p + '"' + (current === p ? ' aria-pressed="true"' : "") + ">" + presetLabel(p) + "</button>").join("");
   }
-  function destination(link) {
-    return new URL(link.path + (link.path.includes("?") ? "&" : "?") + "ref=" + encodeURIComponent(link.id), location.origin).href;
+  function messageFields(m) {
+    return '<fieldset class="tracking-message"><legend>Mensagem exclusiva (opcional)</legend><label>Título<input name="messageTitle" maxlength="120" value="' + esc(m.title) + '" placeholder="Uma mensagem para este convite"></label><label>Texto<textarea name="messageText" maxlength="3000" rows="3" placeholder="Texto mostrado ao visitante">' + esc(m.text) + '</textarea></label><label>Imagem por URL<input name="messageImage" maxlength="2000" inputmode="url" value="' + esc(m.image) + '" placeholder="https://…"><span class="tracking-help">Use uma imagem pública HTTP ou HTTPS.</span></label><label class="tracking-upload">Enviar imagem<input type="file" name="messageImageFile" data-message-image-file accept="image/*"><span class="tracking-help" data-upload-status></span></label></fieldset>';
   }
-  function formatCount(value) { return Number(value || 0).toLocaleString("pt-BR"); }
-  function presetMarkup(current) {
-    return '<div class="tracking-presets" role="group" aria-label="Destinos rápidos">' + allowedPresets.map((path) => '<button type="button" class="secondary tracking-preset" data-path="' + path + '"' + (current === path ? ' aria-pressed="true"' : "") + '>' + (path === "/" ? "Perfil" : path.slice(1).replace("audiovisuals", "Audiovisuais")) + "</button>").join("") + "</div>";
+  function notifyField(link, create) {
+    return '<label class="tracking-check"><input type="checkbox" name="notify"' + (create || link.notify !== false ? " checked" : "") + "> Enviar acessos ao Discord</label>";
   }
-  function card(link) {
-    const url = destination(link);
-    return '<article class="tracking-card" data-tracking-id="' + esc(link.id) + '"><div class="tracking-card-head"><div><h3>' + esc(link.label || "Sem nome") + '</h3><p class="tracking-path">' + esc(link.path) + '</p></div><span class="tracking-state ' + (link.active === false ? "paused" : "active") + '">' + (link.active === false ? "Pausado" : "Ativo") + "</span></div>" +
-      '<div class="tracking-stats"><div><strong>' + (link.statsTruncated ? "≥" : "") + formatCount(link.visits) + '</strong><span>visitas</span></div><div><strong>' + date(link.firstVisitAt) + '</strong><span>primeira visita</span></div><div><strong>' + date(link.lastVisitAt) + '</strong><span>última visita</span></div></div>' +
-      '<p class="tracking-url"><code>' + esc(url) + '</code><button type="button" class="secondary" data-copy-link>Copiar</button></p>' +
-      '<form class="tracking-edit" data-tracking-edit><label>Nome interno<input name="label" value="' + esc(link.label) + '" required maxlength="80"></label><label>Destino<input name="path" value="' + esc(link.path) + '" required maxlength="180" inputmode="url"></label>' + presetMarkup(link.path) + '<div class="tracking-actions"><button type="submit">Salvar</button><button type="button" class="secondary" data-preview>Pré-visualizar</button><button type="button" class="secondary" data-toggle>' + (link.active === false ? "Ativar" : "Pausar") + '</button><button type="button" class="danger" data-delete>Excluir</button><span class="status" data-status role="status"></span></div></form></article>';
+  function card(l) {
+    const m = messageOf(l), image = m.image && imageValid(m.image) ? '<img class="tracking-message-image" src="' + esc(m.image) + '" alt="" loading="lazy" data-message-preview>' : "";
+    return '<article class="tracking-card" data-tracking-id="' + esc(l.id) + '"><div class="tracking-card-head"><div><h3>' + esc(l.label || "Sem nome") + '</h3><p class="tracking-path">' + esc(l.path) + (l.code ? " · <strong>/" + esc(l.code) + "</strong>" : " · link legado") + '</p></div><span class="tracking-state ' + (l.active === false ? "paused" : "active") + '">' + (l.active === false ? "Pausado" : "Ativo") + '</span></div><div class="tracking-stats"><div><strong>' + (l.statsTruncated ? "≥" : "") + count(l.visits) + "</strong><span>visitas</span></div><div><strong>" + date(l.firstVisitAt) + "</strong><span>primeira visita</span></div><div><strong>" + date(l.lastVisitAt) + "</strong><span>última visita</span></div></div>" + (m.title || m.text || image ? '<div class="tracking-message-preview">' + image + "<div><strong>" + esc(m.title) + "</strong><p>" + esc(m.text) + "</p></div></div>" : "") + '<p class="tracking-url"><code>' + esc(destination(l)) + '</code><button type="button" class="secondary" data-copy-link>Copiar</button></p><form class="tracking-edit" data-tracking-edit><label>Nome interno<input name="label" value="' + esc(l.label) + '" required maxlength="80"></label><label>Destino<input name="path" value="' + esc(l.path) + '" required maxlength="180"></label><label>Código curto<input name="code" value="' + esc(l.code || "") + '" minlength="5" maxlength="32" pattern="[a-z0-9]{5,32}" placeholder="automático (5–32 letras/números)"></label>' + presets(l.path) + messageFields(m) + notifyField(l, false) + '<div class="tracking-actions"><button type="submit">Salvar</button><button type="button" class="secondary" data-preview>Pré-visualizar</button><button type="button" class="secondary" data-visit-details>Ver acessos</button><button type="button" class="secondary" data-toggle>' + (l.active === false ? "Ativar" : "Pausar") + '</button><button type="button" class="danger" data-delete>Excluir</button><span class="status" data-status role="status"></span></div><div class="tracking-visits" data-visits-list hidden></div></form></article>';
   }
-  function emptyMarkup() {
-    return '<div class="tracking-empty"><h3>Nenhum link criado</h3><p>Crie um link para cada publisher ou email. O contador registra visitas ao portfólio por 90 dias.</p></div>';
+  function createMarkup() {
+    return '<section class="tracking-create"><div><p class="eyebrow">NOVO LINK</p><h2>Criar link rastreável</h2><p class="muted">Use um nome interno para lembrar para quem você enviou o endereço.</p></div><form data-tracking-create><div class="tracking-create-fields"><label>Nome interno<input name="label" required maxlength="80" placeholder="Publisher — apresentação outubro"></label><label>Destino<input name="path" required maxlength="180" value="/portfolio" placeholder="/portfolio"></label></div><label>Código curto opcional<input name="code" minlength="5" maxlength="32" pattern="[a-z0-9]{5,32}" placeholder="automático (5–32 letras/números)"></label>' + presets("/portfolio") + messageFields({}) + notifyField(null, true) + '<div class="tracking-actions"><button type="submit">Criar link</button><span class="status" data-status role="status"></span></div></form></section>';
   }
-  function formMarkup() {
-    return '<section class="tracking-create"><div><p class="eyebrow">NOVO LINK</p><h2>Criar link rastreável</h2><p class="muted">Use um nome interno para lembrar para quem você enviou o endereço.</p></div><form data-tracking-create><div class="tracking-create-fields"><label>Nome interno<input name="label" required maxlength="80" placeholder="Publisher — apresentação outubro"></label><label>Destino<input name="path" required maxlength="180" value="/portfolio" placeholder="/portfolio"></label></div>' + presetMarkup("/portfolio") + '<div class="tracking-actions"><button type="submit">Criar link</button><span class="status" data-status role="status"></span></div></form></section>';
+  function settingsMarkup() {
+    return '<section class="tracking-settings"><div><p class="eyebrow">DISCORD</p><h2>Notificações de acessos</h2><p class="muted">O Worker pode enviar data, IP, dispositivo e localização aproximada dos acessos feitos por links rastreáveis. Isso não confirma abertura de email.</p></div><form data-webhook-settings><label>URL do webhook<input type="password" name="webhookUrl" autocomplete="new-password" placeholder="Cole uma nova URL para substituir a atual"></label><label class="tracking-check"><input type="checkbox" name="enabled" checked> Ativar notificações</label><div class="tracking-actions"><button type="submit">Salvar configuração</button><button type="button" class="secondary" data-webhook-test>Testar</button><button type="button" class="danger" data-webhook-remove>Remover webhook</button><span class="status" data-status role="status"></span></div></form></section>';
   }
-  function setDirty(form) {
-    if (!form) return;
-    const label = $(form, 'input[name="label"]')?.value || "";
-    const path = $(form, 'input[name="path"]')?.value || "";
-    form.classList.toggle("tracking-dirty", form.dataset.initialLabel !== label || form.dataset.initialPath !== path);
+  const fields = ["label", "path", "code", "messageTitle", "messageText", "messageImage", "notify", "webhookUrl", "enabled"];
+  function fieldState(form) {
+    return fields.map((n) => {
+      const e = $(form, '[name="' + n + '"]');
+      return e?.type === "checkbox" ? String(e.checked) : e?.value || "";
+    }).join("");
   }
-  function setBusy(root, value) {
+  function dirty(form) {
+    form?.classList.toggle("tracking-dirty", form.dataset.initialFields !== fieldState(form));
+  }
+  function busyState(root, value, owner = generation) {
+    if (!value && busyOwner !== owner) return;
+    busyOwner = value ? owner : null;
     busy = value;
     root.classList.toggle("tracking-busy", value);
-    root.querySelectorAll("button,input").forEach((control) => { control.disabled = value; });
+    root.querySelectorAll("button,input,textarea").forEach((e) => e.disabled = value);
   }
-  async function refreshIfCurrent(api, root, notify, token) {
-    if (token !== generation || !active) return;
-    await renderLinks(api, root, notify);
+  async function refresh(api, root, notify, token, upload) {
+    if (token === generation && active) await renderLinks(api, root, notify, upload);
   }
-  async function renderLinks(api, root, notify) {
+  async function renderSettings(api, root, token) {
+    const f = $(root, "[data-webhook-settings]");
+    if (!f) return;
+    f.inert = true;
+    try {
+      const v = await api("/api/tracking/settings");
+      if (token !== generation || !active || !f.isConnected) return;
+      $(f, '[name="enabled"]').checked = v?.enabled !== false;
+      f.dataset.initialFields = fieldState(f);
+      const state = $(f, "[data-status]");
+      if (state) state.textContent = v?.configured ? "Webhook configurado (URL oculta)." : "Nenhum webhook configurado.";
+    } catch (e) {
+      if (token !== generation || !active || !f.isConnected) return;
+      $(f, "[data-status]").textContent = e.status === 404 ? "Recurso de webhook indisponível no Worker atual." : e.message || "Não foi possível carregar a configuração.";
+    } finally {
+      if (token === generation && active && f.isConnected) f.inert = false;
+    }
+  }
+  async function renderLinks(api, root, notify, upload) {
     const token = ++generation;
     if (!active) return;
     root.classList.add("tracking-root");
     root.innerHTML = '<div class="state">Carregando links…</div>';
     let payload;
-    try { payload = await api("/api/tracking/links"); }
-    catch (error) {
+    try {
+      payload = await api("/api/tracking/links");
+    } catch (e) {
       if (token !== generation || !active) return;
-      root.innerHTML = '<div class="state">' + (error.status === 404 ? "O Worker ainda não possui o recurso de links rastreáveis. Atualize o Worker antes de usar esta aba." : esc(error.message || "Não foi possível carregar os links.")) + '</div>';
+      root.innerHTML = '<div class="state">' + (e.status === 404 ? "O Worker ainda não possui o recurso de links rastreáveis. Atualize o Worker antes de usar esta aba." : esc(e.message || "Não foi possível carregar os links.")) + "</div>";
       return;
     }
     if (token !== generation || !active) return;
     const links = Array.isArray(payload?.links) ? payload.links : [];
-    const truncated = links.some((link) => link.statsTruncated);
-    root.innerHTML = '<div class="tracking-heading"><div><p class="eyebrow">VISITAS AO PORTFÓLIO</p><h2>Links rastreáveis</h2><p class="muted">Acompanhe acessos vindos dos seus emails. Isso registra visita ao site; não confirma que o email foi aberto.</p></div><span class="tracking-retention">Dados dos últimos ' + esc(payload?.retentionDays || 90) + ' dias</span></div>' + formMarkup() + '<div class="tracking-list" aria-live="polite">' + (links.length ? links.map(card).join("") : emptyMarkup()) + '</div><p class="tracking-note">Pré-visualizações, scanners de segurança e bloqueadores podem gerar ou esconder visitas. Nenhum email ou identidade do visitante é armazenado.' + (truncated ? ' Alguns contadores atingiram o limite de leitura e são exibidos como mínimo.' : '') + '</p>';
-    bind(root, api, notify);
+    root.innerHTML = '<div class="tracking-heading"><div><p class="eyebrow">VISITAS AO PORTFÓLIO</p><h2>Links rastreáveis</h2><p class="muted">Acompanhe acessos vindos dos seus emails. Isso registra visita ao site; não confirma que o email foi aberto.</p></div><span class="tracking-retention">Dados dos últimos ' + esc(payload?.retentionDays || 90) + " dias</span></div>" + createMarkup() + settingsMarkup() + '<div class="tracking-list" aria-live="polite">' + (links.length ? links.map(card).join("") : '<div class="tracking-empty"><h3>Nenhum link criado</h3><p>Crie um link para cada publisher ou email. O contador registra visitas ao portfólio por 90 dias.</p></div>') + '</div><p class="tracking-note">Pré-visualizações, scanners de segurança e bloqueadores podem gerar ou esconder visitas. Acessos por convite registram IP e dispositivo por 90 dias. A visita não confirma abertura de email.</p>';
+    if (busy) root.querySelectorAll("button,input,textarea").forEach(control => control.disabled = true);
+    bind(root, api, notify, upload);
+    await renderSettings(api, root, token);
   }
-  function bind(root, api, notify) {
-    const setStatus = (form, message, error = false) => { const node = $(form, "[data-status]"); if (node) { node.textContent = message; node.classList.toggle("error", error); } };
-    root.querySelectorAll(".tracking-preset").forEach((button) => button.addEventListener("click", () => {
-      if (busy) return;
-      const form = button.closest("form"); const input = form && $(form, 'input[name="path"]'); if (!input) return;
-      input.value = button.dataset.path; form.querySelectorAll(".tracking-preset").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-      setDirty(form);
-      input.focus();
-    }));
-    const create = $(root, "[data-tracking-create]");
-    root.querySelectorAll("[data-tracking-create], [data-tracking-edit]").forEach((form) => {
-      const label = $(form, 'input[name="label"]')?.value || "";
-      const path = $(form, 'input[name="path"]')?.value || "";
-      form.dataset.initialLabel = label; form.dataset.initialPath = path;
-      form.addEventListener("input", () => setDirty(form));
-    });
-    create?.addEventListener("submit", async (event) => {
-      event.preventDefault(); const form = event.currentTarget; const data = Object.fromEntries(new FormData(form));
-      if (!pathValid(data.path)) { setStatus(form, "Use um caminho interno do portfólio, sem query string.", true); return; }
-      const button = form.querySelector('button[type="submit"]'); button.disabled = true; setStatus(form, "Criando…");
-      const token = generation; setBusy(root, true);
-      try { await api("/api/tracking/links", { method: "POST", body: { label: data.label.trim(), path: data.path.trim() } }); if (token === generation && active) notify?.("Link criado."); await refreshIfCurrent(api, root, notify, token); }
-      catch (error) { if (token === generation && active) setStatus(form, error.message || "Não foi possível criar o link.", true); }
-      finally { if (active && root.isConnected) setBusy(root, false); }
-    });
-    root.querySelectorAll("[data-copy-link]").forEach((button) => button.addEventListener("click", async () => {
-      const cardRoot = button.closest("[data-tracking-id]"); const text = $(cardRoot, "code")?.textContent || "";
-      try { await navigator.clipboard.writeText(text); button.textContent = "Copiado"; setTimeout(() => { if (button.isConnected) button.textContent = "Copiar"; }, 1400); } catch { window.prompt("Copie o link:", text); }
-    }));
-    root.querySelectorAll("[data-preview]").forEach((button) => button.addEventListener("click", () => { const cardRoot = button.closest("[data-tracking-id]"); const path = $(cardRoot, 'input[name="path"]')?.value || "/portfolio"; if (pathValid(path)) window.open(new URL(path, location.origin).href, "_blank", "noopener"); }));
-    root.querySelectorAll("[data-tracking-edit]").forEach((form) => form.addEventListener("submit", async (event) => {
-      event.preventDefault(); const cardRoot = form.closest("[data-tracking-id]"), id = cardRoot.dataset.trackingId, data = Object.fromEntries(new FormData(form));
-      if (!pathValid(data.path)) { setStatus(form, "Use um caminho interno do portfólio, sem query string.", true); return; }
-      setStatus(form, "Salvando…");
-      const token = generation; setBusy(root, true);
-      try { await api("/api/tracking/links", { method: "POST", body: { id, label: data.label.trim(), path: data.path.trim() } }); if (token === generation && active) notify?.("Link atualizado."); await refreshIfCurrent(api, root, notify, token); }
-      catch (error) { if (token === generation && active) setStatus(form, error.message || "Não foi possível salvar.", true); }
-      finally { if (active && root.isConnected) setBusy(root, false); }
-    }));
-    root.querySelectorAll("[data-toggle]").forEach((button) => button.addEventListener("click", async () => {
-      if (busy) return;
-      const cardRoot = button.closest("[data-tracking-id]"), form = $(cardRoot, "[data-tracking-edit]"), id = cardRoot.dataset.trackingId;
-      const token = generation; setBusy(root, true);
-      try { await api("/api/tracking/links", { method: "POST", body: { id, label: $(form, 'input[name="label"]').value.trim(), path: $(form, 'input[name="path"]').value.trim(), active: button.textContent.trim() === "Ativar" } }); await refreshIfCurrent(api, root, notify, token); }
-      catch (error) { if (token === generation && active) setStatus(form, error.message || "Não foi possível alterar o estado.", true); }
-      finally { if (active && root.isConnected) setBusy(root, false); }
-    }));
-    root.querySelectorAll("[data-delete]").forEach((button) => button.addEventListener("click", async () => {
-      if (busy) return;
-      const cardRoot = button.closest("[data-tracking-id]"), id = cardRoot.dataset.trackingId;
-      if (!window.confirm("Excluir este link e seus dados de visitas?")) return;
-      const token = generation; setBusy(root, true);
-      try { await api("/api/tracking/links?id=" + encodeURIComponent(id), { method: "DELETE" }); if (token === generation && active) notify?.("Link excluído."); await refreshIfCurrent(api, root, notify, token); }
-      catch (error) { if (token === generation && active) setStatus($(cardRoot, "form"), error.message || "Não foi possível excluir.", true); }
-      finally { if (active && root.isConnected) setBusy(root, false); }
-    }));
+  function message(form) {
+    return { title: $(form, '[name="messageTitle"]')?.value.trim() || "", text: $(form, '[name="messageText"]')?.value.trim() || "", image: $(form, '[name="messageImage"]')?.value.trim() || "" };
   }
-  window.PortfolioTrackingAdmin = {
-    render({ request, container, notify }) { active = true; busy = false; mountedContainer = container; return renderLinks(request, container, notify); },
-    reset(container = mountedContainer) { active = false; generation += 1; busy = false; if (container) { container.classList.remove("tracking-root", "tracking-busy"); container.replaceChildren(); } mountedContainer = null; },
-    hasDirty(container = mountedContainer) { return !!container?.querySelector(".tracking-dirty"); },
-    isBusy() { return busy; }
-  };
+  function status(form, text, error) {
+    const n = $(form, "[data-status]");
+    if (n) {
+      n.textContent = text;
+      n.classList.toggle("error", !!error);
+    }
+  }
+  function bind(root, api, notify, upload) {
+    root.querySelectorAll(".tracking-preset").forEach((b) => b.addEventListener("click", () => {
+      if (busy) return;
+      const f = b.closest("form"), i = f && $(f, '[name="path"]');
+      if (!i) return;
+      i.value = b.dataset.path;
+      f.querySelectorAll(".tracking-preset").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      dirty(f);
+      i.focus();
+    }));
+    root.querySelectorAll("[data-message-preview]").forEach((image) => image.addEventListener("error", () => {
+      image.hidden = true;
+    }));
+    root.querySelectorAll("[data-tracking-create],[data-tracking-edit]").forEach((f) => {
+      f.dataset.initialFields = fieldState(f);
+      f.addEventListener("input", () => dirty(f));
+      f.addEventListener("change", () => dirty(f));
+    });
+    root.querySelectorAll("[data-message-image-file]").forEach((input) => input.addEventListener("change", async () => {
+      if (!upload || !input.files?.[0] || busy) return;
+      const form = input.closest("form"), help = $(input.closest("label"), "[data-upload-status]"), token = generation;
+      if (help) help.textContent = "Enviando…";
+      busyState(root, true);
+      try {
+        const result = await upload(input.files[0], "banner");
+        const url = typeof result === "string" ? result : result?.url || result?.secure_url || result?.path || "";
+        if (!imageValid(url)) throw new Error("O upload não retornou uma URL válida.");
+        if (token !== generation || !active || !form.isConnected) return;
+        const image = $(form, '[name="messageImage"]');
+        image.value = url;
+        dirty(form);
+        if (help) help.textContent = "Imagem enviada.";
+      } catch (error) {
+        if (token === generation && active && help) help.textContent = error.message || "Não foi possível enviar a imagem.";
+      } finally {
+        input.value = "";
+        if (active && root.isConnected) busyState(root, false, token);
+      }
+    }));
+    const submit = async (event, editing) => {
+      event.preventDefault();
+      const f = event.currentTarget, d = Object.fromEntries(new FormData(f)), m = message(f);
+      if (!pathValid(d.path)) return status(f, "Use um caminho interno do portfólio, sem query string.", true);
+      if (!codeValid(d.code)) return status(f, "O código deve ter 5–32 caracteres minúsculos (letras e números).", true);
+      if (!imageValid(m.image)) return status(f, "A imagem deve usar uma URL HTTP ou HTTPS válida.", true);
+      const body = { label: d.label.trim(), path: d.path.trim(), ...d.code ? { code: d.code } : {}, message: m, notify: d.notify === "on" };
+      if (editing) body.id = f.closest("[data-tracking-id]").dataset.trackingId;
+      status(f, editing ? "Salvando…" : "Criando…");
+      const token = generation;
+      busyState(root, true);
+      try {
+        await api("/api/tracking/links", { method: "POST", body });
+        if (token === generation && active) notify?.(editing ? "Link atualizado." : "Link criado.");
+        await refresh(api, root, notify, token, upload);
+      } catch (e) {
+        if (token === generation && active) status(f, e.message || "Não foi possível salvar.", true);
+      } finally {
+        if (active && root.isConnected) busyState(root, false, token);
+      }
+    };
+    $(root, "[data-tracking-create]")?.addEventListener("submit", (e) => submit(e, false));
+    root.querySelectorAll("[data-tracking-edit]").forEach((f) => f.addEventListener("submit", (e) => submit(e, true)));
+    root.querySelectorAll("[data-copy-link]").forEach((b) => b.addEventListener("click", async () => {
+      const text = $(b.closest("[data-tracking-id]"), "code")?.textContent || "";
+      try {
+        await navigator.clipboard.writeText(text);
+        b.textContent = "Copiado";
+        setTimeout(() => {
+          if (b.isConnected) b.textContent = "Copiar";
+        }, 1400);
+      } catch {
+        window.prompt("Copie o link:", text);
+      }
+    }));
+    root.querySelectorAll("[data-preview]").forEach((b) => b.addEventListener("click", () => {
+      const f = $(b.closest("[data-tracking-id]"), "[data-tracking-edit]"), p = $(f, '[name="path"]').value;
+      if (pathValid(p)) window.open(new URL(p, location.origin).href, "_blank", "noopener");
+    }));
+    root.querySelectorAll("[data-toggle]").forEach((b) => b.addEventListener("click", async () => {
+      if (busy) return;
+      const card2 = b.closest("[data-tracking-id]"), f = $(card2, "form"), token = generation;
+      busyState(root, true);
+      try {
+        await api("/api/tracking/links", { method: "POST", body: { id: card2.dataset.trackingId, active: b.textContent.trim() === "Ativar" } });
+        await refresh(api, root, notify, token, upload);
+      } catch (e) {
+        status(f, e.message || "Não foi possível alterar o estado.", true);
+      } finally {
+        if (active && root.isConnected) busyState(root, false, token);
+      }
+    }));
+    root.querySelectorAll("[data-delete]").forEach((b) => b.addEventListener("click", async () => {
+      if (busy || !window.confirm("Excluir este link e seus dados de visitas?")) return;
+      const card2 = b.closest("[data-tracking-id]"), token = generation;
+      busyState(root, true);
+      try {
+        await api("/api/tracking/links?id=" + encodeURIComponent(card2.dataset.trackingId), { method: "DELETE" });
+        notify?.("Link excluído.");
+        await refresh(api, root, notify, token, upload);
+      } catch (e) {
+        status($(card2, "form"), e.message || "Não foi possível excluir.", true);
+      } finally {
+        if (active && root.isConnected) busyState(root, false, token);
+      }
+    }));
+    root.querySelectorAll("[data-visit-details]").forEach((b) => b.addEventListener("click", async () => {
+      const card2 = b.closest("[data-tracking-id]"), list = $(card2, "[data-visits-list]");
+      if (!list.hidden) {
+        list.hidden = true;
+        return;
+      }
+      list.hidden = false;
+      list.innerHTML = '<span class="muted">Carregando acessos…</span>';
+      try {
+        const v = await api("/api/tracking/visits?id=" + encodeURIComponent(card2.dataset.trackingId)), visits = Array.isArray(v?.visits) ? v.visits.slice(0, 20) : [];
+        list.innerHTML = visits.length ? visits.map((x) => '<div class="tracking-visit"><strong>' + esc(date(x.at)) + "</strong><span>" + esc([x.ip, x.device, x.browser, x.os, x.city, x.country].filter(Boolean).join(" · ") || "Detalhes indisponíveis") + "</span></div>").join("") : '<span class="muted">Nenhum acesso detalhado disponível.</span>';
+      } catch (e) {
+        list.innerHTML = '<span class="status error">' + esc(e.status === 404 ? "O Worker ainda não oferece detalhes de acessos." : e.message || "Não foi possível carregar os acessos.") + "</span>";
+      }
+    }));
+    const settings = $(root, "[data-webhook-settings]");
+    if (settings) {
+      settings.dataset.initialFields = fieldState(settings);
+      settings.addEventListener("input", () => dirty(settings));
+      settings.addEventListener("change", () => dirty(settings));
+    }
+    settings?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const f = e.currentTarget, v = $(f, '[name="webhookUrl"]').value.trim();
+      status(f, "Salvando…");
+      const token = generation;
+      busyState(root, true);
+      try {
+        await api("/api/tracking/settings", { method: "POST", body: { ...v ? { webhookUrl: v } : {}, enabled: $(f, '[name="enabled"]').checked } });
+        $(f, '[name="webhookUrl"]').value = "";
+        f.dataset.initialFields = fieldState(f);
+        status(f, "Configuração salva. A URL permanece oculta.");
+      } catch (x) {
+        if (token === generation && active) status(f, x.message || "Não foi possível salvar.", true);
+      } finally {
+        if (active && root.isConnected) busyState(root, false, token);
+      }
+    });
+    $(root, "[data-webhook-test]")?.addEventListener("click", async () => {
+      if (busy) return;
+      status(settings, "Enviando teste…");
+      const token = generation;
+      busyState(root, true);
+      try {
+        await api("/api/tracking/webhook/test", { method: "POST", body: {} });
+        if (token === generation && active) status(settings, "Teste enviado.");
+      } catch (e) {
+        if (token === generation && active) status(settings, e.message || "Não foi possível testar o webhook.", true);
+      } finally {
+        if (active && root.isConnected) busyState(root, false, token);
+      }
+    });
+    $(root, "[data-webhook-remove]")?.addEventListener("click", async () => {
+      if (busy) return;
+      status(settings, "Removendo…");
+      const token = generation;
+      busyState(root, true);
+      try {
+        await api("/api/tracking/settings", { method: "POST", body: { webhookUrl: "", enabled: false } });
+        $(settings, '[name="webhookUrl"]').value = "";
+        $(settings, '[name="enabled"]').checked = false;
+        settings.dataset.initialFields = fieldState(settings);
+        if (token === generation && active) status(settings, "Webhook removido.");
+      } catch (e) {
+        if (token === generation && active) status(settings, e.message || "Não foi possível remover o webhook.", true);
+      } finally {
+        if (active && root.isConnected) busyState(root, false, token);
+      }
+    });
+  }
+  window.PortfolioTrackingAdmin = { render({ request, container, notify, upload }) {
+    active = true;
+    busy = false;
+    mounted = container;
+    busyOwner = null;
+    return renderLinks(request, container, notify, upload);
+  }, reset(container = mounted) {
+    active = false;
+    generation++;
+    busy = false;
+    busyOwner = null;
+    if (container) {
+      container.classList.remove("tracking-root", "tracking-busy");
+      container.replaceChildren();
+    }
+    mounted = null;
+  }, hasDirty(container = mounted) {
+    return !!container?.querySelector(".tracking-dirty");
+  }, isBusy() {
+    return busy;
+  } };
 })();

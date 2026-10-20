@@ -300,7 +300,7 @@ async function loadSection() {
   try {
     if (tab === "tracking") {
       studio.records = [];
-      await window.PortfolioTrackingAdmin.render({ request, container: $("#editor-list"), notify: notice });
+      await window.PortfolioTrackingAdmin.render({ request, container: $("#editor-list"), notify: notice, upload: file => PortfolioAPI.upload("/api/uploads/images", file, "banner", studio.token) });
       return;
     }
     let items;
