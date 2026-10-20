@@ -1,370 +1,782 @@
-/* Content studio. Each form owns its record; requests and caching live in api.js. */
-'use strict';
-const $ = selector => document.querySelector(selector);
-const studio = { token: null, tab: 'games', records: [], loading: 0 };
+"use strict";
+const $ = (selector) => document.querySelector(selector);
+const studio = { token: null, tab: "games", records: [], activeIndex: 0, loading: 0, busy: false, mediaTarget: null, media: [] };
 const sections = {
-  games: { title: 'Jogos', description: 'Informações, imagens e créditos dos jogos.', add: '+ Novo jogo', endpoint: '/api/games', key: 'appId' },
-  banners: { title: 'Banners', description: 'Imagem, mensagem e destino. Use imagens em 1600 × 600 px para melhor resultado.', add: '+ Criar banner', endpoint: '/api/banners', key: 'id' },
-  music: { title: 'Músicas', description: 'Importe vídeos, edite traduções e organize suas tags.', add: '+ Importar música', endpoint: '/api/manual-music', key: 'id' },
-  audiovisuals: { title: 'Audiovisuais', description: 'Obras, formatos, episódios e publicação das traduções.', add: '+ Nova obra', endpoint: '/api/audiovisuals', key: 'id' }
+  games: { title: "Jogos", description: "Informações, imagens e créditos dos jogos.", add: "+ Novo jogo", endpoint: "/api/games", key: "appId" },
+  audiovisuals: { title: "Audiovisuais", description: "Vídeos, séries, episódios e imagens das suas obras.", add: "+ Nova obra", endpoint: "/api/audiovisuals", key: "id" },
+  music: { title: "Músicas", description: "Vídeos, traduções e tags.", add: "+ Importar música", endpoint: "/api/manual-music", key: "id" },
+  banners: { title: "Banners", description: "Imagens, mensagens e destinos dos banners.", add: "+ Criar banner", endpoint: "/api/banners", key: "id" }
 };
-function esc(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const imageAccept = "image/jpeg,image/png,image/webp,image/gif,image/avif";
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+}
 function safeURL(value, local = false) {
-  if (!value) return '';
+  if (!value) return "";
   try {
     const url = new URL(value, location.origin);
-    return ['https:', 'http:'].includes(url.protocol) && (local || /^https?:\/\//i.test(value)) ? url.href : '';
-  } catch { return ''; }
-}
-function request(path, options = {}) {
-  return PortfolioAPI.request(path, { ...options, token: studio.token }).catch(error => {
-    if (error.status === 401) { logout(); error.message = 'Sua sessão expirou. Entre novamente.'; }
-    throw error;
-  });
-}
-function notice(message) { $('#notice').textContent = message; $('#notice').hidden = !message; }
-function getStoredToken() { try { return sessionStorage.getItem('portfolioAdminToken'); } catch { return null; } }
-function showStudio(token) {
-  studio.token = token;
-  try { sessionStorage.setItem('portfolioAdminToken', token); localStorage.removeItem('adminToken'); } catch { /* Session still works when storage is disabled. */ }
-  $('#login-section').hidden = true; $('#admin-content').hidden = false; $('#logout').hidden = false;
-  loadSection();
-}
-function logout() {
-  studio.token = null; studio.records = []; studio.loading++;
-  try { sessionStorage.removeItem('portfolioAdminToken'); localStorage.removeItem('adminToken'); } catch { /* Browser storage may be blocked. */ }
-  $('#admin-content').hidden = true; $('#login-section').hidden = false; $('#logout').hidden = true; $('#editor-list').replaceChildren();
-  $('#admin-password').value = ''; $('#admin-password').focus();
-}
-$('#logout').addEventListener('click', logout);
-$('#login-form').addEventListener('submit', async event => {
-  event.preventDefault(); const button = $('#login-btn'); button.disabled = true;
-  $('#login-error').textContent = '';
-  try {
-    const data = await PortfolioAPI.request('/auth', { method: 'POST', body: { password: $('#admin-password').value } });
-    if (!data.token) throw new Error('O servidor não retornou uma sessão válida.');
-    $('#admin-password').value = ''; showStudio(data.token);
-  } catch (error) { $('#login-error').textContent = error.status === 401 ? 'Senha incorreta.' : error.message; }
-  finally { button.disabled = false; }
-});
-(async function restoreSession() {
-  const token = getStoredToken();
-  if (!token) return;
-  try { await PortfolioAPI.request('/auth/check', { token }); showStudio(token); }
-  catch (error) { if (error.status === 401) logout(); else $('#login-error').textContent = 'Não foi possível verificar a sessão. Entre novamente.'; }
-})();
-$('.tabs').addEventListener('click', event => {
-  const button = event.target.closest('[data-tab]'); if (!button) return;
-  if (document.querySelector('[data-dirty="true"]') && !confirm('Há alterações não salvas. Deseja trocar de categoria e descartá-las?')) return;
-  studio.tab = button.dataset.tab;
-  $('.tabs').querySelectorAll('button').forEach(tab => tab.removeAttribute('aria-current'));
-  button.setAttribute('aria-current', 'page'); loadSection();
-});
-async function loadSection() {
-  const tab = studio.tab, seq = ++studio.loading, section = sections[tab];
-  $('#section-title').textContent = section.title; $('#section-description').textContent = section.description; $('#add-item').textContent = section.add;
-  $('#admin-search').value = ''; $('#admin-no-results').hidden = true; $('#admin-count').textContent = '';
-  $('#editor-list').innerHTML = '<div class="state">Carregando projetos…</div>'; notice('');
-  try {
-    let items;
-    if (tab === 'music') {
-      const [playlist, manual] = await Promise.all([request('/?admin=true'), request('/api/manual-music?admin=true')]);
-      const merged = new Map();
-      for (const item of playlist) merged.set(item.id, { ...item, manual: false });
-      for (const item of manual) merged.set(item.id, { ...item, manual: true });
-      items = [...merged.values()];
-    } else items = await request(section.endpoint + '?admin=true');
-    if (!Array.isArray(items)) throw new Error('O servidor retornou uma lista inválida.');
-    if (tab === 'games') {
-      items = await Promise.all(items.map(async game => {
-        const id = encodeURIComponent(game.appId);
-        const [tags, credits] = await Promise.all([request('/api/games/tags?id=' + id), request('/api/game/credits?id=' + id)]);
-        return { ...game, tags: tags.tags || [], ...credits };
-      }));
-    }
-    if (seq !== studio.loading) return;
-    studio.records = items; renderRecords();
-  } catch (error) {
-    if (seq !== studio.loading) return;
-    studio.records = [];
-    $('#editor-list').innerHTML = '<div class="state"></div>';
-    const state = $('#editor-list .state');
-    state.textContent = tab === 'banners' && error.status === 404 ? 'O serviço de banners está indisponível. Tente novamente mais tarde.' : error.message;
-    const retry = document.createElement('button'); retry.textContent = 'Tentar novamente'; retry.addEventListener('click', loadSection); state.append(retry);
+    return ["https:", "http:"].includes(url.protocol) && (local || /^https?:\/\//i.test(value)) ? url.href : "";
+  } catch {
+    return "";
   }
 }
-function field(name, title, value = '', type = 'text', extra = '') {
-  return '<label>' + esc(title) + '<input name="' + name + '" type="' + type + '" value="' + esc(value) + '" ' + extra + '></label>';
+function notice(message) {
+  $("#notice").textContent = message || "";
+  $("#notice").hidden = !message;
 }
-const imageAccept = 'image/jpeg,image/png,image/webp,image/gif,image/avif';
-function imageField(name, title, value = '', purpose, type = 'url', extra = '') {
-  return '<div class="media-field">' + field(name, title, value, type, extra) + '<label class="upload-control">Enviar imagem<input type="file" accept="' + imageAccept + '" data-upload-field="' + esc(name) + '" data-upload-purpose="' + esc(purpose) + '"></label><p class="upload-status" data-upload-status="' + esc(name) + '" role="status" aria-live="polite"></p></div>';
+function hasDirty() {
+  return !!$('#editor-list form[data-dirty="true"]');
 }
-function area(name, title, value = '', rows = 3) { return '<label>' + esc(title) + '<textarea name="' + name + '" rows="' + rows + '">' + esc(value) + '</textarea></label>'; }
-function check(name, title, checked = false) { return '<label class="check-label"><input type="checkbox" name="' + name + '" ' + (checked ? 'checked' : '') + '>' + esc(title) + '</label>'; }
-function tagField(record) { return field('tags', 'Tags (separadas por vírgula)', (record.tags || []).map(t => t.name || t).join(', ')); }
-function bannerPreview(record) {
-  const url = safeURL(record.image);
-  return '<div class="banner-preview">' + (url ? '<img src="' + esc(url) + '" alt="" referrerpolicy="no-referrer">' : '') + '<div><small>PRÉVIA DO BANNER</small><h3>' + esc(record.title || 'Título do banner') + '</h3><p>' + esc(record.subtitle || 'Texto de apoio') + '</p><span>' + esc(record.label || 'Conhecer projeto') + ' ↗</span></div></div>';
+function markDirty(form) {
+  if (!form?.isConnected) return;
+  form.dataset.dirty = "true";
+  const state = form.querySelector(".save-state");
+  state.textContent = "Alterações não salvas";
+  state.classList.add("dirty");
 }
-function episodeInput(name, title, value = '', type = 'text', extra = '') {
-  return '<label>' + esc(title) + '<input data-episode-field="' + name + '" type="' + type + '" value="' + esc(value) + '" ' + extra + '></label>';
+function canNavigate(message = "Há alterações não salvas. Deseja descartá-las?") {
+  if (studio.busy || studio.loadingSection) {
+    notice("Aguarde a operação terminar antes de trocar de projeto.");
+    return false;
+  }
+  return !hasDirty() || confirm(message);
 }
-function episodeEditor(episode = {}) {
-  return '<div class="episode-editor">' + episodeInput('id','',episode.id || '', 'hidden') + '<div class="row">' + episodeInput('title','Título',episode.title || '', 'text', 'required') + '</div>' +
-    '<div class="row">' + episodeInput('url','URL do vídeo',episode.url || '', 'url', 'required') + '<div class="media-field">' + episodeInput('thumbnail','Miniatura (URL)',episode.thumbnail || '', 'url') + '<label class="upload-control">Enviar imagem<input type="file" accept="' + imageAccept + '" data-upload-field="thumbnail" data-upload-purpose="audiovisual-episode-thumbnail" data-upload-context="episode"></label><p class="upload-status" data-upload-status="thumbnail" role="status" aria-live="polite"></p></div></div>' +
-    episodeInput('description','Descrição',episode.description || '') + '<div class="row">' + episodeInput('viewCount','Visualizações',episode.viewCount ?? 0, 'number', 'min="0" step="1"') + episodeInput('publishedAt','Publicado em',episode.publishedAt || '') + episodeInput('order','Ordem',episode.order ?? 0, 'number', 'min="0" step="1"') + '</div>' +
-    '<label class="check-label"><input type="checkbox" data-episode-field="published" ' + (episode.published !== false ? 'checked' : '') + '>Publicado</label><button type="button" class="danger" data-remove-episode>Remover episódio</button></div>';
+function getStoredToken() {
+  try {
+    return sessionStorage.getItem("portfolioAdminToken");
+  } catch {
+    return null;
+  }
+}
+async function request(path, options = {}) {
+  try {
+    return await PortfolioAPI.request(path, { ...options, token: studio.token });
+  } catch (error) {
+    if (error.status === 401) {
+      logout(true);
+      error.message = "Sua sessão expirou. Entre novamente.";
+    }
+    throw error;
+  }
+}
+function showStudio(token) {
+  studio.token = token;
+  try {
+    sessionStorage.setItem("portfolioAdminToken", token);
+    localStorage.removeItem("adminToken");
+  } catch {
+  }
+  $("#login-section").hidden = true;
+  $("#admin-content").hidden = false;
+  $("#logout").hidden = false;
+  loadSection();
+}
+function logout(force = false) {
+  if (!force && !canNavigate()) return;
+  studio.token = null;
+  studio.loadingSection = false;
+  studio.records = [];
+  studio.loading++;
+  studio.mediaTarget = null;
+  try {
+    sessionStorage.removeItem("portfolioAdminToken");
+    localStorage.removeItem("adminToken");
+  } catch {
+  }
+  $("#media-dialog").close();
+  $("#import-dialog").close();
+  $("#admin-content").hidden = true;
+  $("#login-section").hidden = false;
+  $("#logout").hidden = true;
+  $("#editor-list").replaceChildren();
+  $("#record-list").replaceChildren();
+  $("#admin-password").value = "";
+  $("#admin-password").focus();
+}
+async function operation(form, task) {
+  if (studio.busy || !form?.isConnected) return;
+  studio.busy = true;
+  form.inert = true;
+  form.setAttribute("aria-busy", "true");
+  const status = form.querySelector(":scope > .status");
+  if (status) status.classList.remove("error");
+  try {
+    await task();
+  } catch (error) {
+    if (form.isConnected && status) {
+      status.classList.add("error");
+      status.textContent = error.message;
+    }
+  } finally {
+    studio.busy = false;
+    form.inert = false;
+    form.removeAttribute("aria-busy");
+  }
+}
+function imageField(name, title, value = "", purpose, extra = "", context = "") {
+  const url = safeURL(value), attr = context ? 'data-episode-field="' + esc(name) + '"' : 'name="' + esc(name) + '"';
+  return '<div class="media-field" data-image-shape="' + (name === "poster" ? "poster" : "wide") + '"><label>' + esc(title) + "<input " + attr + ' type="url" value="' + esc(value) + '" ' + extra + '></label><div class="image-preview"' + (url ? "" : " hidden") + "><img " + (url ? 'src="' + esc(url) + '"' : "") + ' alt="" loading="lazy"></div><div class="media-actions"><label class="upload-control">Enviar imagem<input type="file" accept="' + imageAccept + '" data-upload-field="' + esc(name) + '" data-upload-purpose="' + esc(purpose) + '"' + (context ? ' data-upload-context="episode"' : "") + '></label><button type="button" class="secondary" data-pick-image="' + esc(name) + '">Escolher existente</button><button type="button" class="secondary" data-clear-image="' + esc(name) + '">Limpar</button></div><p class="upload-status" data-upload-status="' + esc(name) + '" role="status" aria-live="polite"></p></div>';
+}
+function episodeEditor(episode = {}, index = 0) {
+  const rowId = episode.id || crypto.randomUUID();
+  return '<details class="episode-editor"' + (episode.id ? "" : " open") + '><summary class="episode-summary"><span class="episode-number">' + String(index + 1).padStart(2, "0") + '</span><span class="episode-summary-title">' + esc(episode.title || "Novo episódio") + '</span><span class="record-badge">' + (episode.published === false ? "Rascunho" : "Publicado") + '</span></summary><div class="episode-body">' + episodeInput("id", "", rowId, "hidden") + '<div class="row">' + episodeInput("title", "Título", episode.title || "", "text", 'required maxlength="300"') + episodeInput("url", "URL do vídeo", episode.url || "", "url", "required") + '</div><button type="button" class="secondary" data-import-video data-import-episode>Buscar dados do vídeo</button><p class="help">Preenche título, descrição e miniatura que estiverem vazios.</p>' + imageField("thumbnail", "Miniatura (URL)", episode.thumbnail || "", "thumbnail", "", "episode") + area("description", "Descrição", episode.description || "", 3, "episode") + '<details class="editor-details"><summary>Dados adicionais</summary><div class="row">' + episodeInput("viewCount", "Visualizações", episode.viewCount ?? 0, "number", 'min="0" step="1"') + episodeInput("publishedAt", "Publicado em", episode.publishedAt || "") + "</div></details>" + episodeInput("order", "", episode.order ?? index, "hidden") + '<label class="check-label"><input type="checkbox" data-episode-field="published" ' + (episode.published !== false ? "checked" : "") + '>Publicado</label><div class="episode-actions"><button type="button" class="secondary" data-move-episode="up" aria-label="Mover episódio para cima">↑ Subir</button><button type="button" class="secondary" data-move-episode="down" aria-label="Mover episódio para baixo">↓ Descer</button><button type="button" class="danger" data-remove-episode>Remover episódio</button></div><p class="episode-status upload-status" role="status"></p></div></details>';
 }
 function episodesEditor(record) {
   const episodes = Array.isArray(record.episodes) ? record.episodes : [];
-  return '<section class="series-fields"' + (record.format === 'series' ? '' : ' hidden') + '><p class="form-section">EPISÓDIOS DA SÉRIE</p><div class="episodes-list">' + episodes.map(episodeEditor).join('') + '</div><button type="button" data-add-episode>+ Adicionar episódio</button><p class="help">Cada episódio precisa de título e URL. Episódios ficam salvos junto com a obra.</p></section>';
+  return '<section class="editor-section" data-editor-section="episodes" hidden><div class="section-heading"><h4>Episódios da série</h4><p>Abra um episódio para editar. Use as setas para definir a ordem.</p></div><div class="episodes-list">' + episodes.map(episodeEditor).join("") + '</div><button type="button" data-add-episode>+ Adicionar episódio</button><details class="episode-import"><summary>Adicionar vários vídeos</summary><label>URLs dos vídeos<textarea data-bulk-episodes rows="3" placeholder="Uma URL por linha"></textarea></label><p class="help">Até 50 vídeos por vez. Os episódios serão adicionados como rascunho.</p><button type="button" class="secondary" data-import-bulk>Importar episódios</button><p class="bulk-status status" role="status"></p></details></section>';
+}
+function tabbed(content) {
+  const names = [["details", "Detalhes"], ...content.includes('data-editor-section="episodes"') ? [["episodes", "Episódios"]] : [], ["images", "Imagens"], ["publication", "Publicação"]];
+  return '<div class="editor-tabs" role="tablist" aria-label="Etapas de edição">' + names.map(([key, label]) => '<button type="button" role="tab" data-editor-tab="' + key + '" aria-selected="' + (key === "details") + '">' + label + "</button>").join("") + "</div>" + content;
+}
+function field(name, title, value = "", type = "text", extra = "") {
+  return "<label>" + esc(title) + '<input name="' + esc(name) + '" type="' + type + '" value="' + esc(value) + '" ' + extra + "></label>";
+}
+function area(name, title, value = "", rows = 3, context = "") {
+  const attr = context ? ' data-episode-field="' + esc(name) + '"' : ' name="' + esc(name) + '"';
+  return "<label>" + esc(title) + "<textarea" + attr + ' rows="' + rows + '">' + esc(value) + "</textarea></label>";
+}
+function check(name, title, checked = false) {
+  return '<label class="check-label"><input type="checkbox" name="' + esc(name) + '" ' + (checked ? "checked" : "") + ">" + esc(title) + "</label>";
+}
+function tagField(record) {
+  return field("tags", "Tags (separadas por vírgula)", (record.tags || []).map((t) => t.name || t).join(", "));
+}
+function episodeInput(name, title, value = "", type = "text", extra = "") {
+  return "<label>" + esc(title) + '<input data-episode-field="' + esc(name) + '" type="' + type + '" value="' + esc(value) + '" ' + extra + "></label>";
+}
+function renderEditor(record, index) {
+  const tab = studio.tab, name = record.name || record.title || "Novo item";
+  let content = "";
+  if (tab === "games") content = tabbed('<section class="editor-section" data-editor-section="details"><div class="section-heading"><h4>Identidade</h4></div><div class="row">' + field("appId", "Steam App ID", record.appId, "text", 'required pattern="[0-9]+" ' + (record._new ? "" : "readonly")) + field("name", "Nome do jogo", record.name, "text", 'required maxlength="200"') + '</div><div class="row">' + field("role", "Seu papel", record.role) + field("dev", "Desenvolvedora", record.dev) + '</div><div class="row">' + field("originalLanguage", "Idioma original", record.originalLanguage || "English") + field("releaseDate", "Lançamento", record.releaseDate) + "</div>" + area("note", "Nota ou estado do projeto", record.note, 2) + area("description", "Descrição", record.description, 4) + tagField(record) + '</section><section class="editor-section" data-editor-section="images" hidden>' + imageField("cover", "Capa horizontal (URL)", record.cover, "cover") + imageField("poster", "Pôster vertical (URL)", record.poster, "poster") + imageField("creditsImage", "Imagem dos créditos (URL)", record.creditsImage, "credits") + '</section><section class="editor-section" data-editor-section="publication" hidden>' + check("featured", "Priorizar este jogo", record.featured) + area("creditsChips", "Créditos: Nome | Papel", (record.creditsChips || []).map((c) => c.name + " | " + (c.role || "")).join("\n"), 4) + "</section>");
+  else if (tab === "banners") content = tabbed('<section class="editor-section" data-editor-section="details"><div class="section-heading"><h4>Conteúdo do banner</h4></div>' + field("title", "Título", record.title, "text", 'required maxlength="140"') + area("subtitle", "Texto de apoio", record.subtitle, 2) + '</section><section class="editor-section" data-editor-section="images" hidden>' + imageField("image", "Imagem do banner (URL)", record.image, "banner", "required") + '</section><section class="editor-section" data-editor-section="publication" hidden><div class="row">' + field("href", "Destino (URL ou /games)", record.href || "/games", "text", "required") + field("label", "Texto do botão", record.label || "Conhecer projeto") + "</div>" + field("order", "Ordem", record.order || 0, "number", 'min="0" step="1"') + check("enabled", "Publicado", record.enabled !== false) + "</section>");
+  else if (tab === "music") content = tabbed('<section class="editor-section" data-editor-section="details"><div class="section-heading"><h4>Tradução</h4></div>' + field("title", "Título", record.title) + field("url", "URL do vídeo", record.url, "url") + tagField(record) + '</section><section class="editor-section" data-editor-section="images" hidden>' + imageField("thumbnail", "Miniatura (URL)", record.thumbnail, "thumbnail") + '</section><section class="editor-section" data-editor-section="publication" hidden>' + area("lyrics", "Letra / Tradução", record.lyrics, 9) + "</section>");
+  else {
+    content = tabbed('<section class="editor-section" data-editor-section="details"><div class="section-heading"><h4>Obra</h4></div>' + field("title", "Título", record.title, "text", "required") + '<div class="row"><label>Formato<select name="format"><option value="short-film" ' + (record.format !== "series" ? "selected" : "") + '>Curta-metragem</option><option value="series" ' + (record.format === "series" ? "selected" : "") + ">Série</option></select></label>" + field("url", "URL do vídeo", record.url, "url") + '<button type="button" class="secondary" data-import-work>Importar dados</button><label>Plataforma<select name="provider">' + ["youtube", "vimeo", "other"].map((p) => '<option value="' + p + '" ' + (record.provider === p ? "selected" : "") + ">" + p + "</option>").join("") + "</select></label></div>" + field("type", "Tipo de projeto", record.type) + '<div class="row">' + field("role", "Seu papel", record.role) + field("client", "Cliente", record.client) + field("year", "Ano", record.year) + field("duration", "Duração", record.duration) + "</div>" + area("description", "Descrição", record.description, 4) + tagField(record) + "</section>" + episodesEditor(record) + '<section class="editor-section" data-editor-section="images" hidden>' + imageField("cover", "Capa horizontal (URL)", record.cover, "cover") + imageField("poster", "Pôster vertical (URL)", record.poster, "poster") + imageField("thumbnail", "Miniatura do vídeo (URL)", record.thumbnail, "thumbnail") + '</section><section class="editor-section" data-editor-section="publication" hidden>' + field("order", "Ordem", record.order || 0, "number", 'step="1"') + check("published", "Publicado", record.published !== false) + check("featured", "Destaque", record.featured) + check("showcase", "Showcase (vídeo sem crédito)", record.showcase === true) + "</section>");
+  }
+  return '<article class="editor-card" data-index="' + index + '"><form data-index="' + index + '"><div class="editor-heading"><div><h3>' + esc(name) + '</h3><span class="record-status">' + (record._new ? "Novo rascunho" : "Editando") + '</span></div><span class="save-state">Sem alterações</span></div>' + content + '<div class="form-actions"><button type="submit">Salvar alterações</button>' + (tab !== "music" || record.manual ? '<button type="button" class="danger" data-delete>Excluir</button>' : "") + '</div><p class="status" role="status"></p></form></article>';
+}
+function isPublicRecord(record) {
+  return !record._new && record.status !== "draft" && record.published !== false && record.enabled !== false;
+}
+function recordTitle(record) {
+  return record.name || record.title || (studio.tab === "games" ? "Novo jogo" : "Nova obra");
+}
+function renderRecordList() {
+  const query = $("#admin-search").value.toLowerCase().trim(), filter = $("#admin-filter").value;
+  const items = studio.records.map((record, index) => ({ record, index })).filter(({ record }) => {
+    const hay = [record.name, record.title, record.appId, record.id, record.url].join(" ").toLowerCase();
+    return hay.includes(query) && (filter === "all" || filter === "published" && isPublicRecord(record) || filter === "draft" && !isPublicRecord(record) || filter === "series" && record.format === "series" || filter === "showcase" && record.showcase === true);
+  });
+  $("#record-list").replaceChildren(...items.map(({ record, index }) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "record-item";
+    button.dataset.selectRecord = index;
+    if (index === studio.activeIndex) button.setAttribute("aria-current", "true");
+    const image = safeURL(record.cover || record.thumbnail || record.poster || record.image);
+    button.innerHTML = (image ? '<span class="record-image"><img src="' + esc(image) + '" alt="" loading="lazy"></span>' : '<span class="record-placeholder" aria-hidden="true">◈</span>') + '<span class="record-info"><strong class="record-name">' + esc(recordTitle(record)) + '</strong><small class="record-meta">' + esc(record.format === "series" ? (record.episodes?.length || 0) + " episódios" : studio.tab === "audiovisuals" ? "Curta-metragem" : sections[studio.tab].title) + (isPublicRecord(record) ? "" : " · Rascunho") + "</small></span>";
+    return button;
+  }));
+  $("#admin-count").textContent = items.length + " de " + studio.records.length + " itens";
+  $("#admin-no-results").hidden = !!items.length || !studio.records.length;
+}
+function setEditorTab(form, name) {
+  const button = form.querySelector('[data-editor-tab="' + name + '"]');
+  if (!button || button.hidden) name = "details";
+  form.dataset.activePanel = name;
+  form.querySelectorAll("[data-editor-tab]").forEach((tab) => {
+    const active = tab.dataset.editorTab === name;
+    tab.setAttribute("aria-selected", String(active));
+    tab.tabIndex = active ? 0 : -1;
+  });
+  form.querySelectorAll("[data-editor-section]").forEach((panel) => panel.hidden = panel.dataset.editorSection !== name);
 }
 function syncFormatUI(form) {
-  const format = form.elements.format?.value || 'short-film';
-  const seriesFields = form.querySelector('.series-fields');
-  if (seriesFields) {
-    seriesFields.hidden = format !== 'series';
-    seriesFields.querySelectorAll('input,select,textarea,button').forEach(control => { control.disabled = format !== 'series'; });
+  if (!form) return;
+  const series = form.elements.format?.value === "series", episodePanel = form.querySelector('[data-editor-section="episodes"]');
+  if (episodePanel) {
+    form.querySelector('[data-editor-tab="episodes"]').hidden = !series;
+    episodePanel.querySelectorAll("input,textarea,select,button").forEach((control) => control.disabled = !series);
   }
-  if (form.elements.url) {
-    form.elements.url.required = format === 'short-film' && Boolean(form.elements.published?.checked);
-    const urlLabel = form.elements.url.closest('label');
-    if (urlLabel) urlLabel.hidden = format === 'series';
+  if (form.elements.format && form.elements.url) {
+    form.elements.url.closest("label").hidden = series;
+    form.elements.url.required = !series && form.elements.published.checked;
+    form.querySelector("[data-import-work]").hidden = series;
+    const source = form.querySelector(".video-source");
+    if (source) source.hidden = series;
+    let note = form.querySelector(".format-note");
+    if (!note) { note = document.createElement("p"); note.className = "format-note help"; form.elements.format.closest(".row").after(note); }
+    note.textContent = "Os episódios ficam guardados ao usar o formato curta-metragem. Selecione Série para editá-los novamente.";
+    note.hidden = series || !form.querySelector(".episode-editor");
   }
+  setEditorTab(form, form.dataset.activePanel || "details");
 }
-function renderRecords() {
-  const section = sections[studio.tab];
-  $('#admin-count').textContent = studio.records.length + (studio.records.length === 1 ? ' item' : ' itens');
-  $('#editor-list').innerHTML = '';
-  if (!studio.records.length) { $('#editor-list').innerHTML = '<div class="state">Nenhum item por aqui ainda. Use o botão acima para começar.</div>'; return; }
-  studio.records.forEach((record, index) => {
-    const article = document.createElement('article'); article.className = 'editor-card'; article.dataset.search = [record.name,record.title,record.appId,record.id].filter(Boolean).join(' ').toLowerCase();
-    let fields = '', preview = '';
-    if (studio.tab === 'games') {
-      const image = safeURL(record.cover) || (/^\d+$/.test(record.appId) ? 'https://cdn.cloudflare.steamstatic.com/steam/apps/' + record.appId + '/header.jpg' : '');
-      if (image) preview = '<img class="card-thumbnail" src="' + esc(image) + '" alt="" loading="lazy">';
-      fields = '<div class="row">' + field('appId','Steam App ID',record.appId,'text','required pattern="[0-9]+" '+(record._new?'':'readonly')) + field('name','Nome do jogo',record.name,'text','required maxlength="200"') + '</div>';
-      fields += '<div class="row">' + field('role','Seu papel',record.role) + field('dev','Desenvolvedora',record.dev) + '</div>';
-      fields += field('note','Nota ou estado do projeto',record.note) + imageField('cover','Capa horizontal (URL)',record.cover,'game-cover') + imageField('poster','Pôster opcional (URL)',record.poster,'game-poster') + '<p class="help">A capa horizontal da Steam é a opção principal. O pôster vertical é opcional para usos alternativos.</p>';
-      fields += check('featured','Priorizar este jogo na galeria',record.featured) + '<details class="editor-details"><summary>Descrição, idiomas e créditos</summary>' + area('description','Descrição',record.description);
-      fields += '<div class="row">' + field('originalLanguage','Idioma original',record.originalLanguage || 'English') + field('releaseDate','Lançamento',record.releaseDate) + '</div>' + tagField(record);
-      fields += '<p class="form-section">CRÉDITOS & PROVA DE TRABALHO</p>' + area('creditsChips','Um crédito por linha: Nome | Papel',(record.creditsChips || []).map(c => c.name + ' | ' + (c.role || '')).join('\n')) + imageField('creditsImage','Imagem dos créditos (URL)',record.creditsImage,'game-credits') + '</details>';
-    } else if (studio.tab === 'banners') {
-      preview = bannerPreview(record);
-      fields = field('title','Título',record.title,'text','required maxlength="140"') + area('subtitle','Texto de apoio',record.subtitle,2) + imageField('image','Imagem do banner (URL)',record.image,'banner','url','required') + '<div class="row">' + field('href','Destino (URL ou /games)',record.href || '/games','text','required') + field('label','Texto do botão',record.label || 'Conhecer projeto') + '</div>' + field('order','Ordem (menor aparece primeiro)',record.order || 0,'number','min="0" step="1"') + check('enabled','Publicado no site',record.enabled !== false);
-    } else if (studio.tab === 'music') {
-      const image = safeURL(record.thumbnail);
-      if (image) preview = '<img class="card-thumbnail" src="' + esc(image) + '" alt="" loading="lazy">';
-      fields = tagField(record) + area('lyrics','Letra / Tradução',record.lyrics,7);
-    } else {
-      const image = safeURL(record.poster) || safeURL(record.cover) || safeURL(record.thumbnail);
-      if (image) preview = '<img class="card-thumbnail" src="' + esc(image) + '" alt="" loading="lazy">';
-      fields = field('title','Título',record.title,'text','required') + '<div class="row"><label>Formato<select name="format"><option value="short-film" '+(record.format !== 'series' ? 'selected' : '')+'>Curta-metragem</option><option value="series" '+(record.format === 'series' ? 'selected' : '')+'>Série</option></select></label>' + field('url','URL do vídeo',record.url,'url') + '</div><div class="row">' + field('type','Tipo de projeto',record.type) + '<label>Plataforma<select name="provider">' + ['youtube','vimeo','other'].map(p=>'<option '+(record.provider===p?'selected':'')+' value="'+p+'">'+p+'</option>').join('') + '</select></label></div>';
-      fields += '<div class="row">' + imageField('cover','Capa horizontal (URL)',record.cover,'audiovisual-cover') + imageField('poster','Pôster opcional (URL)',record.poster,'audiovisual-poster') + '</div><p class="help">A capa horizontal é usada como padrão; o pôster é opcional.</p>';
-      fields += imageField('thumbnail','Miniatura do vídeo (URL)',record.thumbnail,'audiovisual-thumbnail') + '<div class="row">' + field('role','Seu papel',record.role) + field('client','Cliente',record.client) + field('year','Ano',record.year) + field('duration','Duração',record.duration) + '</div>' + area('description','Descrição',record.description) + tagField(record) + field('order','Ordem',record.order || 0,'number','step="1"') + check('published','Publicado',record.published !== false) + check('featured','Destaque',record.featured) + check('showcase','Showcase (vídeo sem crédito)',record.showcase === true) + '<p class="help">Exibe este vídeo em uma seção discreta no fim dos audiovisuais, separado dos trabalhos creditados.</p>' + episodesEditor(record);
-    }
-    article.innerHTML = preview + '<form data-index="' + index + '"><h3>' + esc(record.name || record.title || 'Novo ' + (studio.tab === 'games' ? 'jogo' : studio.tab === 'audiovisuals' ? 'audiovisual' : 'banner')) + '</h3>' + fields + '<div class="form-actions"><button type="submit">Salvar alterações</button>' + ((studio.tab !== 'music' || record.manual) ? '<button type="button" class="danger" data-delete>Excluir</button>' : '') + '</div><p class="status" role="status"></p></form>';
-    $('#editor-list').append(article);
-    if (studio.tab === 'audiovisuals') syncFormatUI(article.querySelector('form'));
+function syncEpisodeRows(form) {
+  const rows = [...form.querySelectorAll(".episode-editor")];
+  rows.forEach((row, index) => {
+    row.querySelector('[data-episode-field="order"]').value = index;
+    row.querySelector(".episode-number").textContent = String(index + 1).padStart(2, "0");
+    row.querySelector(".episode-summary-title").textContent = row.querySelector('[data-episode-field="title"]').value || "Novo episódio";
+    row.querySelector(".record-badge").textContent = row.querySelector('[data-episode-field="published"]').checked ? "Publicado" : "Rascunho";
+    row.querySelector('[data-move-episode="up"]').disabled = index === 0;
+    row.querySelector('[data-move-episode="down"]').disabled = index === rows.length - 1;
   });
 }
-$('#editor-list').addEventListener('input', event => {
-  const form = event.target.closest('form'); if (!form) return; form.dataset.dirty = 'true';
-  if (studio.tab === 'banners') {
-    const record = Object.fromEntries(new FormData(form));
-    const preview = form.closest('article').querySelector('.banner-preview');
-    const wrapper = document.createElement('div'); wrapper.innerHTML = bannerPreview(record); preview.replaceWith(wrapper.firstElementChild);
-  } else if (event.target.dataset.episodeField === 'thumbnail') {
-    const url = safeURL(event.target.value), editor = event.target.closest('.episode-editor');
-    let preview = editor?.querySelector('.episode-upload-preview');
-    if (url && editor) {
-      if (!preview) { preview = document.createElement('img'); preview.className = 'episode-upload-preview'; preview.alt = ''; preview.loading = 'lazy'; editor.append(preview); }
-      preview.src = url; preview.hidden = false;
-    } else if (preview) preview.hidden = true;
-  } else if (['cover', 'poster', 'thumbnail', 'creditsImage'].includes(event.target.name)) {
-    const url = safeURL(event.target.value), article = form.closest('article');
-    let preview = article?.querySelector('.card-thumbnail');
-    if (url && article) {
-      if (!preview) { preview = document.createElement('img'); preview.className = 'card-thumbnail'; preview.alt = ''; preview.loading = 'lazy'; article.insertBefore(preview, form); }
-      preview.src = url; preview.hidden = false;
-    } else if (preview) preview.hidden = true;
+function bannerPreview(form) {
+  const panel = form.querySelector('[data-editor-section="images"]');
+  let preview = panel.querySelector(".banner-preview");
+  if (!preview) {
+    preview = document.createElement("div");
+    preview.className = "banner-preview";
+    panel.prepend(preview);
   }
-});
-$('#editor-list').addEventListener('change', event => {
-  const form = event.target.closest('form'); if (!form || studio.tab !== 'audiovisuals') return;
-  if (event.target.name === 'format' && event.target.value === 'series') {
-      const record = studio.records[Number(form.dataset.index)];
-    const list = form.querySelector('.episodes-list');
-    if ((form.elements.url?.value || record?.url) && list && !list.querySelector('.episode-editor')) {
-      list.insertAdjacentHTML('beforeend', episodeEditor({ title: form.elements.title?.value || record.title, url: form.elements.url?.value || record.url, thumbnail: form.elements.thumbnail?.value || record.thumbnail, description: form.elements.description?.value || record.description, viewCount: Number(form.elements.viewCount?.value || record.viewCount || 0), publishedAt: form.elements.publishedAt?.value || record.publishedAt, order: 0, published: true }));
-    }
-  }
-  if (event.target.name === 'format' || event.target.name === 'published') syncFormatUI(form);
-});
-$('#editor-list').addEventListener('click', event => {
-  const add = event.target.closest('[data-add-episode]');
-  if (add) {
-    const list = add.closest('.series-fields').querySelector('.episodes-list');
-    list.insertAdjacentHTML('beforeend', episodeEditor({ published: true, order: list.children.length }));
-    const form = add.closest('form'); form.dataset.dirty = 'true'; syncFormatUI(form);
+  const url = safeURL(form.elements.image.value);
+  preview.innerHTML = (url ? '<img src="' + esc(url) + '" alt="">' : "") + "<div><small>PRÉVIA DO BANNER</small><h3>" + esc(form.elements.title.value || "Título do banner") + "</h3><p>" + esc(form.elements.subtitle.value) + "</p><span>" + esc(form.elements.label.value || "Conhecer projeto") + " ↗</span></div>";
+}
+function renderRecords() {
+  renderRecordList();
+  if (!studio.records.length) {
+    $("#editor-list").innerHTML = '<div class="state">Nenhum item nesta categoria. Crie o primeiro pelo botão acima.</div>';
     return;
   }
-  const remove = event.target.closest('[data-remove-episode]');
-  if (remove) { const form = remove.closest('form'); remove.closest('.episode-editor').remove(); form.dataset.dirty = 'true'; }
-});
-function readFields(form) {
-  const data = Object.fromEntries(new FormData(form));
-  form.querySelectorAll('input[type=checkbox][name]').forEach(input => data[input.name] = input.checked);
-  if ('order' in data) data.order = Number(data.order) || 0;
+  studio.activeIndex = Math.max(0, Math.min(studio.activeIndex, studio.records.length - 1));
+  const record = studio.records[studio.activeIndex];
+  $("#editor-list").innerHTML = renderEditor(record, studio.activeIndex);
+  const form = $("#editor-list form");
+  form.querySelector("h3").textContent = recordTitle(record);
   if (form.elements.format) {
-    data.format = form.elements.format.value === 'series' ? 'series' : 'short-film';
-    data.episodes = [...form.querySelectorAll('.episode-editor')].map(editor => {
-      const episode = {};
-      editor.querySelectorAll('[data-episode-field]').forEach(input => {
-        const name = input.dataset.episodeField;
-        episode[name] = input.type === 'checkbox' ? input.checked : input.value;
+    const importButton = form.querySelector("[data-import-work]");
+    const source = document.createElement("div");
+    source.className = "video-source";
+    importButton.closest(".row").after(source);
+    source.append(form.elements.url.closest("label"), importButton);
+  }
+  form.querySelector('[data-editor-section="images"]').classList.add("image-grid");
+  form.querySelectorAll("[data-editor-section]").forEach((panel) => panel.setAttribute("role", "tabpanel"));
+  if (studio.tab === "music") {
+    form.querySelector('[data-editor-tab="publication"]').textContent = "Letra / tradução";
+    if (!record.manual) {
+      form.elements.title.readOnly = true;
+      form.elements.url.readOnly = true;
+      form.elements.thumbnail.readOnly = true;
+      form.querySelector(".media-actions").hidden = true;
+      const help = document.createElement("p");
+      help.className = "help";
+      help.textContent = "Título e imagem vêm da playlist do YouTube. Tags e tradução podem ser editadas aqui.";
+      form.querySelector('[data-editor-section="details"]').prepend(help);
+    }
+  }
+  form.querySelector(".record-status").textContent = isPublicRecord(record) ? "Publicado" : "Rascunho";
+  form.querySelector(".record-status").classList.add(isPublicRecord(record) ? "published" : "draft");
+  syncFormatUI(form);
+  syncEpisodeRows(form);
+  if (studio.tab === "banners") bannerPreview(form);
+  if (record._new) markDirty(form);
+}
+async function loadSection() {
+  studio.loadingSection = true;
+  $("#add-item").disabled = true;
+  const tab = studio.tab, section = sections[tab], generation = ++studio.loading;
+  studio.mediaTarget = null;
+  $("#media-dialog").close();
+  $("#record-list").replaceChildren();
+  $("#admin-count").textContent = "";
+  $("#section-title").textContent = section.title;
+  $("#section-description").textContent = section.description;
+  $("#add-item").textContent = section.add;
+  $("#admin-search").value = "";
+  $("#admin-filter").value = "all";
+  $("#admin-no-results").hidden = true;
+  $("#admin-filter").querySelectorAll("option").forEach((option) => option.hidden = ["series", "showcase"].includes(option.value) && tab !== "audiovisuals");
+  $("#editor-list").innerHTML = '<div class="state">Carregando projetos…</div>';
+  notice("");
+  try {
+    let items;
+    if (tab === "music") {
+      const [playlist, manual] = await Promise.all([request("/?admin=true"), request("/api/manual-music?admin=true")]);
+      const merged = /* @__PURE__ */ new Map();
+      playlist.forEach((item) => merged.set(item.id, { ...item, manual: false }));
+      manual.forEach((item) => merged.set(item.id, { ...item, manual: true }));
+      items = [...merged.values()];
+    } else items = await request(section.endpoint + "?admin=true");
+    if (!Array.isArray(items)) throw new Error("O servidor não retornou uma lista válida.");
+    if (tab === "games") items = await Promise.all(items.map(async (game) => {
+      const id = encodeURIComponent(game.appId), [tags, credits] = await Promise.all([request("/api/games/tags?id=" + id), request("/api/game/credits?id=" + id)]);
+      return { ...game, tags: tags.tags || [], ...credits };
+    }));
+    if (generation !== studio.loading || !studio.token) return;
+    studio.records = items;
+    studio.activeIndex = 0;
+    renderRecords();
+  } catch (error) {
+    if (generation !== studio.loading) return;
+    studio.records = [];
+    renderRecordList();
+    $("#editor-list").innerHTML = '<div class="state">' + esc(error.message) + '<button type="button" data-retry>Tentar novamente</button></div>';
+  } finally {
+    if (generation === studio.loading) { studio.loadingSection = false; $("#add-item").disabled = false; }
+  }
+}
+function imageInput(control) {
+  return control.closest(".media-field")?.querySelector('input[type="url"]');
+}
+function setInput(input, value) {
+  if (!input?.isConnected) return;
+  input.value = value ?? "";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+}
+function updateImage(input) {
+  const preview = input.closest(".media-field")?.querySelector(".image-preview");
+  if (!preview) return;
+  const url = safeURL(input.value);
+  preview.hidden = !url;
+  const image = preview.querySelector("img");
+  if (url) { image.hidden = false; image.src = url; }
+  else image.removeAttribute("src");
+}
+async function uploadImage(input) {
+  const form = input.closest("form"), file = input.files?.[0], target = imageInput(input), status = input.closest(".media-field").querySelector(".upload-status");
+  if (!file || studio.busy) return;
+  if (file.size > 10 * 1024 * 1024 || !imageAccept.split(",").includes(file.type)) {
+    status.textContent = "Escolha uma imagem JPG, PNG, WebP, GIF ou AVIF de até 10 MiB.";
+    status.classList.add("error");
+    input.value = "";
+    return;
+  }
+  await operation(form, async () => {
+    status.classList.remove("error");
+    status.textContent = "Enviando imagem…";
+    input.dataset.uploading = "true";
+    try {
+      const result = await PortfolioAPI.upload("/api/uploads/images", file, input.dataset.uploadPurpose, studio.token);
+      const url = safeURL(result?.url);
+      if (!url) throw new Error("O servidor não retornou uma imagem válida.");
+      if (target.isConnected) {
+        setInput(target, url);
+        status.textContent = "Imagem enviada. Salve o item para aplicar.";
+      }
+    } catch (error) {
+      if (error.status === 401) logout(true);
+      status.classList.add("error");
+      status.textContent = error.message;
+    } finally {
+      delete input.dataset.uploading;
+      input.value = "";
+    }
+  });
+}
+async function importVideo(form, row) {
+  const target = (name) => row ? row.querySelector('[data-episode-field="' + name + '"]') : form.elements[name];
+  const url = target("url")?.value.trim(), status = row?.querySelector(".episode-status") || form.querySelector(":scope > .status");
+  if (!safeURL(url)) {
+    status.textContent = "Informe uma URL válida para buscar os dados.";
+    return;
+  }
+  await operation(form, async () => {
+    status.textContent = "Buscando dados do vídeo…";
+    const info = await request("/api/fetch-video-info?url=" + encodeURIComponent(url));
+    if (!form.isConnected || row && !row.isConnected) return;
+    for (const name of ["title", "description", "thumbnail", "publishedAt"]) if (target(name) && !target(name).value.trim()) setInput(target(name), info[name] || "");
+    if (target("viewCount")) setInput(target("viewCount"), info.viewCount || 0);
+    if (!row) { form.dataset.importSource = url; form.dataset.imported = JSON.stringify({ viewCount: info.viewCount || 0, publishedAt: info.publishedAt || "", channelTitle: info.channelTitle || "", channelId: info.channelId || "" }); }
+    markDirty(form);
+    syncEpisodeRows(form);
+    status.textContent = "Dados importados nos campos vazios. Revise e salve.";
+  });
+}
+function appendEpisode(form, record) {
+  const list = form.querySelector(".episodes-list");
+  list.insertAdjacentHTML("beforeend", episodeEditor(record, list.children.length));
+  list.lastElementChild.open = true;
+  syncEpisodeRows(form);
+  markDirty(form);
+}
+async function importBulk(form) {
+  const textarea = form.querySelector("[data-bulk-episodes]"), status = form.querySelector(".bulk-status");
+  const urls = [...new Set(textarea.value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean))];
+  if (!urls.length || urls.length > 50 || urls.some((url) => !safeURL(url))) {
+    status.textContent = "Informe de 1 a 50 URLs válidas, uma por linha.";
+    return;
+  }
+  if (form.querySelectorAll(".episode-editor").length + urls.length > 200) {
+    status.textContent = "Uma série pode ter até 200 episódios.";
+    return;
+  }
+  await operation(form, async () => {
+    let failed = 0;
+    for (let index = 0; index < urls.length; index++) {
+      status.textContent = "Importando " + (index + 1) + " de " + urls.length + "…";
+      let info = {};
+      try {
+        info = await request("/api/fetch-video-info?url=" + encodeURIComponent(urls[index]));
+      } catch (error) {
+        if (error.status === 401) throw error;
+        failed++;
+      }
+      if (!form.isConnected) return;
+      appendEpisode(form, { ...info, id: void 0, url: urls[index], title: info.title || "Episódio " + (form.querySelectorAll(".episode-editor").length + 1), published: false });
+      form.querySelector(".episode-editor:last-child").open = false;
+    }
+    textarea.value = "";
+    status.textContent = urls.length + " episódios adicionados como rascunho." + (failed ? " " + failed + " vídeos precisam de revisão manual dos dados." : "");
+  });
+}
+async function openMedia(form, input) {
+  if (studio.busy || !input) return;
+  studio.mediaTarget = input;
+  $("#media-search").value = "";
+  $("#media-grid").replaceChildren();
+  $("#media-status").textContent = "Carregando imagens…";
+  $("#media-dialog").showModal();
+  await operation(form, async () => {
+    const images = [];
+    const add = (record) => {
+      for (const key of ["image", "cover", "poster", "thumbnail", "creditsImage"]) if (safeURL(record[key])) images.push({ url: safeURL(record[key]), title: record.name || record.title || "Imagem do portfólio" });
+      (Array.isArray(record.episodes) ? record.episodes : []).forEach((episode) => {
+        if (safeURL(episode.thumbnail)) images.push({ url: safeURL(episode.thumbnail), title: episode.title || record.title });
       });
-      for (const name of ['viewCount', 'order']) episode[name] = Number(episode[name] || 0);
+    };
+    studio.records.forEach(add);
+    form.querySelectorAll(".media-field input[type=url]").forEach((field2) => {
+      if (safeURL(field2.value)) images.push({ url: safeURL(field2.value), title: field2.closest("label").firstChild.textContent });
+    });
+    const results = await Promise.allSettled(Object.values(sections).map((section) => request(section.endpoint + "?admin=true")));
+    results.forEach((result) => {
+      if (result.status === "fulfilled" && Array.isArray(result.value)) result.value.forEach(add);
+    });
+    if (!studio.token || !input.isConnected || studio.mediaTarget !== input || !$("#media-dialog").open) return;
+    studio.media = [...new Map(images.map((image) => [image.url, image])).values()];
+    $("#media-status").textContent = studio.media.length + " imagens disponíveis." + (results.some((result) => result.status === "rejected") ? " Algumas categorias não puderam ser carregadas." : "");
+    renderMedia();
+  });
+}
+function renderMedia() {
+  const query = $("#media-search").value.toLowerCase().trim(), images = studio.media.filter((image) => image.title.toLowerCase().includes(query));
+  $("#media-grid").replaceChildren(...images.map((image) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.mediaUrl = image.url;
+    button.innerHTML = '<img src="' + esc(image.url) + '" alt="" loading="lazy"><span>' + esc(image.title) + "</span>";
+    return button;
+  }));
+  if (!images.length) $("#media-status").textContent = "Nenhuma imagem corresponde à busca.";
+}
+function readFields(form, record) {
+  const values = Object.fromEntries(new FormData(form));
+  form.querySelectorAll("input[type=checkbox][name]").forEach((input) => values[input.name] = input.checked);
+  if ("order" in values) values.order = Number(values.order) || 0;
+  if (form.elements.format) {
+    values.episodes = [...form.querySelectorAll(".episode-editor")].map((row, index) => {
+      const idInput = row.querySelector("[data-episode-field=id]");
+      if (!idInput.value) idInput.value = crypto.randomUUID();
+      const episode = { ...(record.episodes || []).find((item) => item.id === idInput.value) };
+      row.querySelectorAll("[data-episode-field]").forEach((input) => episode[input.dataset.episodeField] = input.type === "checkbox" ? input.checked : input.value);
+      episode.order = index;
+      episode.viewCount = Number(episode.viewCount) || 0;
+      if (!episode.title.trim() || !safeURL(episode.url)) throw new Error("Complete o título e a URL de todos os episódios na aba Episódios.");
       return episode;
     });
   }
-  for (const name of ['image','cover','poster','thumbnail','creditsImage','url']) {
-    if (data[name] && !safeURL(data[name])) throw new Error('Use uma URL HTTP ou HTTPS válida no campo ' + name + '.');
-  }
-  if (data.href && !safeURL(data.href, true)) throw new Error('Informe um destino válido para o banner.');
-  return data;
+  for (const name of ["image", "cover", "poster", "thumbnail", "creditsImage", "url"]) if (values[name] && !safeURL(values[name])) throw new Error("Use uma URL HTTP ou HTTPS válida no campo " + name + ".");
+  if (values.href && !safeURL(values.href, true)) throw new Error("Informe um destino válido para o banner.");
+  return values;
 }
-async function uploadImage(input) {
-  const form = input.closest('form');
-  if (!form || input.dataset.uploading === 'true' || !input.files?.length) return;
-  const file = input.files[0];
-  const fieldName = input.dataset.uploadField;
-  const context = input.dataset.uploadContext || '';
-  const target = context === 'episode'
-    ? input.closest('.episode-editor')?.querySelector('[data-episode-field="' + CSS.escape(fieldName) + '"]')
-    : form.elements[fieldName];
-  const status = input.closest('.media-field')?.querySelector('[data-upload-status]');
-  const saveButtons = form.querySelectorAll('button[type="submit"]');
-  input.dataset.uploading = 'true'; input.disabled = true; saveButtons.forEach(button => { button.disabled = true; });
-  if (status) { status.classList.remove('error'); status.textContent = 'Enviando…'; }
-  try {
-    const result = await PortfolioAPI.upload('/api/uploads/images', file, input.dataset.uploadPurpose, studio.token);
-    const url = safeURL(result?.url);
-    if (!url) throw new Error('O servidor não retornou uma URL de imagem válida.');
-    if (!form.isConnected || (context === 'episode' && !input.closest('.episode-editor')?.isConnected)) return;
-    if (!target) throw new Error('Não foi possível localizar o campo de imagem.');
-    target.value = url;
-    target.dispatchEvent(new Event('input', { bubbles: true }));
-    if (status) status.textContent = 'Imagem enviada. Salve o item para aplicar.';
-  } catch (error) {
-    if (status) { status.classList.add('error'); status.textContent = error.message || 'Não foi possível enviar a imagem.'; }
-  } finally {
-    input.value = '';
-    input.disabled = false;
-    delete input.dataset.uploading;
-    if (form.isConnected && !form.querySelector('[data-uploading="true"]')) saveButtons.forEach(button => { button.disabled = false; });
-  }
-}
-$('#editor-list').addEventListener('change', event => {
-  const input = event.target.closest('input[type="file"][data-upload-field]');
-  if (input) uploadImage(input);
-});
 async function saveTags(type, id, original, value) {
-  const nextNames = [...new Set((value || '').split(',').map(name => name.trim()).filter(Boolean))];
-  if (nextNames.some(name => name.length > 80)) throw new Error('Cada tag pode ter no máximo 80 caracteres.');
-  const old = (original || []).map(tag => typeof tag === 'string' ? { name: tag } : tag);
-  const endpoint = '/api/' + (type === 'games' ? 'games' : type === 'music' ? 'music' : 'audiovisuals') + '/tags';
-  // Add before removing: a failed POST must not delete the existing metadata.
-  for (const name of nextNames) {
-    if (!old.some(tag => tag.name === name)) await request(endpoint, { method: 'POST', body: { id, tag: { name, color: '#6b7194' } } });
-  }
-  for (const tag of old) {
-    if (!nextNames.includes(tag.name)) await request(endpoint + '?id=' + encodeURIComponent(id) + '&tag=' + encodeURIComponent(tag.name), { method: 'DELETE' });
-  }
-  return nextNames.map(name => old.find(tag => tag.name === name) || { name, color: '#6b7194' });
+  const nextNames = [...new Set((value || "").split(",").map((name) => name.trim()).filter(Boolean))];
+  if (nextNames.some((name) => name.length > 80)) throw new Error("Cada tag pode ter no máximo 80 caracteres.");
+  const old = (original || []).map((tag) => typeof tag === "string" ? { name: tag } : tag);
+  const endpoint = "/api/" + (type === "games" ? "games" : type === "music" ? "music" : "audiovisuals") + "/tags";
+  for (const name of nextNames) if (!old.some((tag) => tag.name === name)) await request(endpoint, { method: "POST", body: { id, tag: { name, color: "#6b7194" } } });
+  for (const tag of old) if (!nextNames.includes(tag.name)) await request(endpoint + "?id=" + encodeURIComponent(id) + "&tag=" + encodeURIComponent(tag.name), { method: "DELETE" });
+  return nextNames.map((name) => old.find((tag) => tag.name === name) || { name, color: "#6b7194" });
 }
-$('#editor-list').addEventListener('submit', async event => {
-  event.preventDefault(); const form = event.target, index = Number(form.dataset.index), record = studio.records[index];
-  if (!record) return;
-  const type = studio.tab, section = sections[type], status = form.querySelector('.status');
-  if (form.querySelector('[data-uploading="true"]')) { status.textContent = 'Aguarde o envio da imagem terminar antes de salvar.'; return; }
-  const buttons = form.querySelectorAll('button'); buttons.forEach(b=>b.disabled=true); status.classList.remove('error'); status.textContent = 'Salvando…';
+$("#editor-list").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.target, index = Number(form.dataset.index), record = studio.records[index], type = studio.tab;
+  if (!record || studio.busy) return;
+  let values;
   try {
-    const values = readFields(form); let saved;
-    if (type === 'music') {
-      await request('/api/music/lyrics', { method: 'POST', body: { id: record.id, lyrics: values.lyrics } });
-      const tags = await saveTags(type, record.id, record.tags, values.tags); saved = { ...record, lyrics: values.lyrics, tags };
-    } else {
-      const body = { ...record, ...values }; delete body._new; delete body.tags; delete body.creditsChips; delete body.creditsImage;
-      if (type === 'banners' && !body.id) body.id = crypto.randomUUID();
-      const response = await request(section.endpoint, { method: 'POST', body });
-      saved = { ...record, ...values, ...body, ...(response && typeof response === 'object' ? response : {}), _new: false };
-      if (type === 'games') {
-        const creditsChips = values.creditsChips.split('\n').filter(s=>s.trim()).map(line=>{const [name,...role]=line.split('|');return {name:name.trim(),role:role.join('|').trim()};});
-        const creditsImage = values.creditsImage || '';
-        await request('/api/game/credits', { method: 'POST', body: { id: values.appId, creditsChips, creditsImage } });
-        saved.creditsChips = creditsChips; saved.creditsImage = creditsImage;
+    values = readFields(form, record);
+  } catch (error) {
+    form.querySelector(":scope > .status").textContent = error.message;
+    return;
+  }
+  await operation(form, async () => {
+    const status = form.querySelector(":scope > .status");
+    status.textContent = "Salvando…";
+    let saved = { ...record };
+    try {
+      if (type !== "music" || record.manual) {
+        const imported = form.dataset.importSource === values.url ? JSON.parse(form.dataset.imported || "{}") : {};
+        const resetVideo = type === "audiovisuals" && values.url !== record.url ? {viewCount:0,publishedAt:"",channelTitle:"",channelId:""} : {};
+        const body = { ...record, ...resetVideo, ...imported, ...values };
+        for (const key of ["_new", "manual", "tags", "lyrics", "creditsChips", "creditsImage"]) delete body[key];
+        const response = await request(sections[type].endpoint, { method: "POST", body });
+        saved = { ...record, ...body, ...response, _new: false };
+        if (form.isConnected) {
+          studio.records[index] = saved;
+          if (type === "games") form.elements.appId.readOnly = true;
+        }
       }
-      if (type !== 'banners') saved.tags = await saveTags(type, body[section.key], record.tags, values.tags);
-      if (type === 'audiovisuals' && Array.isArray(saved.episodes)) {
-        form.querySelectorAll('.episode-editor').forEach((editor, episodeIndex) => {
-          const idInput = editor.querySelector('[data-episode-field="id"]');
-          if (idInput && saved.episodes[episodeIndex]) idInput.value = saved.episodes[episodeIndex].id;
+      const id = saved[sections[type].key];
+      if (type === "music") {
+        await request("/api/music/lyrics", { method: "POST", body: { id, lyrics: values.lyrics || "" } });
+        saved.lyrics = values.lyrics || "";
+      }
+      if (type === "games") {
+        const previous = record.creditsChips || [];
+        const creditsChips = values.creditsChips.split("\n").filter((line) => line.trim()).map((line) => {
+          const [name, ...role] = line.split("|");
+          return { ...previous.find((item) => item.name === name.trim()), name: name.trim(), role: role.join("|").trim() };
         });
+        await request("/api/game/credits", { method: "POST", body: { id, creditsChips, creditsImage: values.creditsImage || "" } });
+        saved.creditsChips = creditsChips;
+        saved.creditsImage = values.creditsImage || "";
       }
+      if (type !== "banners") saved.tags = await saveTags(type, id, record.tags, values.tags);
+      if (!form.isConnected) return;
+      studio.records[index] = saved;
+      if (Array.isArray(saved.episodes)) form.querySelectorAll(".episode-editor").forEach((row, i) => {
+        if (saved.episodes[i]) row.querySelector("[data-episode-field=id]").value = saved.episodes[i].id;
+      });
+      form.dataset.dirty = "false";
+      form.querySelector(".save-state").textContent = "Salvo";
+      form.querySelector(".save-state").classList.remove("dirty");
+      form.querySelector("h3").textContent = recordTitle(saved);
+      form.querySelector(".record-status").textContent = isPublicRecord(saved) ? "Publicado" : "Rascunho";
+      form.querySelector(".record-status").className = "record-status " + (isPublicRecord(saved) ? "published" : "draft");
+      renderRecordList();
+      status.textContent = "Salvo. O cache público foi invalidado.";
+    } catch (error) {
+      if (form.isConnected) markDirty(form);
+      throw new Error("Não foi possível concluir o salvamento. Algumas alterações podem ter sido aplicadas. " + error.message + " Revise e tente novamente.");
     }
-    studio.records[index] = saved; form.dataset.dirty = 'false';
-    form.closest('article').dataset.search = [saved.name,saved.title,saved.appId,saved.id].filter(Boolean).join(' ').toLowerCase();
-    form.querySelector('h3').textContent = saved.name || saved.title; status.textContent = 'Salvo. O cache público foi invalidado.';
-    if (type === 'games') form.elements.appId.readOnly = true;
-  } catch (error) { status.classList.add('error'); status.textContent = 'As alterações podem ter sido salvas parcialmente. ' + error.message + ' Revise e tente novamente.'; }
-  finally { buttons.forEach(b=>b.disabled=false); }
+  });
 });
-$('#editor-list').addEventListener('click', async event => {
-  const button = event.target.closest('[data-delete]'); if (!button) return;
-  const form = button.closest('form'), record = studio.records[Number(form.dataset.index)], section = sections[studio.tab];
-  if (document.querySelector('[data-dirty="true"]') && !confirm('A exclusão recarrega a lista e descarta alterações ainda não salvas. Deseja continuar?')) return;
-  if (!confirm('Excluir “' + (record.name || record.title || 'este item') + '”?')) return;
-  if (record._new) { studio.records.splice(Number(form.dataset.index),1); renderRecords(); return; }
-  button.disabled = true;
-  try { await request(section.endpoint + '?' + section.key + '=' + encodeURIComponent(record[section.key]), { method: 'DELETE' }); await loadSection(); }
-  catch (error) { const status = form.querySelector('.status'); status.classList.add('error'); status.textContent = error.message; button.disabled=false; }
+$("#editor-list").addEventListener("input", (event) => {
+  const form = event.target.closest("form");
+  if (!form) return;
+  markDirty(form);
+  if (event.target.matches('.media-field input[type="url"]')) updateImage(event.target);
+  if (event.target.name === "url") { delete form.dataset.imported; delete form.dataset.importSource; }
+  if (event.target.closest(".episode-editor")) syncEpisodeRows(form);
+  if (studio.tab === "banners") bannerPreview(form);
 });
-$('#add-item').addEventListener('click', () => {
-  if (document.querySelector('[data-dirty="true"]') && !confirm('Há alterações não salvas. Deseja descartá-las para criar um item?')) return;
-  if (studio.tab === 'music') { $('#import-form').reset(); $('#import-dialog .status').textContent=''; $('#import-dialog').showModal(); return; }
-  if (studio.tab === 'audiovisuals') studio.records.unshift({ _new:true, id: crypto.randomUUID(), title:'', format:'short-film', episodes:[], published:false, showcase:false, featured:false, order:0 });
-  else studio.records.unshift(studio.tab === 'games' ? { _new:true, appId:'', name:'', tags:[], creditsChips:[] } : { _new:true, title:'', enabled:false, order:0 });
-  renderRecords(); $('#editor-list form input').focus();
+$("#editor-list").addEventListener("change", (event) => {
+  const form = event.target.closest("form");
+  if (!form) return;
+  if (event.target.matches("input[type=file]")) {
+    uploadImage(event.target);
+    return;
+  }
+  markDirty(form);
+  if (event.target.name === "format" && event.target.value === "series" && !form.querySelector(".episode-editor") && form.elements.url.value.trim()) appendEpisode(form, { title: form.elements.title.value, url: form.elements.url.value, thumbnail: form.elements.thumbnail.value, description: form.elements.description.value, published: false });
+  syncFormatUI(form);
+  syncEpisodeRows(form);
 });
-$('.dialog-close').addEventListener('click', ()=>$('#import-dialog').close());
-$('#import-form').addEventListener('submit', async event => {
-  event.preventDefault(); const form=event.target, button=form.querySelector('[type=submit]'), status=form.querySelector('.status');button.disabled=true;status.textContent='Buscando informações…';
-  try {
-    const url = $('#video-url').value.trim();
-    const info = await request('/api/fetch-video-info?url=' + encodeURIComponent(url));
-    const body = { ...info, url };
-    if (studio.tab === 'audiovisuals') { delete body.id; Object.assign(body, { provider:'youtube',published:true,featured:false,order:0 }); }
-    await request(sections[studio.tab].endpoint,{method:'POST',body});$('#import-dialog').close();await loadSection();
-  } catch(error){status.textContent=error.message;}finally{button.disabled=false;}
+$("#editor-list").addEventListener("click", async (event) => {
+  if (event.target.closest("[data-retry]")) {
+    if (!studio.busy) loadSection();
+    return;
+  }
+  const form = event.target.closest("form");
+  if (!form || studio.busy) return;
+  const tab = event.target.closest("button[data-editor-tab]");
+  if (tab) {
+    setEditorTab(form, tab.dataset.editorTab);
+    return;
+  }
+  const picker = event.target.closest("[data-pick-image]");
+  if (picker) {
+    await openMedia(form, imageInput(picker));
+    return;
+  }
+  const clear = event.target.closest("[data-clear-image]");
+  if (clear) {
+    setInput(imageInput(clear), "");
+    return;
+  }
+  if (event.target.closest("[data-import-work],[data-import-video]")) {
+    await importVideo(form, event.target.closest(".episode-editor"));
+    return;
+  }
+  if (event.target.closest("[data-import-bulk]")) {
+    await importBulk(form);
+    return;
+  }
+  if (event.target.closest("[data-add-episode]")) {
+    if (form.querySelectorAll(".episode-editor").length >= 200) {
+      form.querySelector(":scope > .status").textContent = "Limite de 200 episódios atingido.";
+      return;
+    }
+    appendEpisode(form, { published: false });
+    return;
+  }
+  const remove = event.target.closest("[data-remove-episode]");
+  if (remove) {
+    const row = remove.closest(".episode-editor");
+    if (!confirm("Remover este episódio? A remoção será aplicada ao salvar a obra.")) return;
+    row.remove();
+    syncEpisodeRows(form);
+    markDirty(form);
+    return;
+  }
+  const move = event.target.closest("[data-move-episode]");
+  if (move) {
+    const row = move.closest(".episode-editor"), list = row.parentElement;
+    if (move.dataset.moveEpisode === "up" && row.previousElementSibling) list.insertBefore(row, row.previousElementSibling);
+    if (move.dataset.moveEpisode === "down" && row.nextElementSibling) list.insertBefore(row.nextElementSibling, row);
+    syncEpisodeRows(form);
+    markDirty(form);
+    return;
+  }
+  if (event.target.closest("[data-delete]")) {
+    const record = studio.records[Number(form.dataset.index)];
+    if (!confirm("Excluir “" + recordTitle(record) + "”?")) return;
+    if (record._new) {
+      studio.records.splice(studio.activeIndex, 1);
+      studio.activeIndex = 0;
+      renderRecords();
+      return;
+    }
+    await operation(form, async () => {
+      await request(sections[studio.tab].endpoint + "?" + sections[studio.tab].key + "=" + encodeURIComponent(record[sections[studio.tab].key]), { method: "DELETE" });
+      await loadSection();
+    });
+  }
 });
-$('#refresh').addEventListener('click',async event=>{
-  if (document.querySelector('[data-dirty="true"]') && !confirm('Há alterações não salvas. Deseja descartá-las para atualizar?')) return;
-  const button=event.target;button.disabled=true;notice('');
-  try{await request('/refresh',{method:'POST'});PortfolioAPI.clear();await loadSection();notice('Cache atualizado. As próximas visitas buscarão os dados atuais.');}
-  catch(error){notice(error.message);}finally{button.disabled=false;}
-});
-window.addEventListener('beforeunload',event=>{if(document.querySelector('[data-dirty="true"]')){event.preventDefault();event.returnValue='';}});
-
-$('#admin-search').addEventListener('input', event => {
-  const query = event.target.value.toLowerCase().trim();
-  let visible = 0;
-  $('#editor-list').querySelectorAll('.editor-card').forEach(card => { card.hidden = !card.dataset.search.includes(query); if (!card.hidden) visible++; });
-  $('#admin-no-results').hidden = visible > 0 || !studio.records.length;
-  $('#admin-count').textContent = visible + ' de ' + studio.records.length + ' itens';
-});
-
-$('#editor-list').addEventListener('error', event => {
-  if (event.target.matches('img')) event.target.hidden = true;
+$("#editor-list").addEventListener("invalid", (event) => {
+  const panel = event.target.closest("[data-editor-section]"), form = event.target.closest("form");
+  if (!panel || !form) return;
+  const row = event.target.closest(".episode-editor");
+  if (row) row.open = true;
+  const details = event.target.closest("details");
+  if (details) details.open = true;
+  setEditorTab(form, panel.dataset.editorSection);
 }, true);
+$("#editor-list").addEventListener("keydown", (event) => {
+  const tab = event.target.closest("button[data-editor-tab]");
+  if (!tab || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+  event.preventDefault();
+  const tabs = [...tab.parentElement.querySelectorAll("button:not([hidden])")], i = tabs.indexOf(tab);
+  const next = event.key === "Home" ? tabs[0] : event.key === "End" ? tabs.at(-1) : tabs[(i + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+  setEditorTab(tab.closest("form"), next.dataset.editorTab);
+  next.focus();
+});
+$("#record-list").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-select-record]");
+  if (!button || Number(button.dataset.selectRecord) === studio.activeIndex || !canNavigate()) return;
+  studio.activeIndex = Number(button.dataset.selectRecord);
+  renderRecords();
+  if (matchMedia("(max-width:760px)").matches) $("#editor-list").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+$("#admin-search").addEventListener("input", renderRecordList);
+$("#admin-filter").addEventListener("change", renderRecordList);
+$(".tabs").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-tab]");
+  if (!button || button.dataset.tab === studio.tab || !canNavigate()) return;
+  studio.tab = button.dataset.tab;
+  $(".tabs").querySelectorAll("button").forEach((tab) => tab.removeAttribute("aria-current"));
+  button.setAttribute("aria-current", "page");
+  loadSection();
+});
+$("#add-item").addEventListener("click", () => {
+  if (!canNavigate()) return;
+  if (studio.tab === "music") {
+    $("#import-form").reset();
+    $("#import-dialog .status").textContent = "";
+    $("#import-dialog").showModal();
+    return;
+  }
+  const record = studio.tab === "games" ? { appId: "", name: "", tags: [], creditsChips: [] } : studio.tab === "banners" ? { id: crypto.randomUUID(), title: "", enabled: false, order: 0 } : { id: crypto.randomUUID(), title: "", format: "short-film", episodes: [], published: false, showcase: false, featured: false, order: 0 };
+  studio.records.unshift({ ...record, _new: true });
+  studio.activeIndex = 0;
+  $("#admin-search").value = "";
+  $("#admin-filter").value = "all";
+  renderRecords();
+  $("#editor-list input:not([type=hidden])").focus();
+});
+$("#refresh").addEventListener("click", async () => {
+  if (!canNavigate("Há alterações não salvas. Deseja descartá-las para atualizar?")) return;
+  const button = $("#refresh");
+  button.disabled = true;
+  studio.busy = true;
+  try {
+    await request("/refresh", { method: "POST" });
+    PortfolioAPI.clear();
+    await loadSection();
+    notice("Dados atualizados.");
+  } catch (error) {
+    notice(error.message);
+  } finally {
+    button.disabled = false;
+    studio.busy = false;
+  }
+});
+$("#media-dialog").addEventListener("click", (event) => {
+  if (event.target.closest("[data-close-media]")) {
+    $("#media-dialog").close();
+    return;
+  }
+  const choice = event.target.closest("[data-media-url]");
+  if (!choice || studio.busy) return;
+  setInput(studio.mediaTarget, choice.dataset.mediaUrl);
+  $("#media-dialog").close();
+});
+$("#media-dialog").addEventListener("close", () => studio.mediaTarget = null);
+$("#media-search").addEventListener("input", renderMedia);
+$("#import-dialog .dialog-close").addEventListener("click", () => {
+  if (!studio.busy) $("#import-dialog").close();
+});
+$("#import-dialog").addEventListener("cancel", (event) => {
+  if (studio.busy) event.preventDefault();
+});
+$("#import-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = event.target;
+  await operation(form, async () => {
+    form.querySelector(":scope > .status").textContent = "Buscando vídeo…";
+    const url = $("#video-url").value.trim(), info = await request("/api/fetch-video-info?url=" + encodeURIComponent(url));
+    await request("/api/manual-music", { method: "POST", body: { ...info, url } });
+    $("#import-dialog").close();
+    await loadSection();
+  });
+});
+$("#logout").addEventListener("click", () => logout());
+$("#login-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = $("#login-btn");
+  button.disabled = true;
+  $("#login-error").textContent = "";
+  try {
+    const data = await PortfolioAPI.request("/auth", { method: "POST", body: { password: $("#admin-password").value } });
+    if (!data.token) throw new Error("O servidor não retornou uma sessão válida.");
+    $("#admin-password").value = "";
+    showStudio(data.token);
+  } catch (error) {
+    $("#login-error").textContent = error.status === 401 ? "Senha incorreta." : error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+window.addEventListener("beforeunload", (event) => {
+  if (hasDirty() || studio.busy) {
+    event.preventDefault();
+    event.returnValue = "";
+  }
+});
+$("#editor-list").addEventListener("error", (event) => {
+  if (event.target.matches("img")) event.target.hidden = true;
+}, true);
+(async function restoreSession() {
+  const token = getStoredToken();
+  if (!token) return;
+  try {
+    await PortfolioAPI.request("/auth/check", { token });
+    showStudio(token);
+  } catch (error) {
+    if (error.status === 401) logout(true);
+    else $("#login-error").textContent = "Não foi possível verificar a sessão. Entre novamente.";
+  }
+})();
