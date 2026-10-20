@@ -189,10 +189,41 @@
       const id = url.searchParams.get('v') || url.pathname.split('/').filter(Boolean).pop(); return /^[A-Za-z0-9_-]{11}$/.test(id || '') ? id : '';
     } catch { return ''; }
   }
-  function videoPlayer(video) {
-    const id = youtubeId(video), url = safeUrl(video.url);
-    return id ? '<div class="detail-video"><iframe src="https://www.youtube.com/embed/' + id + '?rel=0&cc_lang_pref=pt" title="' + esc(video.title) + '" allow="fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>' : url ? '<a class="button button-outline" href="' + esc(url) + '" target="_blank" rel="noopener">Open translation ↗</a>' : '';
+  function artwork(...values) { return values.map(value => safeUrl(value)).find(Boolean) || ''; }
+  function playIcon() { return '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>'; }
+  function videoHeading(item, label) {
+    const meta = [item.channelTitle || item.client, item.role, date(item.publishedAt) || item.year].filter(Boolean);
+    return '<header class="watch-heading"><span class="media-kind">' + esc(label) + (item.showcase ? ' · Showcase' : '') + '</span><h2 id="detail-title">' + esc(item.title) + '</h2><p class="watch-meta"><span class="watch-views">' + formatNumber(item.viewCount) + ' views</span>' + meta.map(value => '<span>' + esc(value) + '</span>').join('') + '</p></header>';
   }
+  function videoPlayer(video, fallbackImage) {
+    const id = youtubeId(video), image = artwork(video.cover, video.thumbnail, fallbackImage, video.poster);
+    const url = safeUrl(video.url) || (id ? 'https://www.youtube.com/watch?v=' + id : '');
+    if (!id && !url) return '<p class="empty-state">This video is not available yet.</p>';
+    const label = id ? 'Play video' : 'Watch video';
+    const opening = id ? '<button type="button" class="video-launch" data-play-video="' + id + '" data-play-title="' + esc(video.title) + '" aria-label="Play ' + esc(video.title) + '">' : '<a class="video-launch external-player" href="' + esc(url) + '" target="_blank" rel="noopener">';
+    return '<div class="video-player"><div class="detail-video">' + opening + (image ? '<img class="player-art" src="' + esc(image) + '" alt="" decoding="async">' : '') + '<span class="play-control"><span class="play-disc">' + playIcon() + '</span><span>' + label + '</span></span><span class="player-caption">' + esc(video.title) + '</span>' + (id ? '</button>' : '</a>') + '</div><div class="player-toolbar"><span>' + (id ? icon('youtube') + 'YouTube' : icon('audiovisuals') + 'Video') + '</span><a href="' + esc(url) + '" target="_blank" rel="noopener">' + (id ? 'Open on YouTube' : 'Open original video') + ' ↗</a></div></div>';
+  }
+  function episodeList(item, selectedId) {
+    return '<section class="episode-section" aria-labelledby="episodes-heading"><div class="episodes-heading"><h3 id="episodes-heading">Episodes <span>' + item.episodes.length + '</span></h3><span class="episodes-caption">' + (selectedId ? 'Choose an episode' : 'All translations') + '</span></div>' + (item.episodes.length ? '<ol class="episode-list">' + item.episodes.map((entry,index) => {
+      const image = artwork(entry.thumbnail, item.cover, item.thumbnail, item.poster), active = entry.id === selectedId;
+      return '<li><a class="episode-link" href="/audiovisual/' + encodeURIComponent(item.id) + '/' + encodeURIComponent(entry.id) + '" data-route' + (active ? ' aria-current="page"' : '') + '><span class="episode-thumb">' + (image ? '<img src="' + esc(image) + '" alt="" loading="lazy">' : icon('image')) + '<span class="episode-number">' + String(index+1).padStart(2,'0') + '</span></span><div class="episode-copy"><strong>' + esc(entry.title) + '</strong><small>' + (active ? '<span class="now-playing">Selected</span>' : esc([date(entry.publishedAt), formatNumber(entry.viewCount) + ' views'].filter(Boolean).join(' · '))) + '</small></div><span class="episode-play" aria-hidden="true">' + playIcon() + '</span></a></li>';
+    }).join('') + '</ol>' : '<p class="empty-state">No episodes published yet.</p>') + '</section>';
+  }
+  function episodeNavigation(item, index) {
+    const link = (entry, next) => '<a class="episode-nav-link' + (next ? ' next' : '') + '" data-episode-' + (next ? 'next' : 'prev') + ' href="/audiovisual/' + encodeURIComponent(item.id) + '/' + encodeURIComponent(entry.id) + '" data-route>' + icon(next ? 'right' : 'left') + '<span><small>' + (next ? 'Next episode' : 'Previous episode') + '</small><strong>' + esc(entry.title) + '</strong></span></a>';
+    return '<nav class="episode-nav" aria-label="Episode navigation">' + (index > 0 ? link(item.episodes[index-1],false) : '') + (index < item.episodes.length-1 ? link(item.episodes[index+1],true) : '') + '</nav>';
+  }
+  function seriesDetail(item, episodeId) {
+    const episode = item.episodes.find(entry => entry.id === episodeId);
+    const heading = videoHeading(item, 'Series');
+    if (episode) {
+      const index = item.episodes.indexOf(episode);
+      return heading + '<div class="watch-layout"><section class="watch-main" aria-labelledby="episode-title"><div class="episode-heading"><span class="media-kind">Episode ' + String(index+1).padStart(2,'0') + '</span><h3 id="episode-title">' + esc(episode.title) + '</h3></div>' + videoPlayer(episode,artwork(item.cover,item.thumbnail,item.poster)) + episodeNavigation(item,index) + (episode.description || item.description ? '<p class="detail-description">' + esc(episode.description || item.description) + '</p>' : '') + '</section>' + episodeList(item,episodeId) + '</div>';
+    }
+    const first = item.episodes[0], image = artwork(item.cover,item.thumbnail,first?.thumbnail,item.poster);
+    return heading + (episodeId ? '<p class="detail-warning">This episode is not available.</p>' : '') + '<div class="series-overview">' + (first ? '<a class="series-cover" data-start-series data-route href="/audiovisual/' + encodeURIComponent(item.id) + '/' + encodeURIComponent(first.id) + '">' + (image ? '<img src="' + esc(image) + '" alt="" decoding="async">' : '') + '<span class="series-cover-action"><span class="play-disc">' + playIcon() + '</span><span><strong>Start watching</strong><small>' + item.episodes.length + ' episodes</small></span></span></a>' : '') + (item.description ? '<div class="series-intro"><span class="media-kind">About this series</span><p class="detail-description">' + esc(item.description) + '</p></div>' : '') + '</div>' + episodeList(item);
+  }
+
   async function showDetail(type, id, episodeId) {
     const items = type === 'games' ? state.games : state[type];
     const item = items.find(record => String(type === 'games' ? record.appId : record.id) === id);
@@ -230,11 +261,12 @@
         content.querySelectorAll('[data-gallery-index]').forEach(button => { button.onclick = () => select(Number(button.dataset.galleryIndex)); });
       }
     } else if (type === 'audiovisuals' && item.format === 'series') {
-      const episode = episodeId ? item.episodes.find(entry => entry.id === episodeId) : null;
-      content.innerHTML = '<h2 id="detail-title">' + esc(item.title) + '</h2><p class="detail-role">Series' + (item.showcase ? ' · Showcase · Uncredited work' : '') + '</p><p class="card-meta">' + esc([item.client || item.channelTitle, item.role, item.year, formatNumber(item.viewCount) + ' total views'].filter(Boolean).join(' · ')) + '</p>' + (item.description ? '<p class="detail-description">' + esc(item.description) + '</p>' : '') + (episodeId && !episode ? '<p class="detail-warning">This episode is not available.</p>' : '') + (episode ? '<section class="episode-player" aria-labelledby="episode-title"><h3 id="episode-title">' + esc(episode.title) + '</h3>' + videoPlayer(episode) + (episode.description ? '<p class="detail-description">' + esc(episode.description) + '</p>' : '') + '</section>' : '') + '<section class="episode-section" aria-labelledby="episodes-heading"><h3 id="episodes-heading">Episodes <span>' + item.episodes.length + '</span></h3>' + (item.episodes.length ? '<ol class="episode-list">' + item.episodes.map((entry, index) => '<li><a class="episode-link" href="/audiovisual/' + encodeURIComponent(id) + '/' + encodeURIComponent(entry.id) + '" data-route' + (entry.id === episodeId ? ' aria-current="page"' : '') + '><span class="episode-number">' + String(index + 1).padStart(2, '0') + '</span><div><strong>' + esc(entry.title) + '</strong><small>' + esc([date(entry.publishedAt), formatNumber(entry.viewCount) + ' views'].filter(Boolean).join(' · ')) + '</small></div><span class="episode-play" aria-hidden="true">▶</span></a></li>').join('') + '</ol>' : '<p class="empty-state">No episodes published yet.</p>') + '</section>';
+      content.innerHTML = seriesDetail(item, episodeId);
+      bindImages(content);
       if (episodeId) { byId('detail-back').href = '/audiovisual/' + encodeURIComponent(id); byId('detail-back').innerHTML = icon('left') + 'Back to ' + esc(item.title); }
     } else {
-      content.innerHTML = '<h2 id="detail-title">' + esc(item.title) + '</h2>' + (type === 'audiovisuals' ? '<p class="detail-role">Short film' + (item.showcase ? ' · Showcase · Uncredited work' : '') + '</p>' : '') + '<p class="card-meta">' + esc([formatNumber(item.viewCount) + ' views', item.channelTitle || item.client, date(item.publishedAt) || item.year, item.role].filter(Boolean).join(' · ')) + '</p>' + videoPlayer(item) + '<p class="detail-description">' + esc(item.description || '') + '</p>' + (type === 'music' ? '<h3>Lyrics / Translation</h3><div id="lyrics-detail" class="detail-description" aria-live="polite">Loading lyrics…</div>' : '');
+      content.innerHTML = videoHeading(item, type === 'music' ? 'Music translation' : 'Short film') + videoPlayer(item) + (item.description ? '<p class="detail-description">' + esc(item.description) + '</p>' : '') + (type === 'music' ? '<section class="translation-panel"><h3>Lyrics / Translation</h3><div id="lyrics-detail" class="detail-description" aria-live="polite">Loading lyrics…</div></section>' : '');
+      bindImages(content);
       if (type === 'music') {
         try { const result = await PortfolioAPI.get('/api/music/lyrics?id=' + encodeURIComponent(id), { ttl: 600000 }); if (sequence === detailSequence) byId('lyrics-detail').textContent = result.lyrics || 'No lyrics available yet.'; }
         catch { if (sequence === detailSequence) byId('lyrics-detail').textContent = 'Lyrics could not be loaded. Please reopen the project to retry.'; }
@@ -288,6 +320,21 @@
     byId('work-search').addEventListener('input', event => { state.query = event.target.value.toLowerCase().trim(); renderCollection(); });
     byId('work-sort').addEventListener('change', event => { state.sort = event.target.value; renderCollection(); });
     document.addEventListener('click', event => {
+      const play = event.target.closest('[data-play-video]');
+      if (play) {
+        const id = play.dataset.playVideo;
+        if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube.com/embed/' + id + '?rel=0&cc_lang_pref=pt&autoplay=1';
+        iframe.title = play.dataset.playTitle || 'Video';
+        iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        iframe.allowFullscreen = true;
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        play.closest('.detail-video').replaceChildren(iframe);
+        iframe.focus({ preventScroll: true });
+        return;
+      }
+
       const contactMenu = document.querySelector('.contact-menu[open]');
       if (contactMenu && !contactMenu.contains(event.target)) contactMenu.open = false;
       const anchor = event.target.closest('a');
