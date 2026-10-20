@@ -5,7 +5,8 @@ const sections = {
   games: { title: "Jogos", description: "Informações, imagens e créditos dos jogos.", add: "+ Novo jogo", endpoint: "/api/games", key: "appId" },
   audiovisuals: { title: "Audiovisuais", description: "Vídeos, séries, episódios e imagens das suas obras.", add: "+ Nova obra", endpoint: "/api/audiovisuals", key: "id" },
   music: { title: "Músicas", description: "Vídeos, traduções e tags.", add: "+ Importar música", endpoint: "/api/manual-music", key: "id" },
-  banners: { title: "Banners", description: "Imagens, mensagens e destinos dos banners.", add: "+ Criar banner", endpoint: "/api/banners", key: "id" }
+  banners: { title: "Banners", description: "Imagens, mensagens e destinos dos banners.", add: "+ Criar banner", endpoint: "/api/banners", key: "id" },
+  tracking: { title: "Links rastreáveis", description: "Crie links para acompanhar visitas ao seu portfólio.", add: "", endpoint: "/api/tracking/links", key: "id" }
 };
 const imageAccept = "image/jpeg,image/png,image/webp,image/gif,image/avif";
 function esc(value) {
@@ -25,7 +26,7 @@ function notice(message) {
   $("#notice").hidden = !message;
 }
 function hasDirty() {
-  return !!$('#editor-list form[data-dirty="true"]');
+  return !!$('#editor-list form[data-dirty="true"]') || !!window.PortfolioTrackingAdmin?.hasDirty();
 }
 function markDirty(form) {
   if (!form?.isConnected) return;
@@ -35,7 +36,7 @@ function markDirty(form) {
   state.classList.add("dirty");
 }
 function canNavigate(message = "Há alterações não salvas. Deseja descartá-las?") {
-  if (studio.busy || studio.loadingSection) {
+  if (studio.busy || studio.loadingSection || window.PortfolioTrackingAdmin?.isBusy()) {
     notice("Aguarde a operação terminar antes de trocar de projeto.");
     return false;
   }
@@ -73,6 +74,7 @@ function showStudio(token) {
 }
 function logout(force = false) {
   if (!force && !canNavigate()) return;
+  window.PortfolioTrackingAdmin?.reset();
   studio.token = null;
   studio.loadingSection = false;
   studio.records = [];
@@ -275,6 +277,10 @@ function renderRecords() {
   if (record._new) markDirty(form);
 }
 async function loadSection() {
+  window.PortfolioTrackingAdmin?.reset();
+  $(".workspace").classList.toggle("tracking-workspace", studio.tab === "tracking");
+  $("#editor-list").classList.remove("tracking-root");
+  $("#add-item").hidden = studio.tab === "tracking";
   studio.loadingSection = true;
   $("#add-item").disabled = true;
   const tab = studio.tab, section = sections[tab], generation = ++studio.loading;
@@ -292,6 +298,11 @@ async function loadSection() {
   $("#editor-list").innerHTML = '<div class="state">Carregando projetos…</div>';
   notice("");
   try {
+    if (tab === "tracking") {
+      studio.records = [];
+      await window.PortfolioTrackingAdmin.render({ request, container: $("#editor-list"), notify: notice });
+      return;
+    }
     let items;
     if (tab === "music") {
       const [playlist, manual] = await Promise.all([request("/?admin=true"), request("/api/manual-music?admin=true")]);
@@ -441,7 +452,7 @@ async function openMedia(form, input) {
     form.querySelectorAll(".media-field input[type=url]").forEach((field2) => {
       if (safeURL(field2.value)) images.push({ url: safeURL(field2.value), title: field2.closest("label").firstChild.textContent });
     });
-    const results = await Promise.allSettled(Object.values(sections).map((section) => request(section.endpoint + "?admin=true")));
+    const results = await Promise.allSettled(Object.entries(sections).filter(([name]) => name !== "tracking").map(([, section]) => request(section.endpoint + "?admin=true")));
     results.forEach((result) => {
       if (result.status === "fulfilled" && Array.isArray(result.value)) result.value.forEach(add);
     });
@@ -492,6 +503,7 @@ async function saveTags(type, id, original, value) {
   return nextNames.map((name) => old.find((tag) => tag.name === name) || { name, color: "#6b7194" });
 }
 $("#editor-list").addEventListener("submit", async (event) => {
+  if (studio.tab === "tracking") return;
   event.preventDefault();
   const form = event.target, index = Number(form.dataset.index), record = studio.records[index], type = studio.tab;
   if (!record || studio.busy) return;
@@ -555,6 +567,7 @@ $("#editor-list").addEventListener("submit", async (event) => {
   });
 });
 $("#editor-list").addEventListener("input", (event) => {
+  if (studio.tab === "tracking") return;
   const form = event.target.closest("form");
   if (!form) return;
   markDirty(form);
@@ -564,6 +577,7 @@ $("#editor-list").addEventListener("input", (event) => {
   if (studio.tab === "banners") bannerPreview(form);
 });
 $("#editor-list").addEventListener("change", (event) => {
+  if (studio.tab === "tracking") return;
   const form = event.target.closest("form");
   if (!form) return;
   if (event.target.matches("input[type=file]")) {
@@ -576,6 +590,7 @@ $("#editor-list").addEventListener("change", (event) => {
   syncEpisodeRows(form);
 });
 $("#editor-list").addEventListener("click", async (event) => {
+  if (studio.tab === "tracking") return;
   if (event.target.closest("[data-retry]")) {
     if (!studio.busy) loadSection();
     return;
@@ -679,6 +694,7 @@ $(".tabs").addEventListener("click", (event) => {
   studio.tab = button.dataset.tab;
   $(".tabs").querySelectorAll("button").forEach((tab) => tab.removeAttribute("aria-current"));
   button.setAttribute("aria-current", "page");
+  button.scrollIntoView({ block: "nearest", inline: "nearest" });
   loadSection();
 });
 $("#add-item").addEventListener("click", () => {
@@ -703,8 +719,10 @@ $("#refresh").addEventListener("click", async () => {
   button.disabled = true;
   studio.busy = true;
   try {
-    await request("/refresh", { method: "POST" });
-    PortfolioAPI.clear();
+    if (studio.tab !== "tracking") {
+      await request("/refresh", { method: "POST" });
+      PortfolioAPI.clear();
+    }
     await loadSection();
     notice("Dados atualizados.");
   } catch (error) {
@@ -761,7 +779,7 @@ $("#login-form").addEventListener("submit", async (event) => {
   }
 });
 window.addEventListener("beforeunload", (event) => {
-  if (hasDirty() || studio.busy) {
+  if (hasDirty() || studio.busy || window.PortfolioTrackingAdmin?.isBusy()) {
     event.preventDefault();
     event.returnValue = "";
   }

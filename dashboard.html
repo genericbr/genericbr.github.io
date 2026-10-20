@@ -4,12 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin · GenericBR</title>
-<link rel="stylesheet" href="/dashboard.css?v=20261019-admin3">
+<link rel="stylesheet" href="/dashboard.css?v=20261020-tracking1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="/config.js" defer></script>
 <script src="/js/api.js" defer></script>
-<script src="/js/admin.js?v=20261019-admin3" defer></script>
+<script src="/js/tracking-admin.js?v=20261020-tracking1" defer></script>
+<script src="/js/admin.js?v=20261020-tracking1" defer></script>
 </head>
 <body>
 <header class="studio-header"><a class="brand" href="/">GenericBR<span>·</span><small>Admin</small></a><div class="header-actions"><a href="/" target="_blank" rel="noopener">Ver site ↗</a><button id="logout" class="secondary" hidden>Sair</button></div></header>
@@ -17,7 +18,7 @@
 <section id="login-section" class="login-card"><h1>Editar portfólio</h1><form id="login-form"><label for="admin-password">Senha de administrador</label><input type="password" id="admin-password" autocomplete="current-password" required><button id="login-btn" type="submit">Entrar</button><p id="login-error" class="status" role="alert"></p></form></section>
 <section id="admin-content" hidden>
 <div class="page-heading"><div><p class="eyebrow">SEU PORTFÓLIO</p><h1>Painel de edição</h1><p class="muted">Escolha um projeto e organize seu conteúdo.</p></div><button id="refresh" class="secondary">↻ Atualizar dados</button></div>
-<nav class="tabs" aria-label="Categorias"><button data-tab="games" aria-current="page">Jogos</button><button data-tab="audiovisuals">Audiovisuais</button><button data-tab="music">Músicas</button><button data-tab="banners">Banners</button></nav>
+<nav class="tabs" aria-label="Categorias"><button data-tab="games" aria-current="page">Jogos</button><button data-tab="audiovisuals">Audiovisuais</button><button data-tab="music">Músicas</button><button data-tab="banners">Banners</button><button data-tab="tracking">Links</button></nav>
 <div class="toolbar"><div><h2 id="section-title">Jogos</h2><span id="admin-count" class="admin-count"></span><p id="section-description" class="muted"></p></div><button id="add-item">+ Novo jogo</button></div>
 <div id="notice" class="notice" role="status" hidden></div>
 <div class="workspace">

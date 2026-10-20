@@ -29,7 +29,7 @@
     discord: '<path d="M20.3 4.4A19.2 19.2 0 0 0 15.6 3c-.2.4-.5.9-.6 1.3a17.8 17.8 0 0 0-5.9 0A13 13 0 0 0 8.4 3 19.4 19.4 0 0 0 3.7 4.4 20.3 20.3 0 0 0 .5 18.7a19.4 19.4 0 0 0 5.9 3 14 14 0 0 0 1.2-2 12.7 12.7 0 0 1-2-.9l.5-.4a13.8 13.8 0 0 0 11.8 0l.5.4a12.7 12.7 0 0 1-2 1 14 14 0 0 0 1.2 2 19.3 19.3 0 0 0 5.9-3A20.2 20.2 0 0 0 20.3 4.4zM8.2 15.3c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6zm7.6 0c-1.3 0-2.3-1.2-2.3-2.6s1-2.6 2.3-2.6c1.3 0 2.3 1.2 2.3 2.6s-1 2.6-2.3 2.6z"/>'
   };
   function icon(name) {
-    if (name === 'games') return '<span class="steam-icon">' + icon('gamepad') + '<img src="/images/steam-icon.png" alt="" aria-hidden="true"></span>';
+    if (name === 'games') return '<span class="icon steam-icon" aria-hidden="true"></span>';
     return '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" ' + (logos[name] ? 'fill="currentColor"' : 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"') + '>' + (logos[name] || paths[name] || paths.image) + '</svg>';
   }
   function date(value) {
@@ -276,7 +276,10 @@
   function handleRoute() {
     let path = location.pathname;
     const redirected = new URLSearchParams(location.search).get('path');
-    if (redirected?.startsWith('/') && !redirected.startsWith('//')) { history.replaceState(null, '', redirected); path = location.pathname; }
+    if (redirected?.startsWith('/') && !redirected.startsWith('//') && !/[\\\u0000-\u0020]/.test(redirected)) {
+      const target = new URL(redirected, location.origin);
+      if (target.origin === location.origin) { history.replaceState(null, '', target.pathname + target.search + target.hash); path = location.pathname; }
+    }
     const raw = location.hash.replace(/^#\/?/, '') || path.replace(/^\/|\/$/g, '');
     let name, id, episodeId;
     try { [name, id, episodeId] = raw.split('/').map(decodeURIComponent); } catch { name = 'home'; }
