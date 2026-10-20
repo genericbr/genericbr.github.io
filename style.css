@@ -57,13 +57,16 @@ h1,h2,h3,p { margin:0; }
 .chooser-heading { margin-bottom:20px; }
 .chooser-heading h1 { font-size:22px; letter-spacing:-.4px; font-weight:600; }
 .category-list { display:flex; flex-direction:column; gap:10px; }
-.category-choice { display:flex; align-items:center; gap:14px; padding:17px; border:1px solid var(--line); border-radius:10px; background:var(--card); }
-.category-choice:hover { border-color:#f78b4a60; }
-.category-icon { display:grid; place-items:center; width:40px; height:40px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; color:var(--muted); }
+.category-choice { display:flex; align-items:center; gap:14px; min-height:82px; padding:17px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(115deg,#f78b4a06,transparent 65%),var(--card); }
+.category-choice:hover { border-color:#f78b4a60; background-color:#242638; }
+.category-icon { display:grid; place-items:center; width:42px; height:42px; flex-shrink:0; border:1px solid #f78b4a25; border-radius:11px; background:var(--orange-soft); color:var(--orange-bright); }
+.category-icon .steam-icon img { background:transparent; }
 .category-icon .icon { width:21px; height:21px; }
 .category-choice h2 { font-size:14px; line-height:1.4; font-weight:600; }
 .category-choice p { margin-top:3px; color:var(--muted); font-size:11px; }
-.category-arrow { margin-left:auto; color:var(--muted); }
+.category-arrow { display:grid; place-items:center; width:28px; height:28px; margin-left:auto; flex-shrink:0; border:1px solid var(--line); border-radius:50%; color:var(--muted); }
+.category-arrow .icon { width:13px; height:13px; }
+.category-choice:hover .category-arrow,.category-choice:focus-visible .category-arrow { border-color:#f78b4a40; color:var(--orange-bright); background:var(--orange-soft); }
 .collection-card { padding:24px; border:1px solid var(--line); border-radius:14px; background:var(--surface); }
 .collection-heading { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:20px; }
 .collection-heading>div { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
@@ -97,9 +100,12 @@ h1,h2,h3,p { margin:0; }
 .game-note { display:inline-block; margin-top:8px; padding:3px 6px; border:1px solid var(--line); border-radius:4px; color:var(--muted); font:8px 'DM Mono',monospace; }
 .media-fallback { position:absolute; inset:0; display:grid; place-items:center; color:#656d8c; background:var(--card); }
 .media-fallback .icon { width:28px; height:28px; }
-.category-tabs { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px; }
-.category-tabs a { padding:7px 13px; border:1px solid var(--line); border-radius:7px; background:var(--card); color:var(--muted); font-size:11px; }
-.category-tabs a[aria-current] { border-color:#f78b4a60; background:var(--orange-soft); color:var(--orange-bright); }
+.category-tabs { display:flex; width:fit-content; max-width:100%; gap:4px; margin-bottom:18px; padding:4px; border:1px solid var(--line); border-radius:11px; background:var(--bg); }
+.category-tabs a { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:7px 13px; border:1px solid transparent; border-radius:7px; color:var(--muted); font-size:11px; font-weight:500; }
+.category-tabs .icon,.category-tabs .steam-icon { width:15px; height:15px; }
+.category-tabs .steam-icon img { background:transparent; }
+.category-tabs a:hover { background:#ffffff06; color:var(--text); }
+.category-tabs a[aria-current] { border-color:#f78b4a40; background:var(--orange-soft); color:var(--orange-bright); box-shadow:0 1px 5px #0002; }
 .data-notice { margin-bottom:18px; padding:10px 12px; border:1px solid var(--line); border-radius:6px; color:var(--muted); font-size:11px; }
 .data-notice button { padding:0 0 0 4px; border:0; background:none; color:var(--orange-bright); font:inherit; text-decoration:underline; cursor:pointer; }
 .empty-state { grid-column:1/-1; padding:28px 8px; color:var(--muted); text-align:center; font-size:12px; }
@@ -151,6 +157,9 @@ h1,h2,h3,p { margin:0; }
   .category-choice { padding:15px 12px; gap:11px; }
   .category-choice h2 { font-size:13px; }
   .category-choice p { font-size:10px; }
+  .category-tabs { width:100%; }
+  .category-tabs a { flex:1; gap:5px; padding:7px 5px; font-size:10px; }
+  .category-tabs .icon,.category-tabs .steam-icon { width:13px; height:13px; }
   .category-icon { width:35px; height:35px; }
   .collection-card { padding:20px 14px; }
   .collection-heading { flex-direction:column; align-items:start; gap:10px; }
