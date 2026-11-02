@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const destination = resolve(root, 'dist');
 await mkdir(destination, { recursive: true });
-for (const name of ['index.html','404.html','style.css','dashboard.html','dashboard.css','config.js','js','images']) {
+for (const name of ['index.html','404.html','style.css','dashboard.html','dashboard.css','dashboard-settings.css','dashboard-analytics.css','config.js','js','images']) {
   await cp(resolve(root, name), resolve(destination, name), { recursive: true });
 }
 await writeFile(resolve(destination, '.nojekyll'), '');
