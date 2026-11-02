@@ -121,6 +121,10 @@
     document.querySelectorAll('.site-view').forEach(view => { view.hidden = view.id !== 'view-' + name; });
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
+  function announcePageview(path) {
+    const normalized = String(path || '/').replace(/\/+/g, '/').replace(/\/$/, '') || '/';
+    window.dispatchEvent(new CustomEvent('portfolio:pageview', { detail: { path: normalized } }));
+  }
   function renderBanners() {
     const banners = state.banners.filter(banner => banner.enabled !== false).sort((a, b) => (a.order || 0) - (b.order || 0));
     byId('banners').hidden = !banners.length;
@@ -288,15 +292,17 @@
       state.category = types[name];
       if (state.loaded) showDetail(types[name], id, episodeId);
       else detailShell('Loading project…');
+      announcePageview('/' + name + '/' + encodeURIComponent(id) + (episodeId ? '/' + encodeURIComponent(episodeId) : ''));
       return;
     }
     closeDetail();
     if (categoryInfo[name]) {
       if (state.category !== name) { state.query = ''; byId('work-search').value = ''; byId('showcases').open = false; }
       state.category = name; renderCollection(); setView('collection');
-    } else if (['portfolio', 'work'].includes(name)) { setView('portfolio'); }
-    else if (name === 'about') { setView('about'); }
-    else { setView('home'); }
+      announcePageview('/' + name);
+    } else if (['portfolio', 'work'].includes(name)) { setView('portfolio'); announcePageview('/portfolio'); }
+    else if (name === 'about') { setView('about'); announcePageview('/about'); }
+    else { setView('home'); announcePageview('/'); }
   }
   async function setup() {
     byId('footer-year').textContent = new Date().getFullYear();
@@ -320,6 +326,7 @@
     byId('about-tagline').textContent = cfg.tagline || '';
     byId('about-avatar').innerHTML = avatar.innerHTML;
     bindImages(byId('about-avatar'));
+    window.PortfolioSiteSettings?.applyToDocument?.(window.PortfolioSiteSettings.getCurrent?.());
     byId('work-search').addEventListener('input', event => { state.query = event.target.value.toLowerCase().trim(); renderCollection(); });
     byId('work-sort').addEventListener('change', event => { state.sort = event.target.value; renderCollection(); });
     document.addEventListener('click', event => {

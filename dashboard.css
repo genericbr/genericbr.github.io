@@ -24,6 +24,34 @@ h4 { font-size:16px; font-weight:600; }
 .brand>span { color:var(--accent); padding-left:3px; }
 .brand small { font:10px 'DM Mono',monospace; text-transform:uppercase; letter-spacing:.1em; padding-left:15px; margin-left:15px; border-left:1px solid var(--border); color:var(--muted); }
 .header-actions { display:flex; align-items:center; gap:22px; font-size:12px; }
+.admin-notifications { position:relative; }
+.admin-notifications-button { display:grid; place-items:center; width:34px; height:34px; padding:0!important; border:1px solid var(--border); background:transparent; color:var(--text); position:relative; }
+.admin-notifications-button svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.admin-notifications-badge { position:absolute; top:-5px; right:-5px; min-width:16px; height:16px; padding:0 4px; display:grid; place-items:center; border-radius:99px; background:var(--accent); color:#28190f; font:9px 'DM Mono',monospace; }
+.admin-notifications-panel { position:absolute; z-index:20; top:44px; right:0; width:min(390px,calc(100vw - 32px)); max-height:min(70vh,520px); overflow:auto; padding:13px; border:1px solid var(--border); border-radius:11px; background:var(--surface); box-shadow:0 16px 45px #0008; }
+.admin-notifications-head { display:flex; align-items:start; justify-content:space-between; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+.admin-notifications-head strong,.admin-notifications-head small { display:block; }
+.admin-notifications-head small { margin-top:3px; color:var(--muted); font-size:10px; }
+.admin-notifications-head button,.admin-notifications-foot button { padding:5px 7px; font-size:10px; white-space:nowrap; }
+.admin-notifications-status { min-height:1.3em; padding:7px 0 2px; color:var(--muted); font-size:10px; }
+.admin-notifications-status.error { color:var(--danger); }
+.admin-notifications-list { display:grid; gap:4px; }
+.admin-notification-item { display:grid; grid-template-columns:8px minmax(0,1fr); gap:9px; width:100%; padding:9px 7px; text-align:left; color:var(--text); background:transparent; border:1px solid transparent; border-radius:7px; font-weight:400; }
+.admin-notification-item:hover { background:#ffffff07; filter:none; border-color:var(--border); }
+.admin-notification-dot { width:7px; height:7px; margin-top:5px; border-radius:50%; background:var(--accent); }
+.admin-notification-item.is-read .admin-notification-dot { background:var(--border); }
+.admin-notification-item strong,.admin-notification-item small,.admin-notification-item time { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.admin-notification-item strong { font-size:11px; }
+.admin-notification-item small,.admin-notification-item time { margin-top:2px; color:var(--muted); font-size:10px; }
+.admin-notifications-empty { padding:22px 8px; color:var(--muted); text-align:center; font-size:11px; }
+.admin-notifications-foot { border-top:1px solid var(--border); margin-top:5px; padding-top:8px; }
+.admin-notifications-live { position:fixed; z-index:30; right:24px; bottom:24px; width:max-content; max-width:min(380px,calc(100vw - 32px)); padding:12px 16px; border:1px solid #ff914d55; border-radius:10px; background:var(--surface); color:var(--text); box-shadow:0 8px 30px #0005; font-size:12px; overflow-wrap:anywhere; pointer-events:none; }
+.admin-notifications-live:empty { display:none; }
+@media(max-width:480px) {
+  .studio-header:has(.admin-notifications:not([hidden])) .brand small { display:none; }
+  .studio-header:has(.admin-notifications:not([hidden])) .header-actions { gap:8px; flex-shrink:0; }
+  .studio-header:has(.admin-notifications:not([hidden])) .header-actions>a { white-space:nowrap; }
+}
 .header-actions button { padding:.4rem .8rem; }
 main { max-width:1440px; margin:auto; padding:34px 24px 56px; }
 .page-heading { display:flex; align-items:center; justify-content:space-between; gap:20px; }
@@ -265,6 +293,10 @@ footer span { color:var(--accent); padding:0 7px; }
   footer { margin:0 16px; }
 }
 @media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; animation:none!important; transition:none!important; } }
+@media(max-width:560px) {
+  .admin-notifications-panel { position:fixed; top:62px; right:16px; max-height:calc(100dvh - 80px); }
+  .admin-notifications-foot { display:flex; flex-wrap:wrap; gap:6px; }
+}
 
 /* Tracked links stay compact so the dashboard keeps its personal studio feel. */
 .tracking-root { width:min(100%,1000px); margin-inline:auto; }
