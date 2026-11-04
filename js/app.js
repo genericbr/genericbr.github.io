@@ -121,6 +121,12 @@
     document.querySelectorAll('.site-view').forEach(view => { view.hidden = view.id !== 'view-' + name; });
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
+  function navigate() {
+    handleRoute();
+    const view = document.querySelector('.site-view:not([hidden])');
+    view.setAttribute('tabindex', '-1');
+    view.focus({ preventScroll: true });
+  }
   function announcePageview(path) {
     const normalized = String(path || '/').replace(/\/+/g, '/').replace(/\/$/, '') || '/';
     window.dispatchEvent(new CustomEvent('portfolio:pageview', { detail: { path: normalized } }));
@@ -351,13 +357,13 @@
       if (!anchor || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || anchor.target === '_blank') return;
       if (!anchor.hasAttribute('data-route')) return;
       const url = new URL(anchor.href); if (url.origin !== location.origin) return;
-      event.preventDefault(); history.pushState(null, '', url.pathname + url.search + url.hash); handleRoute();
+      event.preventDefault(); history.pushState(null, '', url.pathname + url.search + url.hash); navigate();
     });
     window.addEventListener('keydown', event => {
       if (event.key === 'Escape') document.querySelector('.contact-menu')?.removeAttribute('open');
-      if (event.key === 'Escape' && !byId('view-detail').hidden) { history.pushState(null, '', '/' + state.category); handleRoute(); }
+      if (event.key === 'Escape' && !byId('view-detail').hidden) { history.pushState(null, '', '/' + state.category); navigate(); }
     });
-    window.addEventListener('popstate', handleRoute); window.addEventListener('hashchange', handleRoute);
+    window.addEventListener('popstate', navigate); window.addEventListener('hashchange', navigate);
     await window.PortfolioInviteReady;
     handleRoute();
     load();
