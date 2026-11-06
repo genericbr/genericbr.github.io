@@ -350,3 +350,29 @@ h1,h2,h3,p { margin:0; }
   .episode-nav { gap:8px; } .episode-nav-link { padding:8px; }
   .episode-nav-link strong { font-size:10px; }
 }
+
+/* Restore the spacious desktop layout while retaining the compact mobile screens. */
+@media(min-width:901px) {
+  .page { max-width:1000px; }
+  .profile-card { width:100%; max-width:470px; margin-inline:auto; padding:30px 32px 25px; }
+  .chooser-card { width:100%; max-width:570px; margin-inline:auto; }
+  .about-card { width:100%; max-width:680px; margin-inline:auto; }
+  .collection-heading { flex-direction:row; align-items:center; justify-content:space-between; gap:14px; }
+  .poster-grid,.work-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px 20px; }
+  .category-tabs { width:fit-content; }
+  .category-tabs a { flex:initial; padding:7px 13px; }
+  .home-banners { max-width:570px; margin-inline:auto; }
+  .showcase-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px 16px; }
+  .games-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+  .game-detail-heading { flex-wrap:nowrap; }
+  .game-detail-layout { grid-template-columns:minmax(0,1.9fr) minmax(220px,1fr); }
+  .watch-layout { grid-template-columns:minmax(0,1fr) 250px; gap:22px; }
+  .watch-layout>.episode-section { position:sticky; top:20px; margin-top:0; padding:13px; }
+  .watch-layout .episodes-heading { align-items:start; flex-direction:column; gap:4px; }
+  .watch-layout .episode-list { max-height:460px; overflow-y:auto; scrollbar-width:thin; }
+  .watch-layout .episode-link { grid-template-columns:66px minmax(0,1fr); gap:9px; padding:7px; }
+  .watch-layout .episode-play { display:none; }
+  .watch-layout .episode-copy strong { font-size:11px; }
+  .watch-layout .episode-copy small { font-size:9px; }
+  .series-overview { grid-template-columns:1.2fr 1fr; gap:25px; }
+}
